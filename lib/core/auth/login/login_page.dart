@@ -350,12 +350,12 @@ class _LoginPageState extends TbPageState<LoginPage> {
     if (iconOnly) {
       button = OutlinedButton(
           style: _oauth2IconButtonStyle,
-          onPressed: () => _oauth2ButtonPressed(client),
+          onPressed: () => {}, //_oauth2ButtonPressed(client),
           child: icon);
     } else {
       button = OutlinedButton(
           style: _oauth2ButtonWithTextStyle,
-          onPressed: () => _oauth2ButtonPressed(client),
+          onPressed: () => {}, //_oauth2ButtonPressed(client),
           child: Stack(children: [
             Align(alignment: Alignment.centerLeft, child: icon),
             Container(
@@ -380,6 +380,7 @@ class _LoginPageState extends TbPageState<LoginPage> {
     }
   }
 
+/*
   void _oauth2ButtonPressed(OAuth2ClientInfo client) async {
     _isLoginNotifier.value = true;
     try {
@@ -396,7 +397,7 @@ class _LoginPageState extends TbPageState<LoginPage> {
       _isLoginNotifier.value = false;
     }
   }
-
+*/
   void _login() async {
     FocusScope.of(context).unfocus();
     if (_loginFormKey.currentState?.saveAndValidate() ?? false) {

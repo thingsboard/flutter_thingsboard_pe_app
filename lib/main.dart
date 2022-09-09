@@ -13,10 +13,17 @@ import 'config/themes/tb_theme.dart';
 import 'config/themes/wl_theme_widget.dart';
 import 'generated/l10n.dart';
 
+import 'dart:io';
+
 final appRouter = ThingsboardAppRouter();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  ByteData data = await PlatformAssetBundle().load('assets/ca/certificate.pem');
+  SecurityContext.defaultContext
+      .setTrustedCertificatesBytes(data.buffer.asUint8List());
+
 //  await FlutterDownloader.initialize();
 //  await Permission.storage.request();
 
