@@ -47,6 +47,7 @@ dependencies:
   universal_html: ^2.0.8
   universal_platform: ^1.0.0+1
   preload_page_view: ^0.1.6
+  flutter_native_splash: ^2.2.9
   flutter_localizations:
     sdk: flutter
 
@@ -94,3 +95,6 @@ flutter_icons:
   image_path: "assets/images/thingsboard.png"
 flutter_intl:
   enabled: true
+flutter_native_splash:
+  image: assets/images/splash.png
+  color: "#ffffff"
