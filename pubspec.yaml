@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  thingsboard_pe_client: 1.0.4
+  thingsboard_pe_client: 1.0.5
   intl: ^0.17.0
   flutter_secure_storage: ^6.0.0
   flutter_speed_dial: ^6.0.0
@@ -47,7 +47,16 @@ dependencies:
   universal_html: ^2.0.8
   universal_platform: ^1.0.0+1
   preload_page_view: ^0.1.6
+
+  # Splash screen library
   flutter_native_splash: ^2.2.9
+
+  # Provisioning libraries used
+  esp_softap_provisioning: ^1.0.1
+  flutter_bloc: ^7.0.0
+  equatable: ^2.0.0
+  flutter_spinkit: ^4.1.2
+
   flutter_localizations:
     sdk: flutter
 
