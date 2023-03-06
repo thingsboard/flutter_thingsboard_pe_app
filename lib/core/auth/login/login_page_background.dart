@@ -18,7 +18,7 @@ class _LoginPageBackgroundPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color.withAlpha(14);
+    final paint = Paint()..color = Color.fromARGB(255, 3, 104, 158);
     paint.style = PaintingStyle.fill;
     var topPath = Path();
     topPath.moveTo(0, 0);

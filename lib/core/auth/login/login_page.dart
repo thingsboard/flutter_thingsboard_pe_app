@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -24,12 +25,15 @@ class LoginPage extends TbPageWidget {
 
 class _LoginPageState extends TbPageState<LoginPage> {
   final ButtonStyle _oauth2ButtonWithTextStyle = OutlinedButton.styleFrom(
-      padding: EdgeInsets.all(16),
-      alignment: Alignment.centerLeft,
-      foregroundColor: Colors.black87);
+    padding: EdgeInsets.all(16),
+    alignment: Alignment.center,
+    side: BorderSide(width: 0.5, color: Color.fromARGB(0, 209, 209, 209)),
+  );
 
   final ButtonStyle _oauth2IconButtonStyle = OutlinedButton.styleFrom(
-      padding: EdgeInsets.all(16), alignment: Alignment.center);
+      padding: EdgeInsets.all(16),
+      alignment: Alignment.center,
+      side: BorderSide(width: 0.5, color: Color.fromARGB(255, 209, 209, 209)));
 
   final _isLoginNotifier = ValueNotifier<bool>(false);
   final _showPasswordNotifier = ValueNotifier<bool>(false);
@@ -54,14 +58,14 @@ class _LoginPageState extends TbPageState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: false,
+        backgroundColor: const Color(0xff0277B7),
+        resizeToAvoidBottomInset: true,
         body: Stack(children: [
           LoginPageBackground(),
           Positioned.fill(child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                  padding: EdgeInsets.fromLTRB(24, 71, 24, 24),
+                  padding: EdgeInsets.fromLTRB(24, 65, 24, 24),
                   child: ConstrainedBox(
                       constraints: BoxConstraints(
                           minHeight: constraints.maxHeight - (71 + 24)),
@@ -73,7 +77,7 @@ class _LoginPageState extends TbPageState<LoginPage> {
                                 tbContext.wlService.loginLogoImage != null
                                     ? tbContext.wlService.loginLogoImage!
                                     : SizedBox(height: 25)
-                              ]),
+                              ], mainAxisAlignment: MainAxisAlignment.center),
                               if (tbContext.wlService.loginShowNameVersion ==
                                       true &&
                                   !(tbContext.wlService.showNameBottom == true))
@@ -86,8 +90,8 @@ class _LoginPageState extends TbPageState<LoginPage> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 28,
                                         height: 36 / 28))
-                              ]),
-                              SizedBox(height: 48),
+                              ], mainAxisAlignment: MainAxisAlignment.center),
+                              SizedBox(height: 20),
                               if (tbContext.hasOAuthClients)
                                 _buildOAuth2Buttons(
                                     tbContext.oauth2ClientInfos!),
@@ -175,9 +179,7 @@ class _LoginPageState extends TbPageState<LoginPage> {
                                     child: Text(
                                       '${S.of(context).passwordForgotText}',
                                       style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                          color: const Color(0xffffffff),
                                           letterSpacing: 1,
                                           fontSize: 12,
                                           height: 16 / 12),
@@ -187,10 +189,35 @@ class _LoginPageState extends TbPageState<LoginPage> {
                               ),
                               Spacer(),
                               ElevatedButton(
-                                child: Text('${S.of(context).login}'),
+                                child: Ink(
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xff999999),
+                                        Color(0xff999999)
+                                      ],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5.0)),
+                                  ),
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                        minWidth: 88.0,
+                                        minHeight:
+                                            50.0), // min sizes for Material buttons
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      '${S.of(context).login}',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
                                 style: ElevatedButton.styleFrom(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 16)),
+                                  padding: EdgeInsets.symmetric(vertical: 0),
+                                ),
                                 onPressed: () {
                                   _login();
                                 },
@@ -214,9 +241,7 @@ class _LoginPageState extends TbPageState<LoginPage> {
                                           child: Text(
                                             '${S.of(context).createAccount}',
                                             style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
+                                                color: Color(0xff999999),
                                                 letterSpacing: 1,
                                                 fontSize: 14,
                                                 height: 20 / 14),
@@ -270,7 +295,7 @@ class _LoginPageState extends TbPageState<LoginPage> {
                               child: Container(
                                 decoration: new BoxDecoration(
                                     color:
-                                        Colors.grey.shade200.withOpacity(0.2)),
+                                        Colors.grey.shade200.withOpacity(0.6)),
                                 child: Container(
                                   padding:
                                       EdgeInsets.only(bottom: bottomPadding),
@@ -353,18 +378,22 @@ class _LoginPageState extends TbPageState<LoginPage> {
           onPressed: () => {_oauth2ButtonPressed(client)},
           child: icon);
     } else {
-      button = OutlinedButton(
-          style: _oauth2ButtonWithTextStyle,
-          onPressed: () => {_oauth2ButtonPressed(client)},
-          child: Stack(children: [
-            Align(alignment: Alignment.centerLeft, child: icon),
-            Container(
-              height: 24,
-              child: Align(
-                  alignment: Alignment.center,
-                  child: Text(text, textAlign: TextAlign.center)),
-            )
-          ]));
+      button = Container(
+          color: Color(0xffe8eaf6),
+          child: OutlinedButton(
+              style: _oauth2ButtonWithTextStyle,
+              onPressed: () => {_oauth2ButtonPressed(client)},
+              child: Stack(children: [
+                Align(alignment: Alignment.centerLeft, child: icon),
+                Container(
+                  height: 24,
+                  child: Align(
+                      alignment: Alignment.center,
+                      child: Text(text,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.black))),
+                )
+              ])));
     }
     if (expand) {
       return Expanded(

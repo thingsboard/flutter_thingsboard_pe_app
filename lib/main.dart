@@ -15,6 +15,8 @@ import 'generated/l10n.dart';
 
 import 'dart:io';
 
+import 'package:upgrader/upgrader.dart';
+
 final appRouter = ThingsboardAppRouter();
 
 void main() async {
@@ -30,6 +32,8 @@ void main() async {
   if (UniversalPlatform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
+
+  await Upgrader.clearSavedSettings(); // REMOVE this for release builds
 
   runApp(ThingsboardApp());
 }
@@ -136,10 +140,14 @@ class ThingsboardAppState extends State<ThingsboardApp>
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: Colors.white,
-        statusBarColor: Colors.white,
-        systemNavigationBarIconBrightness: Brightness.dark));
+        systemNavigationBarColor: const Color(0xff333333),
+        statusBarColor: const Color(0xff333333),
+        systemNavigationBarIconBrightness: Brightness.light));
     return WlThemeWidget(
       appRouter.tbContext,
       wlThemedWidgetBuilder: (context, data, wlParams) => MaterialApp(
@@ -151,43 +159,44 @@ class ThingsboardAppState extends State<ThingsboardApp>
           ],
           supportedLocales: S.delegate.supportedLocales,
           title: 'Hubble Cloudlink', //wlParams.appTitle!,
-          themeMode: ThemeMode.light,
-          home: TwoPageView(
-              controller: _mainPageViewController,
-              first: MaterialApp(
-                key: mainAppKey,
-                scaffoldMessengerKey: appRouter.tbContext.messengerKey,
-                localizationsDelegates: [
-                  S.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: S.delegate.supportedLocales,
-                title: 'Hubble Cloudlink',
-                theme: data,
-                themeMode: ThemeMode.light,
-                darkTheme: tbDarkTheme,
-                onGenerateRoute: appRouter.router.generator,
-                navigatorObservers: [appRouter.tbContext.routeObserver],
-              ),
-              second: MaterialApp(
-                key: dashboardKey,
-                // scaffoldMessengerKey: appRouter.tbContext.messengerKey,
-                localizationsDelegates: [
-                  S.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: S.delegate.supportedLocales,
-                title: 'Hubble Cloudlink',
-                theme: data,
-                themeMode: ThemeMode.light,
-                darkTheme: tbDarkTheme,
-                home: MainDashboardPage(appRouter.tbContext,
-                    controller: _mainDashboardPageController),
-              ))),
+          themeMode: ThemeMode.dark,
+          home: UpgradeAlert(
+              child: TwoPageView(
+                  controller: _mainPageViewController,
+                  first: MaterialApp(
+                    key: mainAppKey,
+                    scaffoldMessengerKey: appRouter.tbContext.messengerKey,
+                    localizationsDelegates: [
+                      S.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    supportedLocales: S.delegate.supportedLocales,
+                    title: 'Hubble Cloudlink',
+                    theme: data,
+                    themeMode: ThemeMode.dark,
+                    darkTheme: tbDarkTheme,
+                    onGenerateRoute: appRouter.router.generator,
+                    navigatorObservers: [appRouter.tbContext.routeObserver],
+                  ),
+                  second: MaterialApp(
+                    key: dashboardKey,
+                    // scaffoldMessengerKey: appRouter.tbContext.messengerKey,
+                    localizationsDelegates: [
+                      S.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    supportedLocales: S.delegate.supportedLocales,
+                    title: 'Hubble Cloudlink',
+                    theme: data,
+                    themeMode: ThemeMode.dark,
+                    darkTheme: tbDarkTheme,
+                    home: MainDashboardPage(appRouter.tbContext,
+                        controller: _mainDashboardPageController),
+                  )))),
     );
   }
 }

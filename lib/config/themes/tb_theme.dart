@@ -6,7 +6,7 @@ const Color _tbPrimaryColor = Color(_tbPrimaryColorValue);
 const Color _tbSecondaryColor = Color(0x6778D1);
 const Color _tbDarkPrimaryColor = Color(0xFF9fa8da);
 
-const int _tbTextColorValue = 0xFF282828;
+const int _tbTextColorValue = 0xFFffffff;
 const Color _tbTextColor = Color(_tbTextColorValue);
 
 var tbTypography = Typography.material2018();
