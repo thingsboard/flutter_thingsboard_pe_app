@@ -318,9 +318,6 @@ class TbContext implements PopEntry {
                 .getAllowedPermissions();
             homeDashboard =
                 await tbClient.getDashboardService().getHomeDashboardInfo();
-
-            // TODO: firebase_init: run flutterfire configure and uncomment it
-            // NotificationService().init(tbClient, log, this);
           } catch (e) {
             if (!_isConnectionError(e)) {
               logout();
@@ -351,6 +348,10 @@ class TbContext implements PopEntry {
           tbClient.isAuthenticated() && !tbClient.isPreVerificationToken();
       await wlService.updateWhiteLabeling();
       await updateRouteState();
+      if (tbClient.getAuthUser()!.userId != null) {
+        // TODO: firebase_init: run flutterfire configure and uncomment it
+        // NotificationService().init(tbClient, log, this);
+      }
     } catch (e, s) {
       log.error('Error: $e', e, s);
       if (_isConnectionError(e)) {
