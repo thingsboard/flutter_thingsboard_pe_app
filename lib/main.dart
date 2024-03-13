@@ -1,19 +1,16 @@
-// TODO: firebase_init: run flutterfire configure and uncomment it
-// import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:developer';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
+import 'package:thingsboard_app/firebase_options.dart';
 import 'package:thingsboard_app/modules/dashboard/main_dashboard_page.dart';
-import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/widgets/two_page_view.dart';
 import 'package:universal_platform/universal_platform.dart';
-
-// TODO: firebase_init: run flutterfire configure and uncomment it
-// import 'package:thingsboard_app/firebase_options.dart';
 
 import 'config/themes/tb_theme.dart';
 import 'config/themes/wl_theme_widget.dart';
@@ -30,8 +27,13 @@ void main() async {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
 
-  // TODO: firebase_init: run firebase cli then uncomment it
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    log(e.toString());
+  }
 
   runApp(ThingsboardApp());
 }

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:thingsboard_app/config/themes/tb_theme_utils.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/modules/notification/filter_segmented_button.dart';
 import 'package:thingsboard_app/modules/notification/notification_list.dart';
 import 'package:thingsboard_app/modules/notification/notification_model.dart';
 import 'package:thingsboard_app/utils/services/_tb_secure_storage.dart';
@@ -29,37 +29,37 @@ class _NotificationPageState extends TbPageState<NotificationPage> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async => _refresh(),
-      child: SafeArea(
-        child: Scaffold(
-          appBar: TbAppBar(
-            tbContext,
-            title: const Text('Notifications'),
-            actions: [
-              TextButton(
-                child: Text('Mark all as read'),
-                onPressed: () {
-                  setState(() {
-                    for (int i = 0; i < _notifications.length; ++i) {
-                      if (!_notifications[i].read) {
-                        _notifications[i] =
-                            _notifications[i].copyWith(read: true);
-                        NotificationService.decreaseNotificationBadgeCount();
-                      }
+      child: Scaffold(
+        appBar: TbAppBar(
+          tbContext,
+          title: const Text('Notifications'),
+          actions: [
+            TextButton(
+              child: Text('Mark all as read'),
+              onPressed: () {
+                setState(() {
+                  for (int i = 0; i < _notifications.length; ++i) {
+                    if (!_notifications[i].read) {
+                      _notifications[i] =
+                          _notifications[i].copyWith(read: true);
+                      NotificationService.clearNotificationBadgeCount();
                     }
-                  });
+                  }
+                });
 
-                  final storage = tbContext.storage;
-                  storage.setItem(
-                    NotificationService.notificationsListKey,
-                    jsonEncode(
-                      _notifications.map((e) => e.toJson()).toList(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          body: StreamBuilder(
+                final storage = tbContext.storage;
+                storage.setItem(
+                  NotificationService.notificationsListKey,
+                  jsonEncode(
+                    _notifications.map((e) => e.toJson()).toList(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: StreamBuilder(
             stream: NotificationService.notificationsNumberStream.stream,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -121,65 +121,27 @@ class _NotificationPageState extends TbPageState<NotificationPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: SegmentedButton(
-                              segments: [
-                                ButtonSegment(
-                                  value: NotificationsFilter.unread,
-                                  label: Center(
-                                    child: Text(
-                                      'Unread',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                ButtonSegment(
-                                  value: NotificationsFilter.all,
-                                  label: Text(
-                                    'All',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              selected: {notificationsFilter},
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10, bottom: 20),
+                            child: FilterSegmentedButton(
+                              selected: notificationsFilter,
                               onSelectionChanged: (newSelection) {
                                 setState(() {
-                                  notificationsFilter = newSelection.first;
+                                  notificationsFilter = newSelection;
                                 });
                               },
-                              showSelectedIcon: false,
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.resolveWith(
-                                  (states) {
-                                    if (states
-                                        .contains(MaterialState.selected)) {
-                                      return TbThemeUtils.tbPrimary;
-                                    }
-
-                                    return Colors.grey.withOpacity(0.3);
-                                  },
+                              segments: [
+                                FilterSegments(
+                                  label: 'Unread',
+                                  value: NotificationsFilter.unread,
                                 ),
-                                foregroundColor:
-                                    MaterialStateProperty.resolveWith(
-                                  (states) {
-                                    if (states
-                                        .contains(MaterialState.selected)) {
-                                      return Colors.white;
-                                    }
-
-                                    return Colors.grey;
-                                  },
+                                FilterSegments(
+                                  label: 'All',
+                                  value: NotificationsFilter.all,
                                 ),
-                              ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 10),
                           Expanded(
                             child: NotificationsList(
                               notifications: _notifications.reversed.where((e) {
@@ -199,7 +161,9 @@ class _NotificationPageState extends TbPageState<NotificationPage> {
 
                                 if (!notification.read) {
                                   NotificationService
-                                      .decreaseNotificationBadgeCount();
+                                      .decreaseNotificationBadgeCount(
+                                    notification.hashCode,
+                                  );
                                 }
 
                                 setState(() {
@@ -219,16 +183,31 @@ class _NotificationPageState extends TbPageState<NotificationPage> {
                                 );
                               },
                               onReadNotification: (id) {
+                                final index = _notifications.indexWhere(
+                                  (e) => e.message.messageId == id,
+                                );
+                                if (index == -1) {
+                                  return;
+                                }
+
                                 setState(() {
-                                  final index = _notifications.indexWhere(
-                                    (e) => e.message.messageId == id,
+                                  _notifications[index] = _notifications[index]
+                                      .copyWith(read: true);
+
+                                  NotificationService
+                                      .decreaseNotificationBadgeCount(
+                                    _notifications[index].hashCode,
                                   );
-                                  if (index != -1) {
-                                    _notifications[index] =
-                                        _notifications[index]
-                                            .copyWith(read: true);
-                                  }
                                 });
+
+                                final type = _notifications[index]
+                                    .message
+                                    .data['notificationType'];
+
+                                if (type?.toUpperCase().contains('ALARM') ==
+                                    true) {
+                                  _updateAlarmStatusById(_notifications[index]);
+                                }
 
                                 final storage = tbContext.storage;
                                 storage.setItem(
@@ -239,9 +218,6 @@ class _NotificationPageState extends TbPageState<NotificationPage> {
                                         .toList(),
                                   ),
                                 );
-
-                                NotificationService
-                                    .decreaseNotificationBadgeCount();
                               },
                             ),
                           ),
@@ -283,9 +259,35 @@ class _NotificationPageState extends TbPageState<NotificationPage> {
   }
 
   Future<void> _refresh() async {
+    // final uniqueAlarms = _notifications
+    //     .where((n) => n.message.data['info.alarmId'] != null)
+    //     .toSet();
+    //
+    // final updatedAlarms = await Future.wait(
+    //   uniqueAlarms
+    //       .map((e) => tbClient
+    //           .getAlarmService()
+    //           .getAlarms(e.message.data['info.alarmId']))
+    //       .toList(),
+    // );
+
+    // print(updatedAlarms);
+
     await _loadNotifications();
+
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  void _updateAlarmStatusById(NotificationModel notification) {
+    final id = notification.message.data['info.alarmId'];
+    final status = notification.message.data['info.alarmStatus'];
+
+    for (int i = 0; i < _notifications.length; ++i) {
+      if (_notifications[i].message.data['info.alarmId'] == id) {
+        _notifications[i].message.data['info.alarmStatus'] = status;
+      }
     }
   }
 }
