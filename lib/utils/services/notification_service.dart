@@ -359,6 +359,6 @@ class NotificationService {
   }
 
   Future<void> _clearAllNotifications() async {
-    await _tbContext.storage.deleteItem(notificationsListKey);
+    await createAppStorage().deleteItem(notificationsListKey);
   }
 }
