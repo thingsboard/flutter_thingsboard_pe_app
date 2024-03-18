@@ -28,6 +28,9 @@ const Map<ActionType, String> actionTypeTranslations = {
   ActionType.RELATIONS_DELETED: 'All relation deleted',
   ActionType.ALARM_ACK: 'Acknowledged',
   ActionType.ALARM_CLEAR: 'Cleared',
+  ActionType.ALARM_DELETE: 'Alarm Deleted',
+  ActionType.ALARM_ASSIGNED: 'Alarm Assigned',
+  ActionType.ALARM_UNASSIGNED: 'Alarm Unassigned',
   ActionType.REST_API_RULE_ENGINE_CALL: 'Rule engine REST API call',
   ActionType.MADE_PUBLIC: 'Made public',
   ActionType.MADE_PRIVATE: 'Made private',
@@ -42,7 +45,11 @@ const Map<ActionType, String> actionTypeTranslations = {
   ActionType.TIMESERIES_DELETED: 'Telemetry deleted',
   ActionType.CHANGE_OWNER: 'Owner changed',
   ActionType.ASSIGNED_TO_EDGE: 'Assigned to Edge',
-  ActionType.UNASSIGNED_FROM_EDGE: 'Unassigned from Edge'
+  ActionType.UNASSIGNED_FROM_EDGE: 'Unassigned from Edge',
+  ActionType.ADDED_COMMENT: 'Added Comment',
+  ActionType.UPDATED_COMMENT: 'Updated Comment',
+  ActionType.DELETED_COMMENT: 'Deleted Comment',
+  ActionType.SMS_SENT: 'SMS Sent'
 };
 
 const Map<ActionStatus, String> actionStatusTranslations = {
