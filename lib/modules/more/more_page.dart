@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
+import 'package:thingsboard_app/modules/notification/service/notifications_local_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_pe_client/thingsboard_client.dart';
 
@@ -115,7 +116,7 @@ class _MorePageState extends TbContextState<MorePage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      NotificationService.triggerNotificationCountStream();
+      NotificationService().updateNotificationsCount();
     }
   }
 
@@ -243,7 +244,7 @@ class MoreMenuItem {
               icon: Icons.notifications_active,
               path: '/notifications',
               showAdditionalIcon: true,
-              additionalIcon: _notificationNumberWidget(),
+              additionalIcon: _notificationNumberWidget(tbContext.tbClient),
               disabled: Firebase.apps.isEmpty,
               disabledReasonMessage: 'Firebase is not configured.'
                   ' Please refer to the official Firebase documentation for'
@@ -270,7 +271,7 @@ class MoreMenuItem {
               icon: Icons.notifications_active,
               path: '/notifications',
               showAdditionalIcon: true,
-              additionalIcon: _notificationNumberWidget(),
+              additionalIcon: _notificationNumberWidget(tbContext.tbClient),
               disabled: Firebase.apps.isEmpty,
               disabledReasonMessage: 'Notifications are not configured. '
                   'Please contact your system administrator.',
@@ -288,7 +289,7 @@ class MoreMenuItem {
               icon: Icons.notifications_active,
               path: '/notifications',
               showAdditionalIcon: true,
-              additionalIcon: _notificationNumberWidget(),
+              additionalIcon: _notificationNumberWidget(tbContext.tbClient),
               disabled: Firebase.apps.isEmpty,
               disabledReasonMessage: 'Notifications are not configured. '
                   'Please contact your system administrator.',
@@ -308,11 +309,11 @@ class MoreMenuItem {
     }
   }
 
-  static Widget _notificationNumberWidget() {
-    NotificationService.triggerNotificationCountStream();
+  static Widget _notificationNumberWidget(ThingsboardClient tbClient) {
+    NotificationsLocalService().triggerNotificationCountStream();
 
     return StreamBuilder<int>(
-      stream: NotificationService.notificationsNumberStream.stream,
+      stream: NotificationsLocalService.notificationsNumberStream.stream,
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data! > 0) {
           return Container(
