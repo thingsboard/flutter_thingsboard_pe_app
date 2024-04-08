@@ -310,7 +310,7 @@ class MoreMenuItem {
   }
 
   static Widget _notificationNumberWidget(ThingsboardClient tbClient) {
-    NotificationsLocalService().triggerNotificationCountStream();
+    NotificationService().updateNotificationsCount();
 
     return StreamBuilder<int>(
       stream: NotificationsLocalService.notificationsNumberStream.stream,
