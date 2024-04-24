@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
+import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/modules/notification/service/i_notifications_local_service.dart';
 import 'package:thingsboard_app/modules/notification/service/notifications_local_service.dart';
 import 'package:thingsboard_app/utils/utils.dart';
@@ -18,6 +19,7 @@ class NotificationService {
   late TbContext _tbContext;
   final INotificationsLocalService _localService = NotificationsLocalService();
   StreamSubscription? _foregroundMessageSubscription;
+  StreamSubscription? _onMessageOpenedAppSubscription;
 
   String? _fcmToken;
 
@@ -37,6 +39,8 @@ class NotificationService {
     _tbClient = tbClient;
     _tbContext = context;
 
+    _log.debug('NotificationService::init()');
+
     final message = await FirebaseMessaging.instance.getInitialMessage();
     if (message != null) {
       NotificationService.handleClickOnNotification(
@@ -45,7 +49,8 @@ class NotificationService {
       );
     }
 
-    FirebaseMessaging.onMessageOpenedApp.listen(
+    _onMessageOpenedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen(
       (message) async {
         NotificationService.handleClickOnNotification(
           message.data,
@@ -104,13 +109,16 @@ class NotificationService {
   }
 
   Future<void> logout() async {
+    _log.debug('NotificationService::logout()');
     if (_fcmToken != null) {
+      _log.debug('NotificationService::logout() removeMobileSession');
       _tbClient.getUserService().removeMobileSession(_fcmToken!);
     }
 
     await _foregroundMessageSubscription?.cancel();
-    await _messaging.setAutoInitEnabled(false);
+    await _onMessageOpenedAppSubscription?.cancel();
     await _messaging.deleteToken();
+    await _messaging.setAutoInitEnabled(false);
     await flutterLocalNotificationsPlugin.cancelAll();
     await _localService.clearNotificationBadgeCount();
   }

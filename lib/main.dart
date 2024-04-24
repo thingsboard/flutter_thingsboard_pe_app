@@ -1,56 +1,45 @@
 import 'dart:developer';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:get_it/get_it.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
+import 'package:thingsboard_app/config/themes/wl_theme_widget.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/firebase_options.dart';
+import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/main_dashboard_page.dart';
+import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/tb_app_storage.dart';
 import 'package:thingsboard_app/widgets/two_page_view.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import 'config/themes/tb_theme.dart';
-import 'config/themes/wl_theme_widget.dart';
 import 'generated/l10n.dart';
-
-// final appRouter = ThingsboardAppRouter();
-
-final getIt = GetIt.instance;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 //  await FlutterDownloader.initialize();
 //  await Permission.storage.request();
 
-  getIt.registerSingleton(ThingsboardAppRouter());
-
+  setUpRootDependencies();
   if (UniversalPlatform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
 
-  try {
-    await Firebase.initializeApp(
-      name: 'initial',
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (e) {
-    log(e.toString());
-  }
+  getIt<IFirebaseService>().initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   try {
     final uri = await getInitialUri();
-    print('initial link $uri');
     if (uri != null) {
-      createAppStorage().setItem('initialDeepLink', uri.toString());
+      await createAppStorage().setItem('initialDeepLink', uri.toString());
     }
   } catch (e) {
-    log('TbContext:getInitialUri() exception $e', error: e);
+    log('main::getInitialUri() exception $e', error: e);
   }
 
   runApp(ThingsboardApp());
