@@ -3,9 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:thingsboard_app/constants/app_constants.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 
 class TbRecaptcha extends TbPageWidget {
   final String siteKey;
@@ -43,7 +44,7 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
 
   @override
   void initState() {
-    _initialUrl = Uri.parse(ThingsboardAppConstants.thingsBoardApiEndpoint +
+    _initialUrl = Uri.parse(getIt<IEndpointService>().getCachedEndpoint() +
         '/signup/recaptcha?siteKey=${widget.siteKey}');
     super.initState();
   }
