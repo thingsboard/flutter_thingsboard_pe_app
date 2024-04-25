@@ -66,6 +66,7 @@ class TbContext implements PopEntry {
   late final IosDeviceInfo? _iosInfo;
   late final String packageName;
   String? _initialNavigation;
+  StreamSubscription? _appLinkStreamSubscription;
 
   TbMainDashboardHolder? _mainDashboardHolder;
   bool _closeMainFirst = false;
@@ -383,22 +384,32 @@ class TbContext implements PopEntry {
     } finally {
       try {
         final link = await createAppStorage().getItem('initialDeepLink');
-        if (link != null) {
-          final uri = Uri.parse(link);
-          await createAppStorage().deleteItem('initialDeepLink');
-
-          log.debug('TbContext: navigate by appLink $uri');
-          router.navigateTo(
-            currentState!.context,
-            uri.path,
-            routeSettings: RouteSettings(
-              arguments: {...uri.queryParameters, 'uri': uri},
-            ),
-          );
-        }
+        _navigateByAppLink(link);
       } catch (e) {
         log.error('TbContext:getInitialUri() exception $e');
       }
+
+      _appLinkStreamSubscription = linkStream.listen((link) {
+        _navigateByAppLink(link);
+      }, onError: (err) {
+        log.error('linkStream.listen $err');
+      });
+    }
+  }
+
+  Future<void> _navigateByAppLink(String? link) async {
+    if (link != null) {
+      final uri = Uri.parse(link);
+      await createAppStorage().deleteItem('initialDeepLink');
+
+      log.debug('TbContext: navigate by appLink $uri');
+      router.navigateTo(
+        currentState!.context,
+        uri.path,
+        routeSettings: RouteSettings(
+          arguments: {...uri.queryParameters, 'uri': uri},
+        ),
+      );
     }
   }
 
@@ -414,6 +425,8 @@ class TbContext implements PopEntry {
       requestConfig: requestConfig,
       notifyUser: notifyUser,
     );
+
+    _appLinkStreamSubscription?.cancel();
   }
 
   bool _isConnectionError(e) {
