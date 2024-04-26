@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:jovial_svg/jovial_svg.dart';
+import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_pe_client/thingsboard_client.dart';
-
-import '../constants/app_constants.dart';
 
 abstract class Utils {
   static const _tbImagePrefix = 'tb-image;';
@@ -21,9 +21,7 @@ abstract class Utils {
   static String createDashboardEntityState(EntityId? entityId,
       {String? entityName, String? entityLabel, String? stateId}) {
     var stateObj = [
-      <String, dynamic>{
-        'params': <String, dynamic>{}
-      }
+      <String, dynamic>{'params': <String, dynamic>{}}
     ];
     if (entityId != null) {
       stateObj[0]['params']['entityId'] = entityId.toJson();
@@ -89,7 +87,7 @@ abstract class Utils {
         Map<String, String>? headers;
         if (loginLogo != null && loginLogo) {
           var type = parts[parts.length - 2];
-          imageLink = ThingsboardAppConstants.thingsBoardApiEndpoint +
+          imageLink = getIt<IEndpointService>().getCachedEndpoint() +
               '/api/noauth/whiteLabel/loginLogo/' +
               type +
               '/' +
@@ -107,7 +105,7 @@ abstract class Utils {
           parts[parts.length - 1] = key;
           var encodedUrl = parts.join('/');
           imageLink =
-              ThingsboardAppConstants.thingsBoardApiEndpoint + encodedUrl;
+              getIt<IEndpointService>().getCachedEndpoint() + encodedUrl;
           headers = {_authHeaderName: _authScheme + jwtToken};
         }
         return _networkImage(context, imageLink,
