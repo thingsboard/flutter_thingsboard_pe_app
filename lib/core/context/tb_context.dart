@@ -71,6 +71,7 @@ class TbContext implements PopEntry {
 
   TbMainDashboardHolder? _mainDashboardHolder;
   bool _closeMainFirst = false;
+  late bool _handleRootState;
 
   final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(false);
 
@@ -110,7 +111,7 @@ class TbContext implements PopEntry {
       }
       return true;
     }());
-
+    _handleRootState = true;
     _initialized = true;
 
     final endpoint = await getIt<IEndpointService>().getEndpoint();
@@ -185,12 +186,13 @@ class TbContext implements PopEntry {
   }) async {
     log.debug('TbContext:reinit()');
 
+    _handleRootState = false;
     _initialized = false;
 
     tbClient = ThingsboardClient(
       endpoint,
       storage: getIt<ILocalDatabaseService>(),
-      onUserLoaded: () => onUserLoaded(handleRouteState: false, onDone: onDone),
+      onUserLoaded: () => onUserLoaded(onDone: onDone),
       onError: onError,
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
@@ -293,8 +295,7 @@ class TbContext implements PopEntry {
     _isLoadingNotifier.value = false;
   }
 
-  Future<void> onUserLoaded(
-      {bool handleRouteState = true, VoidCallback? onDone}) async {
+  Future<void> onUserLoaded({VoidCallback? onDone}) async {
     try {
       log.debug(
           'TbContext.onUserLoaded: isAuthenticated=${tbClient.isAuthenticated()}');
@@ -349,7 +350,7 @@ class TbContext implements PopEntry {
         onDone?.call();
       }
 
-      if (handleRouteState) {
+      if (_handleRootState) {
         await updateRouteState();
       }
 
@@ -385,14 +386,14 @@ class TbContext implements PopEntry {
         final link = await getIt<ILocalDatabaseService>().getItem(
           DatabaseKeys.initialAppLink,
         );
-        _navigateByAppLink(link);
+        navigateByAppLink(link);
       } catch (e) {
         log.error('TbContext:getInitialUri() exception $e');
       }
 
       if (_appLinkStreamSubscription == null) {
         _appLinkStreamSubscription = linkStream.listen((link) {
-          _navigateByAppLink(link);
+          navigateByAppLink(link);
         }, onError: (err) {
           log.error('linkStream.listen $err');
         });
@@ -400,7 +401,7 @@ class TbContext implements PopEntry {
     }
   }
 
-  Future<void> _navigateByAppLink(String? link) async {
+  Future<void> navigateByAppLink(String? link) async {
     if (link != null) {
       final uri = Uri.parse(link);
       await getIt<ILocalDatabaseService>().deleteItem(
@@ -408,8 +409,7 @@ class TbContext implements PopEntry {
       );
 
       log.debug('TbContext: navigate by appLink $uri');
-      router.navigateTo(
-        currentState!.context,
+      navigateTo(
         uri.path,
         routeSettings: RouteSettings(
           arguments: {...uri.queryParameters, 'uri': uri},
@@ -422,6 +422,9 @@ class TbContext implements PopEntry {
     RequestConfig? requestConfig,
     bool notifyUser = true,
   }) async {
+    log.debug('TbContext::logout($requestConfig, $notifyUser)');
+    _handleRootState = true;
+
     if (getIt<IFirebaseService>().apps.isNotEmpty) {
       await NotificationService().logout();
     }
