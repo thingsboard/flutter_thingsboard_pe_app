@@ -409,8 +409,7 @@ class TbContext implements PopEntry {
       );
 
       log.debug('TbContext: navigate by appLink $uri');
-      router.navigateTo(
-        currentState!.context,
+      navigateTo(
         uri.path,
         routeSettings: RouteSettings(
           arguments: {...uri.queryParameters, 'uri': uri},
