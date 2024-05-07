@@ -25,8 +25,8 @@ class _SwitchEndpointNoAuthViewState extends State<SwitchEndpointNoAuthView> {
   @override
   Widget build(BuildContext context) {
     if (getIt<NoAuthBloc>().isClosed) {
-      return const Scaffold(
-        body: NoAuthLoadingWidget(),
+      return Scaffold(
+        body: NoAuthLoadingWidget(tbContext: widget.tbContext),
       );
     }
 
