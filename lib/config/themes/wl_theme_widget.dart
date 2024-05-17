@@ -4,16 +4,22 @@ import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_pe_client/thingsboard_client.dart';
 
 typedef WlThemedWidgetBuilder = Widget Function(
-    BuildContext context, ThemeData data, WhiteLabelingParams wlParams);
+  BuildContext context,
+  ThemeData data,
+  WhiteLabelingParams wlParams,
+);
 
 class WlThemeWidget extends TbContextWidget {
   final WlThemedWidgetBuilder wlThemedWidgetBuilder;
 
-  WlThemeWidget(TbContext tbContext, {required this.wlThemedWidgetBuilder})
-      : super(tbContext);
+  WlThemeWidget(
+    TbContext tbContext, {
+    required this.wlThemedWidgetBuilder,
+    super.key,
+  }) : super(tbContext);
 
   @override
-  _WlThemeWidgetState createState() => _WlThemeWidgetState();
+  State<StatefulWidget> createState() => _WlThemeWidgetState();
 
   static _WlThemeWidgetState? of(BuildContext context) {
     return context.findAncestorStateOfType<_WlThemeWidgetState>();

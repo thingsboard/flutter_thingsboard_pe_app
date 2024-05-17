@@ -50,11 +50,11 @@ void main() async {
     log('main::getInitialUri() exception $e', error: e);
   }
 
-  runApp(ThingsboardApp());
+  runApp(const ThingsboardApp());
 }
 
 class ThingsboardApp extends StatefulWidget {
-  ThingsboardApp({Key? key}) : super(key: key);
+  const ThingsboardApp({Key? key}) : super(key: key);
 
   @override
   ThingsboardAppState createState() => ThingsboardAppState();
@@ -127,6 +127,7 @@ class ThingsboardAppState extends State<ThingsboardApp>
     return _closeDashboard(animate: animate);
   }
 
+  @override
   bool isDashboardOpen() {
     return _mainPageViewController.index == 1;
   }
@@ -168,7 +169,7 @@ class ThingsboardAppState extends State<ThingsboardApp>
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
+      const SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.white,
         statusBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.light,
@@ -178,7 +179,7 @@ class ThingsboardAppState extends State<ThingsboardApp>
     return WlThemeWidget(
       getIt<ThingsboardAppRouter>().tbContext,
       wlThemedWidgetBuilder: (context, data, wlParams) => MaterialApp(
-        localizationsDelegates: [
+        localizationsDelegates: const [
           S.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -193,7 +194,7 @@ class ThingsboardAppState extends State<ThingsboardApp>
             key: mainAppKey,
             scaffoldMessengerKey:
                 getIt<ThingsboardAppRouter>().tbContext.messengerKey,
-            localizationsDelegates: [
+            localizationsDelegates: const [
               S.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
@@ -212,7 +213,7 @@ class ThingsboardAppState extends State<ThingsboardApp>
           second: MaterialApp(
             key: dashboardKey,
             // scaffoldMessengerKey: appRouter.tbContext.messengerKey,
-            localizationsDelegates: [
+            localizationsDelegates: const [
               S.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,

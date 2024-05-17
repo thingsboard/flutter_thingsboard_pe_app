@@ -11,10 +11,11 @@ import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart'
 class TbRecaptcha extends TbPageWidget {
   final String siteKey;
 
-  TbRecaptcha(TbContext tbContext, {required this.siteKey}) : super(tbContext);
+  TbRecaptcha(TbContext tbContext, {super.key, required this.siteKey})
+      : super(tbContext);
 
   @override
-  _TbRecaptchaState createState() => _TbRecaptchaState();
+  State<StatefulWidget> createState() => _TbRecaptchaState();
 }
 
 class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
@@ -29,23 +30,27 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
   late Uri _initialUrl;
 
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
-      crossPlatform: InAppWebViewOptions(
-        mediaPlaybackRequiresUserGesture: false,
-        javaScriptEnabled: true,
-        cacheEnabled: true,
-        clearCache: true,
-        supportZoom: false,
-      ),
-      android: AndroidInAppWebViewOptions(
-          useHybridComposition: true, thirdPartyCookiesEnabled: true),
-      ios: IOSInAppWebViewOptions(
-        allowsInlineMediaPlayback: true,
-      ));
+    crossPlatform: InAppWebViewOptions(
+      mediaPlaybackRequiresUserGesture: false,
+      javaScriptEnabled: true,
+      cacheEnabled: true,
+      clearCache: true,
+      supportZoom: false,
+    ),
+    android: AndroidInAppWebViewOptions(
+      useHybridComposition: true,
+      thirdPartyCookiesEnabled: true,
+    ),
+    ios: IOSInAppWebViewOptions(
+      allowsInlineMediaPlayback: true,
+    ),
+  );
 
   @override
   void initState() {
-    _initialUrl = Uri.parse(getIt<IEndpointService>().getCachedEndpoint() +
-        '/signup/recaptcha?siteKey=${widget.siteKey}');
+    _initialUrl = Uri.parse(
+      '${getIt<IEndpointService>().getCachedEndpoint()}/signup/recaptcha?siteKey=${widget.siteKey}',
+    );
     super.initState();
   }
 
@@ -63,55 +68,61 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
-        body: _buildRecaptchaView(context));
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+      body: _buildRecaptchaView(context),
+    );
   }
 
   Widget _buildRecaptchaView(BuildContext context) {
     return Stack(
       children: [
         InAppWebView(
-            key: recaptchaWebViewKey,
-            initialUrlRequest: URLRequest(url: _initialUrl),
-            initialOptions: options,
-            onWebViewCreated: (webViewController) {
-              webViewController.addJavaScriptHandler(
-                  handlerName: "tbMobileRecaptchaLoadedHandler",
-                  callback: (args) async {
-                    recaptchaLoading.value = false;
-                  });
-              webViewController.addJavaScriptHandler(
-                  handlerName: "tbMobileRecaptchaHandler",
-                  callback: (args) async {
-                    var recaptchaResponse = args[0];
-                    pop(recaptchaResponse);
-                  });
-            },
-            onConsoleMessage: (controller, consoleMessage) {
-              log.debug(
-                  '[JavaScript console] ${consoleMessage.messageLevel}: ${consoleMessage.message}');
-            },
-            onLoadStop: (controller, url) async {
-              log.debug('onLoadStop: $url');
-              if (webViewLoading) {
-                webViewLoading = false;
-                _webViewController.complete(controller);
-              }
-            }),
+          key: recaptchaWebViewKey,
+          initialUrlRequest: URLRequest(url: _initialUrl),
+          initialOptions: options,
+          onWebViewCreated: (webViewController) {
+            webViewController.addJavaScriptHandler(
+              handlerName: 'tbMobileRecaptchaLoadedHandler',
+              callback: (args) async {
+                recaptchaLoading.value = false;
+              },
+            );
+            webViewController.addJavaScriptHandler(
+              handlerName: 'tbMobileRecaptchaHandler',
+              callback: (args) async {
+                var recaptchaResponse = args[0];
+                pop(recaptchaResponse);
+              },
+            );
+          },
+          onConsoleMessage: (controller, consoleMessage) {
+            log.debug(
+              '[JavaScript console] ${consoleMessage.messageLevel}: ${consoleMessage.message}',
+            );
+          },
+          onLoadStop: (controller, url) async {
+            log.debug('onLoadStop: $url');
+            if (webViewLoading) {
+              webViewLoading = false;
+              _webViewController.complete(controller);
+            }
+          },
+        ),
         ValueListenableBuilder(
-            valueListenable: recaptchaLoading,
-            builder: (BuildContext context, bool loading, child) {
-              if (!loading) {
-                return SizedBox.shrink();
-              } else {
-                return Container(
-                  alignment: Alignment.center,
-                  color: Colors.white,
-                  child: CircularProgressIndicator(),
-                );
-              }
-            })
+          valueListenable: recaptchaLoading,
+          builder: (BuildContext context, bool loading, child) {
+            if (!loading) {
+              return const SizedBox.shrink();
+            } else {
+              return Container(
+                alignment: Alignment.center,
+                color: Colors.white,
+                child: const CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
       ],
     );
   }
@@ -120,7 +131,8 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
     var windowMessage = <String, dynamic>{'type': 'resetRecaptcha'};
     var controller = await _webViewController.future;
     await controller.postWebMessage(
-        message: WebMessage(data: jsonEncode(windowMessage)),
-        targetOrigin: Uri.parse('*'));
+      message: WebMessage(data: jsonEncode(windowMessage)),
+      targetOrigin: Uri.parse('*'),
+    );
   }
 }

@@ -19,30 +19,34 @@ class WlService {
       TbThemeUtils.createTheme(_defaultLoginWlParams.paletteSettings);
 
   static final _defaultLogo = SvgPicture.asset(
-      ThingsboardImage.thingsBoardWithTitle,
-      height: 36 / 3 * 2,
-      colorFilter: ColorFilter.mode(TbThemeUtils.tbPrimary, BlendMode.srcIn),
-      semanticsLabel: 'ThingsBoard Logo');
+    ThingsboardImage.thingsBoardWithTitle,
+    height: 36 / 3 * 2,
+    colorFilter: ColorFilter.mode(TbThemeUtils.tbPrimary, BlendMode.srcIn),
+    semanticsLabel: 'ThingsBoard Logo',
+  );
 
   static final _defaultLoginLogo = SvgPicture.asset(
-      ThingsboardImage.thingsBoardWithTitle,
-      height: 50 / 3 * 2,
-      colorFilter: ColorFilter.mode(TbThemeUtils.tbPrimary, BlendMode.srcIn),
-      semanticsLabel: 'ThingsBoard Logo');
+    ThingsboardImage.thingsBoardWithTitle,
+    height: 50 / 3 * 2,
+    colorFilter: ColorFilter.mode(TbThemeUtils.tbPrimary, BlendMode.srcIn),
+    semanticsLabel: 'ThingsBoard Logo',
+  );
 
   static WhiteLabelingParams _createDefaultWlParams() => WhiteLabelingParams(
-      logoImageUrl: DEFAULT_LOGO_URL,
-      logoImageHeight: 36,
-      appTitle: 'ThingsBoard PE',
-      favicon: Favicon(url: 'thingsboard.ico'),
-      paletteSettings: PaletteSettings(
+        logoImageUrl: DEFAULT_LOGO_URL,
+        logoImageHeight: 36,
+        appTitle: 'ThingsBoard PE',
+        favicon: Favicon(url: 'thingsboard.ico'),
+        paletteSettings: PaletteSettings(
           primaryPalette: Palette(type: 'tb-primary'),
-          accentPalette: Palette(type: 'tb-accent')),
-      helpLinkBaseUrl: 'https://thingsboard.io',
-      enableHelpLinks: true,
-      showNameVersion: false,
-      platformName: 'ThingsBoard',
-      platformVersion: '3.4.1PE');
+          accentPalette: Palette(type: 'tb-accent'),
+        ),
+        helpLinkBaseUrl: 'https://thingsboard.io',
+        enableHelpLinks: true,
+        showNameVersion: false,
+        platformName: 'ThingsBoard',
+        platformVersion: '3.4.1PE',
+      );
 
   static LoginWhiteLabelingParams _createDefaultLoginWlParams() {
     var loginWlParams =
@@ -54,7 +58,10 @@ class WlService {
   }
 
   static T _mergeDefaults<T extends WhiteLabelingParams>(
-      bool isLogin, T? wlParams, T? targetDefaultWlParams) {
+    bool isLogin,
+    T? wlParams,
+    T? targetDefaultWlParams,
+  ) {
     if (targetDefaultWlParams == null) {
       if (isLogin) {
         targetDefaultWlParams = _defaultLoginWlParams as T;
@@ -83,9 +90,7 @@ class WlService {
     if (_isEmpty(wlParams.logoImageUrl)) {
       wlParams.logoImageUrl = targetDefaultWlParams.logoImageUrl;
     }
-    if (wlParams.logoImageHeight == null) {
-      wlParams.logoImageHeight = targetDefaultWlParams.logoImageHeight;
-    }
+    wlParams.logoImageHeight ??= targetDefaultWlParams.logoImageHeight;
     if (_isEmpty(wlParams.appTitle)) {
       wlParams.appTitle = targetDefaultWlParams.appTitle;
     }
@@ -114,15 +119,9 @@ class WlService {
         targetDefaultWlParams.enableHelpLinks != null) {
       wlParams.enableHelpLinks = targetDefaultWlParams.enableHelpLinks;
     }
-    if (wlParams.showNameVersion == null) {
-      wlParams.showNameVersion = targetDefaultWlParams.showNameVersion;
-    }
-    if (wlParams.platformName == null) {
-      wlParams.platformName = targetDefaultWlParams.platformName;
-    }
-    if (wlParams.platformVersion == null) {
-      wlParams.platformVersion = targetDefaultWlParams.platformVersion;
-    }
+    wlParams.showNameVersion ??= targetDefaultWlParams.showNameVersion;
+    wlParams.platformName ??= targetDefaultWlParams.platformName;
+    wlParams.platformVersion ??= targetDefaultWlParams.platformVersion;
     return wlParams;
   }
 
@@ -221,8 +220,13 @@ class WlService {
       _loginWlParams = loginWlParams;
       _loginThemeData =
           TbThemeUtils.createTheme(_loginWlParams!.paletteSettings);
-      await _updateImages(_tbContext.currentState!.context, _tbContext.tbClient,
-          _loginWlParams!, _loginThemeData!, true);
+      await _updateImages(
+        _tbContext.currentState!.context,
+        _tbContext.tbClient,
+        _loginWlParams!,
+        _loginThemeData!,
+        true,
+      );
       loginWlChanged = true;
     }
     if (loginWlChanged || _isUserWlMode) {
@@ -246,8 +250,13 @@ class WlService {
     if (!_wlIsEqual(_wlParams, userWlParams)) {
       _wlParams = userWlParams;
       _themeData = TbThemeUtils.createTheme(_wlParams!.paletteSettings);
-      await _updateImages(_tbContext.currentState!.context, _tbContext.tbClient,
-          _wlParams!, _themeData!, false);
+      await _updateImages(
+        _tbContext.currentState!.context,
+        _tbContext.tbClient,
+        _wlParams!,
+        _themeData!,
+        false,
+      );
       userWlChanged = true;
     }
     if (userWlChanged || !_isUserWlMode) {
@@ -256,21 +265,31 @@ class WlService {
     }
   }
 
-  Future<void> _updateImages(BuildContext context, ThingsboardClient tbClient,
-      WhiteLabelingParams wlParams, ThemeData themeData, bool isLogin) async {
+  Future<void> _updateImages(
+    BuildContext context,
+    ThingsboardClient tbClient,
+    WhiteLabelingParams wlParams,
+    ThemeData themeData,
+    bool isLogin,
+  ) async {
     Widget image;
     double height = wlParams.logoImageHeight!.toDouble() / 3 * 2;
     if (wlParams.logoImageUrl == DEFAULT_LOGO_URL) {
-      image = SvgPicture.asset(ThingsboardImage.thingsBoardWithTitle,
-          height: height,
-          colorFilter:
-              ColorFilter.mode(themeData.primaryColor, BlendMode.srcIn),
-          semanticsLabel: 'ThingsBoard Logo');
+      image = SvgPicture.asset(
+        ThingsboardImage.thingsBoardWithTitle,
+        height: height,
+        colorFilter: ColorFilter.mode(themeData.primaryColor, BlendMode.srcIn),
+        semanticsLabel: 'ThingsBoard Logo',
+      );
     } else {
-      image = Utils.imageFromTbImage(context, tbClient, wlParams.logoImageUrl!,
-          height: height,
-          semanticLabel: 'ThingsBoard Logo',
-          loginLogo: isLogin);
+      image = Utils.imageFromTbImage(
+        context,
+        tbClient,
+        wlParams.logoImageUrl!,
+        height: height,
+        semanticLabel: 'ThingsBoard Logo',
+        loginLogo: isLogin,
+      );
     }
     if (isLogin) {
       _loginLogo = image;

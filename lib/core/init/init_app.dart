@@ -8,7 +8,7 @@ class ThingsboardInitApp extends TbPageWidget {
       : super(tbContext, key: key);
 
   @override
-  _ThingsboardInitAppState createState() => _ThingsboardInitAppState();
+  State<StatefulWidget> createState() => _ThingsboardInitAppState();
 }
 
 class _ThingsboardInitAppState extends TbPageState<ThingsboardInitApp> {

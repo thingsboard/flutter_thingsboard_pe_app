@@ -7,21 +7,23 @@ import 'package:thingsboard_app/utils/ui/tb_recaptcha.dart';
 
 class UiUtilsRoutes extends TbRoutes {
   late var qrCodeScannerHandler = Handler(
-      handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-    return QrCodeScannerPage(tbContext);
-  });
+    handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
+      return QrCodeScannerPage(tbContext);
+    },
+  );
 
   late var tbRecaptchaHandler = Handler(
-      handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-    var siteKey = params['siteKey']?.first;
-    return TbRecaptcha(tbContext, siteKey: siteKey);
-  });
+    handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
+      var siteKey = params['siteKey']?.first;
+      return TbRecaptcha(tbContext, siteKey: siteKey);
+    },
+  );
 
   UiUtilsRoutes(TbContext tbContext) : super(tbContext);
 
   @override
   void doRegisterRoutes(router) {
-    router.define("/qrCodeScan", handler: qrCodeScannerHandler);
-    router.define("/tbRecaptcha", handler: tbRecaptchaHandler);
+    router.define('/qrCodeScan', handler: qrCodeScannerHandler);
+    router.define('/tbRecaptcha', handler: tbRecaptchaHandler);
   }
 }

@@ -7,7 +7,9 @@ import 'package:thingsboard_pe_client/thingsboard_client.dart';
 class AuditLogsList extends BaseEntitiesWidget<AuditLog, TimePageLink>
     with AuditLogsBase, EntitiesListStateBase {
   AuditLogsList(
-      TbContext tbContext, PageKeyController<TimePageLink> pageKeyController,
-      {searchMode = false})
-      : super(tbContext, pageKeyController, searchMode: searchMode);
+    TbContext tbContext,
+    PageKeyController<TimePageLink> pageKeyController, {
+    super.key,
+    searchMode = false,
+  }) : super(tbContext, pageKeyController, searchMode: searchMode);
 }

@@ -49,18 +49,25 @@ mixin AlarmsBase on EntitiesBase<AlarmInfo, AlarmQuery> {
     if (dashboardId != null) {
       if (hasGenericPermission(Resource.WIDGETS_BUNDLE, Operation.READ) &&
           hasGenericPermission(Resource.WIDGET_TYPE, Operation.READ)) {
-        var state = Utils.createDashboardEntityState(alarm.originator,
-            entityName: alarm.originatorName);
-        navigateToDashboard(dashboardId,
-            dashboardTitle: alarm.originatorName, state: state);
+        var state = Utils.createDashboardEntityState(
+          alarm.originator,
+          entityName: alarm.originatorName,
+        );
+        navigateToDashboard(
+          dashboardId,
+          dashboardTitle: alarm.originatorName,
+          state: state,
+        );
       } else {
         showErrorNotification(
-            'You don\'t have permissions to perform this operation!');
+          'You don\'t have permissions to perform this operation!',
+        );
       }
     } else {
       if (tbClient.isTenantAdmin()) {
         showWarnNotification(
-            'Mobile dashboard should be configured in device profile alarm rules!');
+          'Mobile dashboard should be configured in device profile alarm rules!',
+        );
       }
     }
   }
@@ -77,10 +84,17 @@ mixin AlarmsBase on EntitiesBase<AlarmInfo, AlarmQuery> {
 
 class AlarmQueryController extends PageKeyController<AlarmQuery> {
   AlarmQueryController({int pageSize = 20, String? searchText})
-      : super(AlarmQuery(
-            TimePageLink(pageSize, 0, searchText,
-                SortOrder('createdTime', Direction.DESC)),
-            fetchOriginator: true));
+      : super(
+          AlarmQuery(
+            TimePageLink(
+              pageSize,
+              0,
+              searchText,
+              SortOrder('createdTime', Direction.DESC),
+            ),
+            fetchOriginator: true,
+          ),
+        );
 
   @override
   AlarmQuery nextPageKey(AlarmQuery pageKey) {
@@ -98,10 +112,11 @@ class AlarmQueryController extends PageKeyController<AlarmQuery> {
 class AlarmCard extends TbContextWidget {
   final AlarmInfo alarm;
 
-  AlarmCard(TbContext tbContext, {required this.alarm}) : super(tbContext);
+  AlarmCard(TbContext tbContext, {super.key, required this.alarm})
+      : super(tbContext);
 
   @override
-  _AlarmCardState createState() => _AlarmCardState(alarm);
+  State<StatefulWidget> createState() => _AlarmCardState(alarm);
 }
 
 class _AlarmCardState extends TbContextState<AlarmCard> {
@@ -113,174 +128,200 @@ class _AlarmCardState extends TbContextState<AlarmCard> {
   _AlarmCardState(this.alarm) : super();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void didUpdateWidget(AlarmCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    this.loading = false;
-    this.alarm = widget.alarm;
+    loading = false;
+    alarm = widget.alarm;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (this.loading) {
+    if (loading) {
       return Container(
-          height: 134,
-          alignment: Alignment.center,
-          child: RefreshProgressIndicator());
+        height: 134,
+        alignment: Alignment.center,
+        child: const RefreshProgressIndicator(),
+      );
     } else {
       bool hasDashboard = alarm.details?['dashboardId'] != null;
       return Stack(
         children: [
           Positioned.fill(
+            child: Container(
+              alignment: Alignment.centerLeft,
               child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    width: 4,
-                    decoration: BoxDecoration(
-                        color: alarmSeverityColors[alarm.severity]!,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(4),
-                            bottomLeft: Radius.circular(4))),
-                  ))),
-          Row(mainAxisSize: MainAxisSize.max, children: [
-            SizedBox(width: 4),
-            Flexible(
+                width: 4,
+                decoration: BoxDecoration(
+                  color: alarmSeverityColors[alarm.severity]!,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    bottomLeft: Radius.circular(4),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              const SizedBox(width: 4),
+              Flexible(
                 fit: FlexFit.tight,
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 16),
-                            Flexible(
-                                fit: FlexFit.tight,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: 12),
-                                    Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Flexible(
-                                              fit: FlexFit.tight,
-                                              child: AutoSizeText(alarm.type,
-                                                  maxLines: 2,
-                                                  minFontSize: 8,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      color: Color(0xFF282828),
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontSize: 14,
-                                                      height: 20 / 14))),
-                                          Text(
-                                              entityDateFormat.format(DateTime
-                                                  .fromMillisecondsSinceEpoch(
-                                                      alarm.createdTime!)),
-                                              style: TextStyle(
-                                                  color: Color(0xFFAFAFAF),
-                                                  fontWeight: FontWeight.normal,
-                                                  fontSize: 12,
-                                                  height: 16 / 12))
-                                        ]),
-                                    SizedBox(height: 4),
-                                    Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Flexible(
-                                              fit: FlexFit.tight,
-                                              child: Text(
-                                                  alarm.originatorName != null
-                                                      ? alarm.originatorName!
-                                                      : '',
-                                                  style: TextStyle(
-                                                      color: Color(0xFFAFAFAF),
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      fontSize: 12,
-                                                      height: 16 / 12))),
-                                          Text(
-                                              alarmSeverityTranslations[
-                                                  alarm.severity]!,
-                                              style: TextStyle(
-                                                  color: alarmSeverityColors[
-                                                      alarm.severity]!,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 12,
-                                                  height: 16 / 12))
-                                        ]),
-                                    SizedBox(height: 12)
-                                  ],
-                                )),
-                            SizedBox(width: 16),
-                            if (hasDashboard)
-                              Icon(Icons.chevron_right,
-                                  color: Color(0xFFACACAC)),
-                            if (hasDashboard) SizedBox(width: 16),
-                          ]),
-                      Divider(height: 1),
-                      SizedBox(height: 8),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(width: 16),
-                          Flexible(
-                              fit: FlexFit.tight,
-                              child: Text(
-                                  alarmStatusTranslations[alarm.status]!,
-                                  style: TextStyle(
-                                      color: Color(0xFF282828),
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 14,
-                                      height: 20 / 14))),
-                          SizedBox(height: 32),
-                          Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(width: 16),
+                        Flexible(
+                          fit: FlexFit.tight,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if ([
-                                AlarmStatus.CLEARED_UNACK,
-                                AlarmStatus.ACTIVE_UNACK
-                              ].contains(alarm.status))
-                                CircleAvatar(
-                                    radius: 16,
-                                    backgroundColor: Color(0xffF0F4F9),
-                                    child: IconButton(
-                                        icon: Icon(Icons.done, size: 18),
-                                        padding: EdgeInsets.all(7.0),
-                                        onPressed: () =>
-                                            _ackAlarm(alarm, context))),
-                              if ([
-                                AlarmStatus.ACTIVE_UNACK,
-                                AlarmStatus.ACTIVE_ACK
-                              ].contains(alarm.status))
-                                Row(children: [
-                                  SizedBox(width: 4),
-                                  CircleAvatar(
-                                      radius: 16,
-                                      backgroundColor: Color(0xffF0F4F9),
-                                      child: IconButton(
-                                          icon: Icon(Icons.clear, size: 18),
-                                          padding: EdgeInsets.all(7.0),
-                                          onPressed: () =>
-                                              _clearAlarm(alarm, context)))
-                                ])
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Flexible(
+                                    fit: FlexFit.tight,
+                                    child: AutoSizeText(
+                                      alarm.type,
+                                      maxLines: 2,
+                                      minFontSize: 8,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Color(0xFF282828),
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        height: 20 / 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    entityDateFormat.format(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                        alarm.createdTime!,
+                                      ),
+                                    ),
+                                    style: const TextStyle(
+                                      color: Color(0xFFAFAFAF),
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 12,
+                                      height: 16 / 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Flexible(
+                                    fit: FlexFit.tight,
+                                    child: Text(
+                                      alarm.originatorName != null
+                                          ? alarm.originatorName!
+                                          : '',
+                                      style: const TextStyle(
+                                        color: Color(0xFFAFAFAF),
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 12,
+                                        height: 16 / 12,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    alarmSeverityTranslations[alarm.severity]!,
+                                    style: TextStyle(
+                                      color:
+                                          alarmSeverityColors[alarm.severity]!,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                      height: 16 / 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
                             ],
                           ),
-                          SizedBox(width: 8)
-                        ],
-                      ),
-                      SizedBox(height: 8)
-                    ]))
-          ])
+                        ),
+                        const SizedBox(width: 16),
+                        if (hasDashboard)
+                          const Icon(
+                            Icons.chevron_right,
+                            color: Color(0xFFACACAC),
+                          ),
+                        if (hasDashboard) const SizedBox(width: 16),
+                      ],
+                    ),
+                    const Divider(height: 1),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(width: 16),
+                        Flexible(
+                          fit: FlexFit.tight,
+                          child: Text(
+                            alarmStatusTranslations[alarm.status]!,
+                            style: const TextStyle(
+                              color: Color(0xFF282828),
+                              fontWeight: FontWeight.normal,
+                              fontSize: 14,
+                              height: 20 / 14,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        Row(
+                          children: [
+                            if ([
+                              AlarmStatus.CLEARED_UNACK,
+                              AlarmStatus.ACTIVE_UNACK,
+                            ].contains(alarm.status))
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundColor: const Color(0xffF0F4F9),
+                                child: IconButton(
+                                  icon: const Icon(Icons.done, size: 18),
+                                  padding: const EdgeInsets.all(7.0),
+                                  onPressed: () => _ackAlarm(alarm, context),
+                                ),
+                              ),
+                            if ([
+                              AlarmStatus.ACTIVE_UNACK,
+                              AlarmStatus.ACTIVE_ACK,
+                            ].contains(alarm.status))
+                              Row(
+                                children: [
+                                  const SizedBox(width: 4),
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: const Color(0xffF0F4F9),
+                                    child: IconButton(
+                                      icon: const Icon(Icons.clear, size: 18),
+                                      padding: const EdgeInsets.all(7.0),
+                                      onPressed: () =>
+                                          _clearAlarm(alarm, context),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       );
     }
@@ -288,10 +329,11 @@ class _AlarmCardState extends TbContextState<AlarmCard> {
 
   _clearAlarm(AlarmInfo alarm, BuildContext context) async {
     var res = await confirm(
-        title: '${S.of(context).alarmClearTitle}',
-        message: '${S.of(context).alarmClearText}',
-        cancel: '${S.of(context).No}',
-        ok: '${S.of(context).Yes}');
+      title: S.of(context).alarmClearTitle,
+      message: S.of(context).alarmClearText,
+      cancel: S.of(context).No,
+      ok: S.of(context).Yes,
+    );
     if (res != null && res) {
       setState(() {
         loading = true;
@@ -308,10 +350,11 @@ class _AlarmCardState extends TbContextState<AlarmCard> {
 
   _ackAlarm(AlarmInfo alarm, BuildContext context) async {
     var res = await confirm(
-        title: '${S.of(context).alarmAcknowledgeTitle}',
-        message: '${S.of(context).alarmAcknowledgeText}',
-        cancel: '${S.of(context).No}',
-        ok: '${S.of(context).Yes}');
+      title: S.of(context).alarmAcknowledgeTitle,
+      message: S.of(context).alarmAcknowledgeText,
+      cancel: S.of(context).No,
+      ok: S.of(context).Yes,
+    );
     if (res != null && res) {
       setState(() {
         loading = true;

@@ -5,7 +5,7 @@ import 'package:thingsboard_pe_client/thingsboard_client.dart';
 abstract class TbThemeUtils {
   static final _tbTypography = Typography.material2018();
 
-  static final Color _tbTextColor = Color(0xFF282828);
+  static const Color _tbTextColor = Color(0xFF282828);
 
   static final tbPrimary =
       _mergeColors(Colors.teal, {'500': Colors.teal[800]!.value});
@@ -19,38 +19,45 @@ abstract class TbThemeUtils {
     var primaryColor = primarySwatch[500]!;
     ThemeData theme = ThemeData(primarySwatch: primarySwatch);
     return ThemeData(
-        useMaterial3: false,
-        primarySwatch: primarySwatch,
-        colorScheme: theme.colorScheme
-            .copyWith(primary: primarySwatch, secondary: accentColor),
-        scaffoldBackgroundColor: Color(0xFFFAFAFA),
-        textTheme: _tbTypography.black,
-        primaryTextTheme: _tbTypography.black,
-        typography: _tbTypography,
-        appBarTheme: AppBarTheme(
-            backgroundColor: Colors.white,
-            foregroundColor: _tbTextColor,
-            /* titleTextStyle: TextStyle(
+      useMaterial3: false,
+      primarySwatch: primarySwatch,
+      colorScheme: theme.colorScheme
+          .copyWith(primary: primarySwatch, secondary: accentColor),
+      scaffoldBackgroundColor: const Color(0xFFFAFAFA),
+      textTheme: _tbTypography.black,
+      primaryTextTheme: _tbTypography.black,
+      typography: _tbTypography,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.white,
+        foregroundColor: _tbTextColor,
+        /* titleTextStyle: TextStyle(
           color: _tbTextColor
       ),
       toolbarTextStyle: TextStyle(
             color: _tbTextColor
       ), */
-            iconTheme: IconThemeData(color: _tbTextColor)),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            backgroundColor: Colors.white,
-            selectedItemColor: primaryColor,
-            unselectedItemColor: primaryColor.withAlpha((255 * 0.38).ceil()),
-            showSelectedLabels: true,
-            showUnselectedLabels: true),
-        pageTransitionsTheme: PageTransitionsTheme(builders: {
+        iconTheme: IconThemeData(color: _tbTextColor),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: Colors.white,
+        selectedItemColor: primaryColor,
+        unselectedItemColor: primaryColor.withAlpha((255 * 0.38).ceil()),
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+      ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
           TargetPlatform.iOS: FadeOpenPageTransitionsBuilder(),
           TargetPlatform.android: FadeOpenPageTransitionsBuilder(),
-        }));
+        },
+      ),
+    );
   }
 
   static MaterialColor _materialColorFromPalette(
-      Palette? palette, bool primary) {
+    Palette? palette,
+    bool primary,
+  ) {
     if (palette == null) {
       return primary ? tbPrimary : tbAccent;
     }
@@ -108,7 +115,9 @@ abstract class TbThemeUtils {
   }
 
   static MaterialColor _mergeColors(
-      MaterialColor color, Map<String, dynamic>? colors) {
+    MaterialColor color,
+    Map<String, dynamic>? colors,
+  ) {
     if (colors != null) {
       var swatch = <int, Color>{
         50: _parseColor(colors['50'], color[50]!),
