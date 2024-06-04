@@ -2,37 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/entity/entity_details_page.dart';
-import 'package:thingsboard_pe_client/thingsboard_client.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
+import 'package:thingsboard_pe_client/thingsboard_client.dart';
 
 class AssetDetailsPage extends EntityDetailsPage<Asset> {
-  AssetDetailsPage(TbContext tbContext, String assetId)
-      : super(tbContext,
-            entityId: assetId,
-            defaultTitle: 'Asset',
-            subTitle: 'Asset details');
+  AssetDetailsPage(TbContext tbContext, String assetId, {super.key})
+      : super(
+          tbContext,
+          entityId: assetId,
+          defaultTitle: 'Asset',
+          subTitle: 'Asset details',
+        );
 
   @override
-  Future<Asset?> fetchEntity(String assetId) {
-    return tbClient.getAssetService().getAsset(assetId);
+  Future<Asset?> fetchEntity(String id) {
+    return tbClient.getAssetService().getAsset(id);
   }
 
   @override
-  Widget buildEntityDetails(BuildContext context, Asset asset) {
+  Widget buildEntityDetails(BuildContext context, Asset entity) {
     return Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Text('${S.of(context).assetName}', style: labelTextStyle),
-              Text(asset.name, style: valueTextStyle),
-              SizedBox(height: 16),
-              Text('${S.of(context).type}', style: labelTextStyle),
-              Text(asset.type, style: valueTextStyle),
-              SizedBox(height: 16),
-              Text('${S.of(context).label}', style: labelTextStyle),
-              Text(asset.label ?? '', style: valueTextStyle),
-            ]));
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Text(S.of(context).assetName, style: labelTextStyle),
+          Text(entity.name, style: valueTextStyle),
+          const SizedBox(height: 16),
+          Text(S.of(context).type, style: labelTextStyle),
+          Text(entity.type, style: valueTextStyle),
+          const SizedBox(height: 16),
+          Text(S.of(context).label, style: labelTextStyle),
+          Text(entity.label ?? '', style: valueTextStyle),
+        ],
+      ),
+    );
   }
 }

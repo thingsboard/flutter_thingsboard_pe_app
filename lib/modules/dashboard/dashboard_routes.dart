@@ -9,34 +9,41 @@ import 'dashboard_page.dart';
 
 class DashboardRoutes extends TbRoutes {
   late var dashboardsHandler = Handler(
-      handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-    return DashboardsPage(tbContext);
-  });
+    handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
+      return DashboardsPage(tbContext);
+    },
+  );
 
   late var dashboardDetailsHandler = Handler(
-      handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-    var fullscreen = params['fullscreen']?.first == 'true';
-    var dashboardTitle = params['title']?.first;
-    var state = params['state']?.first;
-    return DashboardPage(tbContext,
-        dashboardId: params["id"]![0],
+    handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+      var fullscreen = params['fullscreen']?.first == 'true';
+      var dashboardTitle = params['title']?.first;
+      var state = params['state']?.first;
+      return DashboardPage(
+        tbContext,
+        dashboardId: params['id']![0],
         fullscreen: fullscreen,
         dashboardTitle: dashboardTitle,
-        state: state);
-  });
+        state: state,
+      );
+    },
+  );
 
   late var fullscreenDashboardHandler = Handler(
-      handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-    return FullscreenDashboardPage(tbContext, params["id"]![0]);
-  });
+    handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
+      return FullscreenDashboardPage(tbContext, params['id']![0]);
+    },
+  );
 
   DashboardRoutes(TbContext tbContext) : super(tbContext);
 
   @override
   void doRegisterRoutes(router) {
-    router.define("/dashboards", handler: dashboardsHandler);
-    router.define("/dashboard/:id", handler: dashboardDetailsHandler);
-    router.define("/fullscreenDashboard/:id",
-        handler: fullscreenDashboardHandler);
+    router.define('/dashboards', handler: dashboardsHandler);
+    router.define('/dashboard/:id', handler: dashboardDetailsHandler);
+    router.define(
+      '/fullscreenDashboard/:id',
+      handler: fullscreenDashboardHandler,
+    );
   }
 }
