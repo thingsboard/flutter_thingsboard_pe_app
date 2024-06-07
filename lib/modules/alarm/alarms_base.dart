@@ -102,7 +102,7 @@ class AlarmQueryController extends PageKeyController<AlarmQuery> {
   }
 
   onSearchText(String searchText) {
-    var query = value.pageKey;
+    final query = value.pageKey;
     query.pageLink.page = 0;
     query.pageLink.textSearch = searchText;
     notifyListeners();
@@ -116,16 +116,20 @@ class AlarmCard extends TbContextWidget {
       : super(tbContext);
 
   @override
-  State<StatefulWidget> createState() => _AlarmCardState(alarm);
+  State<StatefulWidget> createState() => _AlarmCardState();
 }
 
 class _AlarmCardState extends TbContextState<AlarmCard> {
   bool loading = false;
-  AlarmInfo alarm;
+  late AlarmInfo alarm;
 
   final entityDateFormat = DateFormat('yyyy-MM-dd');
 
-  _AlarmCardState(this.alarm) : super();
+  @override
+  void initState() {
+    alarm = widget.alarm;
+    super.initState();
+  }
 
   @override
   void didUpdateWidget(AlarmCard oldWidget) {
