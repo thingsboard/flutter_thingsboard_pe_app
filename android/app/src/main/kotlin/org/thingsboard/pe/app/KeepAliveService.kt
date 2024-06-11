@@ -1,4 +1,4 @@
-package org.thingsboard.pe.app
+package org.pke.iot.expert.pe.app
 
 import android.app.Service
 import android.content.Intent

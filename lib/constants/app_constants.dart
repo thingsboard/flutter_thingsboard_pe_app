@@ -1,10 +1,10 @@
 abstract class ThingsboardAppConstants {
-  static final thingsBoardApiEndpoint = 'http://localhost:8080';
+  static final thingsBoardApiEndpoint = 'https://cloud.pke-iot.expert';
   static final thingsboardOAuth2CallbackUrlScheme =
-      'org.thingsboard.pe.app.auth';
+      'org.pke.iot.expert.app.auth';
 
   /// Not for production (only for debugging)
-  static final thingsboardOAuth2AppSecret = 'Your app secret here';
+  static final thingsboardOAuth2AppSecret = 'k8OYwDtn5MPdRFRzgOnyWMVZ';
 
   /// Not for production (only for debugging)
   static final thingsboardSignUpAppSecret = 'Your sign up app secret here';

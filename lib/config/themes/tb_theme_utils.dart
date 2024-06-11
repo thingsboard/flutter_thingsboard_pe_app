@@ -28,14 +28,14 @@ abstract class TbThemeUtils {
         primaryTextTheme: _tbTypography.black,
         typography: _tbTypography,
         appBarTheme: AppBarTheme(
-            backgroundColor: Colors.white,
-            foregroundColor: _tbTextColor,
-            /* titleTextStyle: TextStyle(
-          color: _tbTextColor
-      ),
-      toolbarTextStyle: TextStyle(
-            color: _tbTextColor
-      ), */
+            backgroundColor: Colors.white,  // Color.fromRGBO(0, 148, 208, 1),
+            foregroundColor: _tbTextColor,     // Colors.white,
+            titleTextStyle: TextStyle(
+              color: _tbTextColor
+            ),
+            toolbarTextStyle: TextStyle(
+              color: _tbTextColor
+            ), 
             iconTheme: IconThemeData(color: _tbTextColor)),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: Colors.white,

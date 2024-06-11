@@ -1,4 +1,4 @@
-package org.thingsboard.pe.app
+package org.pke.iot.expert.pe.app
 
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity

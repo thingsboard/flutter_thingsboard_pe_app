@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "779988899455",
+    "project_id": "pke-iot-expert-app",
+    "storage_bucket": "pke-iot-expert-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779988899455:android:8d05b4a0118eeafb68914a",
+        "android_client_info": {
+          "package_name": "org.pke.iot.expert.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsUB3kuUWArRW7ubYxrP-Kbf5SRXkTVfA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
