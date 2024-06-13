@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/auth/login/reset_password_request_page.dart';
+import 'package:thingsboard_app/core/auth/login/two_factor_authentication_page.dart';
 import 'package:thingsboard_app/core/auth/signup/email_verified_page.dart';
 import 'package:thingsboard_app/core/auth/signup/privacy_policy.dart';
 import 'package:thingsboard_app/core/auth/signup/signup_page.dart';
 import 'package:thingsboard_app/core/auth/signup/terms_of_use.dart';
-import 'package:thingsboard_app/core/auth/login/two_factor_authentication_page.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 
 import 'login/login_page.dart';
