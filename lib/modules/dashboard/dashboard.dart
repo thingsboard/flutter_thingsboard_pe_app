@@ -154,7 +154,7 @@ class _DashboardState extends TbContextState<Dashboard> {
           var controller = await _controller.future;
           await controller.postWebMessage(
               message: WebMessage(data: jsonEncode(windowMessage)),
-              targetOrigin: Uri.parse('*'));
+              targetOrigin: WebUri('*'));
         }
       }
     }
@@ -219,7 +219,7 @@ class _DashboardState extends TbContextState<Dashboard> {
     var webMessage = WebMessage(data: jsonEncode(windowMessage));
     if (!UniversalPlatform.isWeb) {
       await controller!
-          .postWebMessage(message: webMessage, targetOrigin: Uri.parse('*'));
+          .postWebMessage(message: webMessage, targetOrigin: WebUri('*'));
     }
   }
 
@@ -228,7 +228,7 @@ class _DashboardState extends TbContextState<Dashboard> {
     var windowMessage = <String, dynamic>{'type': 'toggleDashboardLayout'};
     var webMessage = WebMessage(data: jsonEncode(windowMessage));
     await controller.postWebMessage(
-        message: webMessage, targetOrigin: Uri.parse('*'));
+        message: webMessage, targetOrigin: WebUri('*'));
   }
 
   Future<void> tryLocalNavigation(String? path) async {
@@ -293,7 +293,7 @@ class _DashboardState extends TbContextState<Dashboard> {
                     ? Center(child: Text('Not implemented!'))
                     : InAppWebView(
                         key: webViewKey,
-                        initialUrlRequest: URLRequest(url: _initialUrl),
+                        initialUrlRequest: URLRequest(url: WebUri(_initialUrl.toString())),
                         initialOptions: options,
                         onWebViewCreated: (webViewController) {
                           log.debug("onWebViewCreated");

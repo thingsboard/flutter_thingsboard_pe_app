@@ -11,7 +11,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>ThingsBoard PE App</string>
+	<string>PKE IoT Expert App</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -53,6 +53,8 @@
 	<string>Get location to place the device on a map.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Access photo library to take existing photos.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Get location to place the device on a map at any time.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

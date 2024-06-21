@@ -56,17 +56,8 @@ class _EntityDetailsPageState<T extends BaseData>
     super.initState();
     entityFuture = widget.fetchEntity(widget._entityId);
     ValueNotifier<String>? detailsTitle = widget.detailsTitle();
-    if (detailsTitle == null) {
-      titleValue = ValueNotifier(widget._defaultTitle);
-      entityFuture.then((value) {
-        if (value is HasName) {
-          titleValue.value = (value as HasName).getName();
-        }
-      });
-    } else {
-      titleValue = detailsTitle;
+    titleValue = detailsTitle!;
     }
-  }
 
   @override
   Widget build(BuildContext context) {

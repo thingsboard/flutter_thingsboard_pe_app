@@ -10,7 +10,6 @@ import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_pe_client/thingsboard_client.dart';
-import 'package:collection/collection.dart';
 
 typedef ProviderDescFunction = String Function(
     BuildContext context, String? contact);
@@ -83,15 +82,15 @@ class _TwoFactorAuthenticationPageState
     super.initState();
     var providersInfo = tbContext.twoFactorAuthProviders;
     TwoFaProviderType.values.forEach((provider) {
-      var providerConfig =
-          providersInfo!.firstWhereOrNull((config) => config.type == provider);
-      if (providerConfig != null) {
+      try {
+        var providerConfig = providersInfo!.firstWhere((config) => config.type == provider);
         if (providerConfig.isDefault) {
-          _minVerificationPeriod =
-              providerConfig.minVerificationCodeSendPeriod ?? 30;
+          _minVerificationPeriod = providerConfig.minVerificationCodeSendPeriod ?? 30;
           _selectedProvider.value = providerConfig.type;
         }
         _allowProviders.add(providerConfig.type);
+      } catch (e) {
+        // Handle the case when no provider config is found
       }
     });
     if (this._selectedProvider.value != TwoFaProviderType.TOTP) {
@@ -191,8 +190,7 @@ class _TwoFactorAuthenticationPageState
                                   } else {
                                     var providerConfig = tbContext
                                         .twoFactorAuthProviders
-                                        ?.firstWhereOrNull((config) =>
-                                            config.type == providerType);
+                                        ?.firstWhere((config) => config.type == providerType);
                                     if (providerConfig == null) {
                                       return SizedBox.shrink();
                                     }
@@ -413,8 +411,7 @@ class _TwoFactorAuthenticationPageState
     _showResendAction.value = false;
     if (type != null) {
       var providersInfo = tbContext.twoFactorAuthProviders;
-      var providerConfig =
-          providersInfo!.firstWhereOrNull((config) => config.type == type)!;
+      var providerConfig = providersInfo!.firstWhere((config) => config.type == type);
       if (type != TwoFaProviderType.TOTP &&
           type != TwoFaProviderType.BACKUP_CODE) {
         _sendCode();

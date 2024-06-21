@@ -34,7 +34,7 @@ class UrlPage extends StatelessWidget {
           ? const Center(child: Text('Not implemented!'))
           : InAppWebView(
               initialUrlRequest: URLRequest(
-                url: Uri.parse(url),
+                url: WebUri(url),
               ),
               androidOnPermissionRequest:
                   (controller, origin, resources) async {

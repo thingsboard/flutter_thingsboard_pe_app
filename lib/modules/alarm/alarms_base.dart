@@ -46,24 +46,17 @@ mixin AlarmsBase on EntitiesBase<AlarmInfo, AlarmQuery> {
   @override
   void onEntityTap(AlarmInfo alarm) {
     String? dashboardId = alarm.details?['dashboardId'];
-    if (dashboardId != null) {
-      if (hasGenericPermission(Resource.WIDGETS_BUNDLE, Operation.READ) &&
-          hasGenericPermission(Resource.WIDGET_TYPE, Operation.READ)) {
-        var state = Utils.createDashboardEntityState(alarm.originator,
-            entityName: alarm.originatorName);
-        navigateToDashboard(dashboardId,
-            dashboardTitle: alarm.originatorName, state: state);
-      } else {
-        showErrorNotification(
-            'You don\'t have permissions to perform this operation!');
-      }
+    if (hasGenericPermission(Resource.WIDGETS_BUNDLE, Operation.READ) &&
+        hasGenericPermission(Resource.WIDGET_TYPE, Operation.READ)) {
+      var state = Utils.createDashboardEntityState(alarm.originator,
+          entityName: alarm.originatorName);
+      navigateToDashboard(dashboardId ?? '',
+          dashboardTitle: alarm.originatorName, state: state);
     } else {
-      if (tbClient.isTenantAdmin()) {
-        showWarnNotification(
-            'Mobile dashboard should be configured in device profile alarm rules!');
-      }
+      showErrorNotification(
+          'You don\'t have permissions to perform this operation!');
     }
-  }
+    }
 
   @override
   Widget buildEntityListCard(BuildContext context, AlarmInfo alarm) {

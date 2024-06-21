@@ -286,15 +286,11 @@ class WidgetActionHandler with HasTbContext {
       InAppWebViewController controller) async {
     try {
       List<int>? imageBytes = await controller.takeScreenshot();
-      if (imageBytes != null) {
-        String imageUrl =
-            UriData.fromBytes(imageBytes, mimeType: 'image/png').toString();
-        return WidgetMobileActionResult.successResult(
-            MobileActionResult.image(imageUrl));
-      } else {
-        return WidgetMobileActionResult.emptyResult();
-      }
-    } catch (e) {
+      String imageUrl =
+          UriData.fromBytes(imageBytes ?? [], mimeType: 'image/png').toString();
+      return WidgetMobileActionResult.successResult(
+          MobileActionResult.image(imageUrl));
+        } catch (e) {
       return _handleError(e);
     }
   }
