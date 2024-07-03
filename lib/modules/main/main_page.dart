@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
-import 'package:thingsboard_app/modules/alarm/alarms_page.dart';
+import 'package:thingsboard_app/modules/alarm/presentation/view/alarms_page.dart';
 import 'package:thingsboard_app/modules/device/devices_main_page.dart';
 import 'package:thingsboard_app/modules/home/home_page.dart';
 import 'package:thingsboard_app/modules/more/more_page.dart';
@@ -172,12 +172,10 @@ class _MainPageState extends TbPageState<MainPage>
   @override
   Widget build(BuildContext context) {
     TbMainNavigationItem.changeItemsTitleIntl(_tabItems, context);
-    // ignore: deprecated_member_use
+
     return Scaffold(
       body: TabBarView(
-        physics: tbContext.homeDashboard != null
-            ? const NeverScrollableScrollPhysics()
-            : null,
+        physics: const NeverScrollableScrollPhysics(),
         controller: _tabController,
         children: _tabItems.map((item) => item.page).toList(),
       ),
