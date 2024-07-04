@@ -112,6 +112,8 @@ class TbContext implements PopEntry {
 
   WidgetActionHandler get widgetActionHandler => _widgetActionHandler;
 
+  final bottomNavigationTabChangedStream = StreamController<int>.broadcast();
+
   Future<void> init() async {
     assert(() {
       if (_initialized) {

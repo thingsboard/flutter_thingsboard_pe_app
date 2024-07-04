@@ -113,7 +113,10 @@ class _MainPageState extends TbPageState<MainPage>
   }
 
   void _setIndex(int index) {
-    hideNotification();
-    _tabController.index = index;
+    if (_tabController.index != index) {
+      hideNotification();
+      _tabController.index = index;
+      tbContext.bottomNavigationTabChangedStream.add(index);
+    }
   }
 }

@@ -47,7 +47,7 @@ class _TwoPageViewState extends State<TwoPageView> {
   late List<Widget> _pages;
   bool _reverse = false;
   int _selectedIndex = 0;
-  final PreloadPageController _pageController = PreloadPageController();
+  final _pageController = PreloadPageController();
 
   @override
   void initState() {
@@ -100,6 +100,7 @@ class _TwoPageViewState extends State<TwoPageView> {
 
   @override
   void dispose() {
+    _pageController.dispose();
     super.dispose();
   }
 
