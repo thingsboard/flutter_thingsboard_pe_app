@@ -9,8 +9,8 @@ import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
+import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
-import 'package:thingsboard_pe_client/thingsboard_client.dart';
 
 typedef ProviderDescFunction = String Function(
   BuildContext context,

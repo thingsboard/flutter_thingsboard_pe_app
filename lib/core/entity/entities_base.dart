@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
+import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_exception_widget.dart';
 import 'package:thingsboard_app/utils/utils.dart';
-import 'package:thingsboard_pe_client/thingsboard_client.dart';
 
 const Map<EntityType, String> entityTypeTranslations = {
   EntityType.TENANT: 'Tenant',
