@@ -27,7 +27,7 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
 
   final GlobalKey recaptchaWebViewKey = GlobalKey();
 
-  late Uri _initialUrl;
+  late WebUri _initialUrl;
 
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
     crossPlatform: InAppWebViewOptions(
@@ -48,7 +48,7 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
 
   @override
   void initState() {
-    _initialUrl = Uri.parse(
+    _initialUrl = WebUri(
       '${getIt<IEndpointService>().getCachedEndpoint()}/signup/recaptcha?siteKey=${widget.siteKey}',
     );
     super.initState();
@@ -132,7 +132,7 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
     var controller = await _webViewController.future;
     await controller.postWebMessage(
       message: WebMessage(data: jsonEncode(windowMessage)),
-      targetOrigin: Uri.parse('*'),
+      targetOrigin: WebUri('*'),
     );
   }
 }

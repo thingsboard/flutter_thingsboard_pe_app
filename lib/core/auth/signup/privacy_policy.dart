@@ -50,7 +50,6 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
                           htmlparser.parse(privacyPolicy ?? '');
                       return Html.fromDom(
                         document: document,
-                        tagsList: const [],
                       );
                     } else {
                       return Center(

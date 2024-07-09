@@ -50,7 +50,6 @@ class _TermsOfUseState extends TbPageState<TermsOfUse> {
                           htmlparser.parse(termsOfUse ?? '');
                       return Html.fromDom(
                         document: document,
-                        tagsList: const [],
                       );
                     } else {
                       return Center(
