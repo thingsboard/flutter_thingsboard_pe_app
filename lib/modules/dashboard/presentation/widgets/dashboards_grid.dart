@@ -39,10 +39,23 @@ class DashboardsGridWidget extends StatelessWidget {
               dashboard: dashboard,
             ),
             onEntityTap: (dashboard) {
-              dashboardPageCtrl.openDashboard(
-                dashboard.id!.id!,
-                title: dashboard.title,
-              );
+              if (tbContext.hasGenericPermission(
+                    Resource.WIDGETS_BUNDLE,
+                    Operation.READ,
+                  ) &&
+                  tbContext.hasGenericPermission(
+                    Resource.WIDGET_TYPE,
+                    Operation.READ,
+                  )) {
+                dashboardPageCtrl.openDashboard(
+                  dashboard.id!.id!,
+                  title: dashboard.title,
+                );
+              } else {
+                tbContext.showErrorNotification(
+                  'You don\'t have permissions to perform this operation!',
+                );
+              }
             },
             settings: EntityCardSettings(dropShadow: true),
           ),
