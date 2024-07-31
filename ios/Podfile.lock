@@ -1,19 +1,19 @@
 PODS:
   - device_info_plus (0.0.1):
     - Flutter
-  - Firebase/CoreOnly (10.27.0):
-    - FirebaseCore (= 10.27.0)
-  - Firebase/Messaging (10.27.0):
+  - Firebase/CoreOnly (10.28.0):
+    - FirebaseCore (= 10.28.0)
+  - Firebase/Messaging (10.28.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 10.27.0)
-  - firebase_core (3.1.1):
-    - Firebase/CoreOnly (= 10.27.0)
+    - FirebaseMessaging (~> 10.28.0)
+  - firebase_core (3.2.0):
+    - Firebase/CoreOnly (= 10.28.0)
     - Flutter
-  - firebase_messaging (15.0.2):
-    - Firebase/Messaging (= 10.27.0)
+  - firebase_messaging (15.0.3):
+    - Firebase/Messaging (= 10.28.0)
     - firebase_core
     - Flutter
-  - FirebaseCore (10.27.0):
+  - FirebaseCore (10.28.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.12)
     - GoogleUtilities/Logger (~> 7.12)
@@ -24,7 +24,7 @@ PODS:
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
     - PromisesObjC (~> 2.1)
-  - FirebaseMessaging (10.27.0):
+  - FirebaseMessaging (10.28.0):
     - FirebaseCore (~> 10.0)
     - FirebaseInstallations (~> 10.0)
     - GoogleDataTransport (~> 9.3)
@@ -166,13 +166,13 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
-  Firebase: 26b040b20866a55f55eb3611b9fcf3ae64816b86
-  firebase_core: f8d0424c45e0f1e596811085fc12c638d628457c
-  firebase_messaging: 8b29edaf5adfd3b52b5bfa5af8128c44164670c6
-  FirebaseCore: a2b95ae4ce7c83ceecfbbbe3b6f1cddc7415a808
+  Firebase: 5121c624121af81cbc81df3bda414b3c28c4f3c3
+  firebase_core: a9d0180d5285527884d07a41eb4a9ec9ed12cdb6
+  firebase_messaging: ccc82a143a74de75f440a4e413dbbb37ec3fddbc
+  FirebaseCore: 857dc1c6dd1255675047404d8466f7dfaac5d779
   FirebaseCoreInternal: 58d07f1362fddeb0feb6a857d1d1d1c5e558e698
   FirebaseInstallations: 60c1d3bc1beef809fd1ad1189a8057a040c59f2e
-  FirebaseMessaging: 585984d0a1df120617eb10b44cad8968b859815e
+  FirebaseMessaging: 087a7c7cadef7b9239f005bc4db823894844f323
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_app_badger: b87fc231847b03b92ce1412aa351842e7e97932f
   flutter_inappwebview_ios: 97215cf7d4677db55df76782dbd2930c5e1c1ea0
@@ -192,6 +192,6 @@ SPEC CHECKSUMS:
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
 
-PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
+PODFILE CHECKSUM: 8a4b2eabe1a99180e46baba5a37492de09c643c4
 
 COCOAPODS: 1.15.2
