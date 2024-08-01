@@ -2,10 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
+import 'package:thingsboard_app/config/themes/tb_theme.dart';
 import 'package:thingsboard_app/config/themes/wl_theme_widget.dart';
 import 'package:thingsboard_app/constants/database_keys.dart';
 import 'package:thingsboard_app/firebase_options.dart';
@@ -14,9 +16,6 @@ import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart'
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:universal_platform/universal_platform.dart';
-
-import 'config/themes/tb_theme.dart';
-import 'generated/l10n.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,7 +75,7 @@ class ThingsboardApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: S.delegate.supportedLocales,
+        supportedLocales: S.supportedLocales,
         title: wlParams.appTitle!,
         themeMode: ThemeMode.light,
         theme: data,

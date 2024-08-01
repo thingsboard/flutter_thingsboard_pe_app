@@ -15,8 +15,6 @@ import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/domain/entites/dashboard_arguments.dart';
 import 'package:thingsboard_app/modules/main/main_navigation_item.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
-import 'package:thingsboard_app/utils/services/communication/events.dart';
-import 'package:thingsboard_app/utils/services/communication/i_communication_service.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
