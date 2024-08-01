@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/view/alarms_page.dart';
 import 'package:thingsboard_app/modules/device/devices_main_page.dart';
 import 'package:thingsboard_app/modules/home/home_page.dart';

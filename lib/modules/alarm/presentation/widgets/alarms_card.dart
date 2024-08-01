@@ -1,9 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:intl/intl.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/modules/alarm/alarms_base.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 
@@ -233,8 +233,8 @@ class _AlarmCardState extends TbContextState<AlarmCard> {
     var res = await confirm(
       title: S.of(context).alarmClearTitle,
       message: S.of(context).alarmClearText,
-      cancel: S.of(context).No,
-      ok: S.of(context).Yes,
+      cancel: S.of(context).no,
+      ok: S.of(context).yes,
     );
     if (res != null && res) {
       setState(() {
@@ -254,8 +254,8 @@ class _AlarmCardState extends TbContextState<AlarmCard> {
     var res = await confirm(
       title: S.of(context).alarmAcknowledgeTitle,
       message: S.of(context).alarmAcknowledgeText,
-      cancel: S.of(context).No,
-      ok: S.of(context).Yes,
+      cancel: S.of(context).no,
+      ok: S.of(context).yes,
     );
     if (res != null && res) {
       setState(() {
