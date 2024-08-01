@@ -5,10 +5,10 @@ import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/notification/service/notifications_local_service.dart';
+import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
-import 'package:thingsboard_pe_client/thingsboard_client.dart';
 
 class MorePage extends TbContextWidget {
   MorePage(TbContext tbContext, {super.key}) : super(tbContext);
