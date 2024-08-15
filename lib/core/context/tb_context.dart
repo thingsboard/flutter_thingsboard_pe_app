@@ -489,7 +489,7 @@ class TbContext implements PopEntry {
             }
           } else {
             navigateTo(
-              '/home',
+              '/main',
               replace: true,
               transition: TransitionType.fadeIn,
               transitionDuration: const Duration(milliseconds: 750),
