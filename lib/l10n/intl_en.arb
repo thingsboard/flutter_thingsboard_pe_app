@@ -145,6 +145,7 @@
   "acceptPrivacyPolicyMessage": "You must accept our Privacy Policy",
   "acceptTermsOfUseMessage": "You must accept our Terms of Use",
   "inactiveUserAlreadyExists": "Inactive user already exists",
-  "inactiveUserAlreadyExistsMessage": "There is already registered user with unverified email address.\nClick 'Resend' button if you wish to resend verification email."
-
+  "inactiveUserAlreadyExistsMessage": "There is already registered user with unverified email address.\nClick 'Resend' button if you wish to resend verification email.",
+  "assignee": "Assignee",
+  "alarmTypes": "Alarm types"
 }
