@@ -9,6 +9,8 @@ abstract class ThingsboardImage {
       'assets/images/device-profile-placeholder.svg';
   static const emailVerification = 'assets/images/email-verification.svg';
   static const emailVerified = 'assets/images/email-verified.svg';
+  static const dashboardPermissionError =
+      'assets/images/dashboard_permission_error.svg';
 
   static final oauth2Logos = <String, String>{
     'google-logo': 'assets/images/google-logo.svg',

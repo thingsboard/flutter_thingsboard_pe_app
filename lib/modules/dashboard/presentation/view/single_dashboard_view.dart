@@ -3,7 +3,6 @@ import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashboard_controller.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard_widget.dart';
-import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
 class SingleDashboardView extends TbContextWidget {
@@ -37,55 +36,6 @@ class _SingleDashboardViewState extends TbContextState<SingleDashboardView>
 
   @override
   Widget build(BuildContext context) {
-    final widgetBundleReadPermission = tbContext.hasGenericPermission(
-      Resource.WIDGETS_BUNDLE,
-      Operation.READ,
-    );
-    final widgetBundleTypePermission = tbContext.hasGenericPermission(
-      Resource.WIDGET_TYPE,
-      Operation.READ,
-    );
-
-    if (!widgetBundleReadPermission && !widgetBundleTypePermission) {
-      return Scaffold(
-        appBar: TbAppBar(
-          tbContext,
-          leading: BackButton(onPressed: maybePop),
-          showLoadingIndicator: false,
-          elevation: 1,
-          shadowColor: Colors.transparent,
-          title: ValueListenableBuilder<String>(
-            valueListenable: dashboardTitleValue,
-            builder: (context, title, widget) {
-              return FittedBox(
-                fit: BoxFit.fitWidth,
-                alignment: Alignment.centerLeft,
-                child: Text(title),
-              );
-            },
-          ),
-        ),
-        body: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              size: 50,
-              Icons.error,
-              color: Colors.red,
-            ),
-            Center(child: Text(
-              'You don\'t have permissions to perform this operation!',
-            ),),
-          ],
-        ),
-      );
-    } else {
-      tbContext.showErrorNotification(
-        'You don\'t have permissions to perform this operation!',
-      );
-    }
-
     return Scaffold(
       appBar: TbAppBar(
         tbContext,
