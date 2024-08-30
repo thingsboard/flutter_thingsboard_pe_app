@@ -20,10 +20,12 @@ class _ThingsboardInitAppState extends TbPageState<ThingsboardInitApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      color: Colors.white,
-      child: TbProgressIndicator(tbContext, size: 50.0),
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        color: Colors.white,
+        child: TbProgressIndicator(tbContext, size: 50.0),
+      ),
     );
   }
 }

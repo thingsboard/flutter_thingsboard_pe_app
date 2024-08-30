@@ -106,6 +106,7 @@ class TbContext implements PopEntry {
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
+      debugMode: kDebugMode,
     );
 
     oauth2Client = TbOAuth2Client(
@@ -181,6 +182,7 @@ class TbContext implements PopEntry {
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
+      debugMode: kDebugMode,
     );
 
     oauth2Client = TbOAuth2Client(
@@ -365,6 +367,14 @@ class TbContext implements PopEntry {
             transitionDuration: const Duration(milliseconds: 750),
           );
         }
+      } else {
+        navigateTo(
+          '/login',
+          replace: true,
+          clearStack: true,
+          transition: TransitionType.fadeIn,
+          transitionDuration: const Duration(milliseconds: 750),
+        );
       }
     } finally {
       try {
