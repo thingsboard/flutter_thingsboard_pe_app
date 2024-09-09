@@ -5,7 +5,13 @@ import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
 class DashboardPermissionErrorView extends TbContextWidget {
-  DashboardPermissionErrorView(super.tbContext, {super.key});
+  DashboardPermissionErrorView(
+    super.tbContext, {
+    this.fullScreen = false,
+    super.key,
+  });
+
+  final bool fullScreen;
 
   @override
   State<StatefulWidget> createState() => _DashboardPermissionErrorViewState();
@@ -16,18 +22,20 @@ class _DashboardPermissionErrorViewState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TbAppBar(
-        tbContext,
-        leading: BackButton(onPressed: maybePop),
-        showLoadingIndicator: false,
-        elevation: 1,
-        shadowColor: Colors.transparent,
-        title: const FittedBox(
-          fit: BoxFit.fitWidth,
-          alignment: Alignment.centerLeft,
-          child: Text('Dashboard'),
-        ),
-      ),
+      appBar: !widget.fullScreen
+          ? TbAppBar(
+              tbContext,
+              leading: BackButton(onPressed: maybePop),
+              showLoadingIndicator: false,
+              elevation: 1,
+              shadowColor: Colors.transparent,
+              title: const FittedBox(
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.centerLeft,
+                child: Text('Dashboard'),
+              ),
+            )
+          : null,
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -52,7 +60,10 @@ class _DashboardPermissionErrorViewState
                 ),
               ),
             ),
-            const SizedBox(height: 82),
+            Visibility(
+              visible: !widget.fullScreen,
+              child: const SizedBox(height: 82),
+            ),
           ],
         ),
       ),
