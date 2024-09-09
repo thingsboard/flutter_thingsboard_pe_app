@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/modules/dashboard/presentation/view/dashboard_permission_error_view.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/view/dashboards_page.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/view/home_dashboard_page.dart';
 import 'package:thingsboard_app/modules/tenant/tenants_widget.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 
 class HomePage extends TbContextWidget {
   HomePage(TbContext tbContext, {super.key}) : super(tbContext);
@@ -36,14 +39,32 @@ class _HomePageState extends TbContextState<HomePage>
     BuildContext context,
     HomeDashboardInfo dashboard,
   ) {
-    return HomeDashboardPage(tbContext, dashboard);
+    final hasPermission =
+        getIt<IPermissionService>().haveViewDashboardPermission(
+      tbContext,
+    );
+
+    if (hasPermission) {
+      return HomeDashboardPage(tbContext, dashboard);
+    } else {
+      return DashboardPermissionErrorView(tbContext);
+    }
   }
 
   Widget _buildDefaultHome(BuildContext context) {
     if (tbClient.isSystemAdmin()) {
       return _buildSysAdminHome(context);
     } else {
-      return DashboardsPage(tbContext);
+      final hasPermission =
+          getIt<IPermissionService>().haveViewDashboardPermission(
+        tbContext,
+      );
+
+      if (hasPermission) {
+        return DashboardsPage(tbContext);
+      } else {
+        return DashboardPermissionErrorView(tbContext, fullScreen: true);
+      }
     }
   }
 

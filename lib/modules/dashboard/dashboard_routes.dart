@@ -46,7 +46,7 @@ class DashboardRoutes extends TbRoutes {
         return FullscreenDashboardPage(tbContext, params['id']![0]);
       }
 
-      return DashboardPermissionErrorView(tbContext);
+      return DashboardPermissionErrorView(tbContext, fullScreen: true);
     },
   );
 
