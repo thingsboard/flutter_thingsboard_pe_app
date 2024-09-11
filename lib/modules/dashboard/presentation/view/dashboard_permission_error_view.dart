@@ -4,7 +4,7 @@ import 'package:thingsboard_app/constants/assets_path.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
-class DashboardPermissionErrorView extends TbContextWidget {
+class DashboardPermissionErrorView extends TbPageWidget {
   DashboardPermissionErrorView(
     super.tbContext, {
     this.fullScreen = false,
@@ -18,24 +18,28 @@ class DashboardPermissionErrorView extends TbContextWidget {
 }
 
 class _DashboardPermissionErrorViewState
-    extends TbContextState<DashboardPermissionErrorView> {
+    extends TbPageState<DashboardPermissionErrorView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: !widget.fullScreen
-          ? TbAppBar(
-              tbContext,
-              leading: BackButton(onPressed: maybePop),
-              showLoadingIndicator: false,
-              elevation: 1,
-              shadowColor: Colors.transparent,
-              title: const FittedBox(
-                fit: BoxFit.fitWidth,
-                alignment: Alignment.centerLeft,
-                child: Text('Dashboard'),
-              ),
-            )
-          : null,
+      appBar: TbAppBar(
+        tbContext,
+        leading: !widget.fullScreen ? BackButton(onPressed: maybePop) : null,
+        showLoadingIndicator: false,
+        elevation: 1,
+        shadowColor: Colors.transparent,
+        title: const FittedBox(
+          fit: BoxFit.fitWidth,
+          alignment: Alignment.centerLeft,
+          child: Text('Dashboard'),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => navigateTo('/profile?fullscreen=true'),
+          ),
+        ],
+      ),
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -60,10 +64,7 @@ class _DashboardPermissionErrorViewState
                 ),
               ),
             ),
-            Visibility(
-              visible: !widget.fullScreen,
-              child: const SizedBox(height: 82),
-            ),
+            const SizedBox(height: 82),
           ],
         ),
       ),
