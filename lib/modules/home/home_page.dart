@@ -47,7 +47,11 @@ class _HomePageState extends TbContextState<HomePage>
     if (hasPermission) {
       return HomeDashboardPage(tbContext, dashboard);
     } else {
-      return DashboardPermissionErrorView(tbContext);
+      return DashboardPermissionErrorView(
+        tbContext,
+        fullScreen: true,
+        home: true,
+      );
     }
   }
 
@@ -63,7 +67,11 @@ class _HomePageState extends TbContextState<HomePage>
       if (hasPermission) {
         return DashboardsPage(tbContext);
       } else {
-        return DashboardPermissionErrorView(tbContext, fullScreen: true);
+        return DashboardPermissionErrorView(
+          tbContext,
+          fullScreen: true,
+          home: true,
+        );
       }
     }
   }

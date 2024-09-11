@@ -8,10 +8,12 @@ class DashboardPermissionErrorView extends TbPageWidget {
   DashboardPermissionErrorView(
     super.tbContext, {
     this.fullScreen = false,
+    this.home = false,
     super.key,
   });
 
   final bool fullScreen;
+  final bool home;
 
   @override
   State<StatefulWidget> createState() => _DashboardPermissionErrorViewState();
@@ -24,7 +26,9 @@ class _DashboardPermissionErrorViewState
     return Scaffold(
       appBar: TbAppBar(
         tbContext,
-        leading: !widget.fullScreen ? BackButton(onPressed: maybePop) : null,
+        leading: !widget.fullScreen && !widget.home
+            ? BackButton(onPressed: maybePop)
+            : null,
         showLoadingIndicator: false,
         elevation: 1,
         shadowColor: Colors.transparent,
@@ -33,12 +37,14 @@ class _DashboardPermissionErrorViewState
           alignment: Alignment.centerLeft,
           child: Text('Dashboard'),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => navigateTo('/profile?fullscreen=true'),
-          ),
-        ],
+        actions: widget.fullScreen && !widget.home
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.settings),
+                  onPressed: () => navigateTo('/profile?fullscreen=true'),
+                ),
+              ]
+            : null,
       ),
       backgroundColor: Colors.white,
       body: Padding(
