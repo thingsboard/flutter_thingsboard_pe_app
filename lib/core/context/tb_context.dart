@@ -167,7 +167,7 @@ class TbContext implements PopEntry {
   Future<void> reInit({
     required String endpoint,
     required VoidCallback onDone,
-    required ErrorCallback onError,
+    required ErrorCallback onAuthError,
   }) async {
     log.debug('TbContext:reinit()');
 
@@ -178,7 +178,10 @@ class TbContext implements PopEntry {
       endpoint,
       storage: getIt<ILocalDatabaseService>(),
       onUserLoaded: () => onUserLoaded(onDone: onDone),
-      onError: onError,
+      onError: (error) {
+        onAuthError(error);
+        onError(error);
+      },
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
