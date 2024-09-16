@@ -26,9 +26,9 @@
   "requestPasswordReset": "Request password reset",
   "passwordResetLinkSuccessfullySentNotification": "Password reset link was successfully sent!",
 
-  "OR": "OR",
-  "No": "No",
-  "Yes": "Yes",
+  "or": "Or",
+  "no": "No",
+  "yes": "Yes",
 
   "title": "Title",
   "country": "Country",
@@ -145,6 +145,7 @@
   "acceptPrivacyPolicyMessage": "You must accept our Privacy Policy",
   "acceptTermsOfUseMessage": "You must accept our Terms of Use",
   "inactiveUserAlreadyExists": "Inactive user already exists",
-  "inactiveUserAlreadyExistsMessage": "There is already registered user with unverified email address.\nClick 'Resend' button if you wish to resend verification email."
-
+  "inactiveUserAlreadyExistsMessage": "There is already registered user with unverified email address.\nClick 'Resend' button if you wish to resend verification email.",
+  "assignee": "Assignee",
+  "alarmTypes": "Alarm types"
 }

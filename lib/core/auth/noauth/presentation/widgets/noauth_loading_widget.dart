@@ -3,7 +3,7 @@ import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class NoAuthLoadingWidget extends StatelessWidget {
-  const NoAuthLoadingWidget({required this.tbContext});
+  const NoAuthLoadingWidget({required this.tbContext, super.key});
 
   final TbContext tbContext;
 

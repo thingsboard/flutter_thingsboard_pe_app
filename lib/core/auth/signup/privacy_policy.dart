@@ -1,20 +1,20 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:html/parser.dart' as htmlparser;
 import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' as htmlparser;
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class PrivacyPolicy extends TbPageWidget {
-  PrivacyPolicy(TbContext tbContext) : super(tbContext);
+  PrivacyPolicy(TbContext tbContext, {super.key}) : super(tbContext);
 
   @override
-  _PrivacyPolicyState createState() => _PrivacyPolicyState();
+  State<StatefulWidget> createState() => _PrivacyPolicyState();
 }
 
 class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
@@ -30,49 +30,58 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: TbAppBar(
-          tbContext,
-          title: Text('${S.of(context).privacyPolicy}'),
-        ),
-        body: Column(children: [
+      backgroundColor: Colors.white,
+      appBar: TbAppBar(
+        tbContext,
+        title: Text(S.of(context).privacyPolicy),
+      ),
+      body: Column(
+        children: [
           Expanded(
-              child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: SingleChildScrollView(
-                      child: FutureBuilder<String?>(
-                    future: privacyPolicyFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        var privacyPolicy = jsonDecode(snapshot.data ?? '');
-                        dom.Document document =
-                            htmlparser.parse(privacyPolicy ?? '');
-                        return Html.fromDom(
-                          document: document,
-                          tagsList: [],
-                        );
-                      } else {
-                        return Center(
-                            child: TbProgressIndicator(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: FutureBuilder<String?>(
+                  future: privacyPolicyFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      var privacyPolicy = jsonDecode(snapshot.data ?? '');
+                      dom.Document document =
+                          htmlparser.parse(privacyPolicy ?? '');
+                      return Html.fromDom(
+                        document: document,
+                      );
+                    } else {
+                      return Center(
+                        child: TbProgressIndicator(
                           tbContext,
                           size: 50.0,
-                        ));
-                      }
-                    },
-                  )))),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
           Padding(
-              padding: EdgeInsets.symmetric(horizontal: 36),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                      onPressed: () => pop(false),
-                      child: Text('${S.of(context).cancel}')),
-                  ElevatedButton(
-                      onPressed: () => pop(true),
-                      child: Text('${S.of(context).accept}'))
-                ],
-              ))
-        ]));
+            padding: const EdgeInsets.symmetric(horizontal: 36),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => pop(false),
+                  child: Text(S.of(context).cancel),
+                ),
+                ElevatedButton(
+                  onPressed: () => pop(true),
+                  child: Text(S.of(context).accept),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
