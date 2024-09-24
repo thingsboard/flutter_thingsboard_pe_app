@@ -309,10 +309,18 @@ packages:
     dependency: transitive
     description:
       name: dio
-      sha256: "797e1e341c3dd2f69f2dad42564a6feff3bfb87187d05abb93b9609e6f1645c3"
+      sha256: "5598aa796bbf4699afd5c67c0f5f6e2ed542afc956884b9cd58c306966efc260"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.0"
+    version: "5.7.0"
+  dio_web_adapter:
+    dependency: transitive
+    description:
+      name: dio_web_adapter
+      sha256: "33259a9276d6cea88774a0000cfae0d861003497755969c92faa223108620dc8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   ed25519_edwards:
     dependency: transitive
     description:
@@ -1245,6 +1253,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
+  pretty_dio_logger:
+    dependency: transitive
+    description:
+      name: pretty_dio_logger
+      sha256: "36f2101299786d567869493e2f5731de61ce130faa14679473b26905a92b6407"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
   provider:
     dependency: transitive
     description:
@@ -1437,12 +1453,11 @@ packages:
   thingsboard_pe_client:
     dependency: "direct main"
     description:
-      path: "."
-      ref: dev
-      resolved-ref: "8182b159a1cf7cea4097fe83b6f0da14fb5ff10b"
-      url: "https://github.com/thingsboard/dart_thingsboard_pe_client"
-    source: git
-    version: "1.1.1"
+      name: thingsboard_pe_client
+      sha256: c0d75f8f2c418390c2568d521f231aa83b39585c76f46cfd1f3fc6e1837d54b1
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.0"
   timeago:
     dependency: "direct main"
     description:
