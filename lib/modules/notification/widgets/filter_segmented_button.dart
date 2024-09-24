@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class FilterSegmentedButton<T> extends StatelessWidget {
   FilterSegmentedButton({
+    super.key,
     required this.segments,
     required this.selected,
     required this.onSelectionChanged,
@@ -11,7 +12,7 @@ class FilterSegmentedButton<T> extends StatelessWidget {
   final T selected;
   final void Function(T) onSelectionChanged;
 
-  final selectedTextStyle = TextStyle(
+  final selectedTextStyle = const TextStyle(
     color: Colors.white,
     fontWeight: FontWeight.w500,
   );
@@ -40,7 +41,7 @@ class FilterSegmentedButton<T> extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
                   color: segments[index].value == selected
-                      ? Color(0xff00695C)
+                      ? const Color(0xff00695C)
                       : null,
                 ),
                 child: Center(

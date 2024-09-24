@@ -109,7 +109,7 @@ class _SwitchEndpointNoAuthViewState
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.error,
                           color: Colors.red,
                           size: 50,
