@@ -21,8 +21,7 @@ abstract class TbThemeUtils {
     return ThemeData(
       useMaterial3: false,
       primarySwatch: primarySwatch,
-      colorScheme: theme.colorScheme
-          .copyWith(primary: primarySwatch, secondary: accentColor),
+      colorScheme: theme.colorScheme.copyWith(primary: accentColor),
       scaffoldBackgroundColor: const Color(0xFFFAFAFA),
       textTheme: _tbTypography.black,
       primaryTextTheme: _tbTypography.black,
@@ -30,12 +29,6 @@ abstract class TbThemeUtils {
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
         foregroundColor: _tbTextColor,
-        /* titleTextStyle: TextStyle(
-          color: _tbTextColor
-      ),
-      toolbarTextStyle: TextStyle(
-            color: _tbTextColor
-      ), */
         iconTheme: IconThemeData(color: _tbTextColor),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
