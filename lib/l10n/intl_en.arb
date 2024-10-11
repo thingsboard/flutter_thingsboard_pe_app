@@ -154,5 +154,7 @@
   "tryRefreshing": "Please try refreshing",
   "refresh": "Refresh",
   "users": "Users",
-  "unassigned": "Unassigned"
+  "unassigned": "Unassigned",
+  "failedToLoadAlarmDetails": "Failed to load alarm details",
+  "somethingWentWrong" : "Something Went Wrong"
 }

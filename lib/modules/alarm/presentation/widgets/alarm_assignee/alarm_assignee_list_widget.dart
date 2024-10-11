@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:thingsboard_app/constants/assets_path.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/alarm/domain/entities/assignee_entity.dart';
@@ -13,6 +11,7 @@ import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarm_assignee/a
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarm_assignee/alarm_assignee_state.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/assignee/user_info_avatar_widget.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/assignee/user_info_widget.dart';
+import 'package:thingsboard_app/modules/alarm/presentation/widgets/tb_error_widget.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/string_utils.dart';
 import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
@@ -231,48 +230,10 @@ class _AssigneeListWidgetState extends State<AlarmAssigneeListWidget> {
                     );
                   },
                   firstPageErrorIndicatorBuilder: (_) {
-                    return Column(
-                      children: [
-                        const SizedBox(height: 72),
-                        SvgPicture.asset(
-                          ThingsboardImage.noDataImage,
-                          width: 94,
-                          height: 76,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          S.of(context).failedToLoadTheList,
-                          style: TbTextStyles.titleXs.copyWith(
-                            color: Colors.black.withOpacity(.87),
-                          ),
-                        ),
-                        Text(
-                          S.of(context).tryRefreshing,
-                          style: TbTextStyles.bodyLarge.copyWith(
-                            color: Colors.black.withOpacity(.54),
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        TextButton(
-                          onPressed: () {
-                            context
-                                .read<AlarmAssigneeBloc>()
-                                .add(const AlarmAssigneeRefreshEvent());
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).primaryColor.withOpacity(.1),
-                            fixedSize: const Size(216, 48),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.refresh_rounded),
-                              Text(S.of(context).refresh),
-                            ],
-                          ),
-                        ),
-                      ],
+                    return TbErrorWidget(
+                      onRefresh: () => context
+                          .read<AlarmAssigneeBloc>()
+                          .add(const AlarmAssigneeRefreshEvent()),
                     );
                   },
                 ),
