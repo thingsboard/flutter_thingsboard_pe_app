@@ -34,7 +34,7 @@ abstract class TbThemeUtils {
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedItemColor: primaryColor,
-        unselectedItemColor: primaryColor.withAlpha((255 * 0.38).ceil()),
+        unselectedItemColor: Colors.black.withOpacity(.38),
         showSelectedLabels: true,
         showUnselectedLabels: true,
       ),
