@@ -12,7 +12,6 @@ import 'package:thingsboard_app/utils/ui/pagination_list_widget.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_exception_widget.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_progress_builder.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/new_page_progress_builder.dart';
-import 'package:thingsboard_app/utils/utils.dart';
 
 class AlarmsList extends StatelessWidget {
   const AlarmsList({required this.tbContext, super.key});
@@ -32,46 +31,11 @@ class AlarmsList extends StatelessWidget {
           itemBuilder: (context, alarm, index) {
             return EntityListCard(
               alarm,
-              entityCardWidgetBuilder: (context, alarm) {
+              entityCardWidgetBuilder: (_, alarm) {
                 return AlarmCard(
                   tbContext,
                   alarm: alarm,
                 );
-              },
-              onEntityTap: (alarm) {
-                final dashboardId = alarm.details?['dashboardId'];
-                if (dashboardId == null) {
-                  if (tbContext.tbClient.isTenantAdmin()) {
-                    tbContext.showWarnNotification(
-                      'Mobile dashboard should be configured in device profile alarm rules!',
-                    );
-                  }
-                  return;
-                }
-
-                final hasPermission = tbContext.hasGenericPermission(
-                      Resource.WIDGETS_BUNDLE,
-                      Operation.READ,
-                    ) &&
-                    tbContext.hasGenericPermission(
-                      Resource.WIDGET_TYPE,
-                      Operation.READ,
-                    );
-
-                if (hasPermission) {
-                  tbContext.navigateToDashboard(
-                    dashboardId,
-                    dashboardTitle: alarm.originatorName,
-                    state: Utils.createDashboardEntityState(
-                      alarm.originator,
-                      entityName: alarm.originatorName,
-                    ),
-                  );
-                } else {
-                  tbContext.showErrorNotification(
-                    'You don\'t have permissions to perform this operation!',
-                  );
-                }
               },
             );
           },
