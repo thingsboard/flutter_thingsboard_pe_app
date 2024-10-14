@@ -38,6 +38,7 @@ class AlarmTypesWidget extends StatelessWidget {
                   onTap: () {
                     UiUtils.showModalBottomSheet(
                       context: context,
+                      topControl: const SizedBox.shrink(),
                       builder: (context) => AnimatedSize(
                         curve: Curves.easeInOut,
                         duration: const Duration(milliseconds: 500),
@@ -93,12 +94,14 @@ class AlarmTypesWidget extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                state.selectedTypes.elementAt(index),
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.87),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
+                              Flexible(
+                                child: Text(
+                                  state.selectedTypes.elementAt(index),
+                                  style: TextStyle(
+                                    color: Colors.black.withOpacity(0.87),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 4),
@@ -128,6 +131,7 @@ class AlarmTypesWidget extends StatelessWidget {
                           onTap: () {
                             UiUtils.showModalBottomSheet(
                               context: context,
+                              topControl: const SizedBox.shrink(),
                               builder: (context) => TypesListWidget(
                                 tbContext: tbContext,
                                 onChanged: onChanged,

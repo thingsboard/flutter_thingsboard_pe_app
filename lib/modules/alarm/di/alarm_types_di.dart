@@ -11,6 +11,8 @@ import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/pagination_repository.dart';
 
 class AlarmTypesDi {
+  AlarmTypesDi._();
+
   static const _scopeName = 'AlarmTypesDi';
 
   static void init(ThingsboardClient tbClient) {
@@ -50,6 +52,7 @@ class AlarmTypesDi {
           () => AlarmTypesBloc(
             paginationRepository: locator(),
             fetchAlarmTypesUseCase: locator(),
+            filtersService: locator(),
           ),
         );
       },

@@ -29,10 +29,18 @@ final class AssigneeSearchEvent extends AssigneeEvent {
   List<Object?> get props => [searchText];
 }
 
+final class AssigneeResetSearchTextEvent extends AssigneeEvent {
+  const AssigneeResetSearchTextEvent();
+}
+
 final class AssigneeResetEvent extends AssigneeEvent {
   const AssigneeResetEvent();
 }
 
 final class AssigneeRefreshEvent extends AssigneeEvent {
   const AssigneeRefreshEvent();
+}
+
+final class AssigneeResetUnCommittedChanges extends AssigneeEvent {
+  const AssigneeResetUnCommittedChanges();
 }

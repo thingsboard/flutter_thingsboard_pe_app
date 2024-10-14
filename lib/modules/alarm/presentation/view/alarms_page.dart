@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
@@ -9,6 +10,7 @@ import 'package:thingsboard_app/modules/alarm/di/alarms_di.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarms_bloc.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarms_states.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/view/alarms_filter_page.dart';
+import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
 class AlarmsPage extends TbContextWidget {
@@ -46,7 +48,10 @@ class _AlarmsPageState extends TbContextState<AlarmsPage>
               return Scaffold(
                 appBar: TbAppBar(
                   tbContext,
-                  title: const Text('Alarms'),
+                  title: Text(
+                    S.of(context).alarms,
+                    style: TbTextStyles.titleXs,
+                  ),
                   actions: [
                     Stack(
                       children: [
@@ -75,7 +80,7 @@ class _AlarmsPageState extends TbContextState<AlarmsPage>
                                       width: 1,
                                     ),
                                     borderRadius: BorderRadius.circular(16),
-                                    color: const Color(0xff00695C),
+                                    color: Theme.of(context).primaryColor,
                                   ),
                                 ),
                               );

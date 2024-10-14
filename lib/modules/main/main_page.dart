@@ -5,6 +5,7 @@ import 'package:thingsboard_app/modules/dashboard/presentation/view/single_dashb
 import 'package:thingsboard_app/modules/main/bloc/bottom_bar_bloc.dart';
 import 'package:thingsboard_app/modules/main/main_item_widget.dart';
 import 'package:thingsboard_app/modules/main/main_navigation_item.dart';
+import 'package:thingsboard_app/modules/main/tb_navigation_bar_widget.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class MainPage extends TbPageWidget {

@@ -106,6 +106,7 @@ class TbContext implements PopEntry {
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
+      debugMode: kDebugMode,
     );
 
     oauth2Client = TbOAuth2Client(
@@ -166,7 +167,7 @@ class TbContext implements PopEntry {
   Future<void> reInit({
     required String endpoint,
     required VoidCallback onDone,
-    required ErrorCallback onError,
+    required ErrorCallback onAuthError,
   }) async {
     log.debug('TbContext:reinit()');
 
@@ -177,10 +178,14 @@ class TbContext implements PopEntry {
       endpoint,
       storage: getIt<ILocalDatabaseService>(),
       onUserLoaded: () => onUserLoaded(onDone: onDone),
-      onError: onError,
+      onError: (error) {
+        onAuthError(error);
+        onError(error);
+      },
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
+      debugMode: kDebugMode,
     );
 
     oauth2Client = TbOAuth2Client(
@@ -365,6 +370,14 @@ class TbContext implements PopEntry {
             transitionDuration: const Duration(milliseconds: 750),
           );
         }
+      } else {
+        navigateTo(
+          '/login',
+          replace: true,
+          clearStack: true,
+          transition: TransitionType.fadeIn,
+          transitionDuration: const Duration(milliseconds: 750),
+        );
       }
     } finally {
       try {

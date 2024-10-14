@@ -11,7 +11,7 @@ import 'package:thingsboard_app/thingsboard_client.dart';
 class TbMainNavigationItem {
   final Widget page;
   String title;
-  final Icon icon;
+  final IconData icon;
   final String path;
 
   TbMainNavigationItem({
@@ -48,7 +48,7 @@ class TbMainNavigationItem {
         TbMainNavigationItem(
           page: HomePage(tbContext),
           title: 'Home',
-          icon: const Icon(Icons.home),
+          icon: Icons.home_outlined,
           path: '/home',
         ),
       ];
@@ -63,13 +63,13 @@ class TbMainNavigationItem {
               TbMainNavigationItem(
                 page: AlarmsPage(tbContext),
                 title: 'Alarms',
-                icon: const Icon(Icons.notifications),
+                icon: Icons.notifications_outlined,
                 path: '/alarms',
               ),
               TbMainNavigationItem(
                 page: DevicesMainPage(tbContext),
                 title: 'Devices',
-                icon: const Icon(Icons.devices_other),
+                icon: Icons.devices_outlined,
                 path: '/devices',
               ),
             ],
@@ -87,7 +87,7 @@ class TbMainNavigationItem {
         TbMainNavigationItem(
           page: MorePage(tbContext),
           title: 'More',
-          icon: const Icon(Icons.menu),
+          icon: Icons.menu_outlined,
           path: '/more',
         ),
       );

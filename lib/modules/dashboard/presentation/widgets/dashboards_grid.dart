@@ -9,6 +9,7 @@ import 'package:thingsboard_app/modules/dashboard/domain/pagination/dashboards_p
 import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashboard_page_controller.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard_grid_card.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_exception_widget.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_progress_builder.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/new_page_progress_builder.dart';
@@ -28,7 +29,7 @@ class DashboardsGridWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        getIt<DashboardsPaginationRepository>().pagingController.refresh();
+        getIt<DashboardsPaginationRepository>().refresh();
       },
       child: PaginationGridWidget<PageLink, DashboardInfo>(
         pagingController:
@@ -41,14 +42,10 @@ class DashboardsGridWidget extends StatelessWidget {
               dashboard: dashboard,
             ),
             onEntityTap: (dashboard) {
-              if (tbContext.hasGenericPermission(
-                    Resource.WIDGETS_BUNDLE,
-                    Operation.READ,
-                  ) &&
-                  tbContext.hasGenericPermission(
-                    Resource.WIDGET_TYPE,
-                    Operation.READ,
-                  )) {
+              final havePermission = getIt<IPermissionService>()
+                  .haveViewDashboardPermission(tbContext);
+
+              if (havePermission) {
                 dashboardPageCtrl.openDashboard(
                   dashboard.id!.id!,
                   title: dashboard.title,

@@ -71,13 +71,16 @@ class _DashboardState extends State<DashboardWidget> {
         if (await controller?.canGoBack() == true) {
           await controller?.goBack();
         } else {
-          widget.pageController?.closeDashboard().then(
-                (_) => dashboardLoading.value = true,
-              );
-          return true;
+          if (widget.pageController != null) {
+            widget.pageController?.closeDashboard().then(
+                  (_) => dashboardLoading.value = true,
+                );
+          } else {
+            return true;
+          }
         }
 
-        return true;
+        return false;
       },
       child: Stack(
         children: [
@@ -191,8 +194,8 @@ class _DashboardState extends State<DashboardWidget> {
               log.debug('shouldOverrideUrlLoading $uriString');
               if (Platform.isAndroid ||
                   Platform.isIOS &&
-                      navigationAction.iosWKNavigationType ==
-                          IOSWKNavigationType.LINK_ACTIVATED) {
+                      navigationAction.navigationType ==
+                          NavigationType.LINK_ACTIVATED) {
                 if (uriString.startsWith(endpoint)) {
                   var target = uriString.substring(endpoint.length);
                   if (!target.startsWith('?accessToken')) {
@@ -232,6 +235,10 @@ class _DashboardState extends State<DashboardWidget> {
                 '[JavaScript console] ${consoleMessage.messageLevel}: '
                 '${consoleMessage.message}',
               );
+
+              if (dashboardLoading.value) {
+                dashboardLoading.value = false;
+              }
             },
             onLoadStart: (controller, url) async {
               log.debug('onLoadStart: $url');
@@ -242,13 +249,14 @@ class _DashboardState extends State<DashboardWidget> {
                 webViewLoading = false;
               }
             },
-            androidOnPermissionRequest: (controller, origin, resources) async {
+            onPermissionRequest: (controller, request) async {
               log.debug(
-                'androidOnPermissionRequest origin: $origin, resources: $resources',
+                'onPermissionRequest resources: ${request.resources}',
               );
-              return PermissionRequestResponse(
-                resources: resources,
-                action: PermissionRequestResponseAction.GRANT,
+
+              return PermissionResponse(
+                action: PermissionResponseAction.GRANT,
+                resources: request.resources,
               );
             },
           ),
