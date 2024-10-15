@@ -42,6 +42,12 @@ class DashboardsGridWidget extends StatelessWidget {
               dashboard: dashboard,
             ),
             onEntityTap: (dashboard) {
+              tbContext.navigateToDashboard(
+                dashboard.id!.id!,
+                dashboardTitle: dashboard.title,
+              );
+              return;
+
               final havePermission = getIt<IPermissionService>()
                   .haveViewDashboardPermission(tbContext);
 
