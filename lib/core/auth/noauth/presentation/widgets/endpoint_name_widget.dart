@@ -11,7 +11,7 @@ class EndpointNameWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100),
         border: Border.all(
-          color: const Color(0xFF305680),
+          color: Theme.of(context).primaryColor,
         ),
       ),
       padding: const EdgeInsets.all(5),
@@ -21,7 +21,7 @@ class EndpointNameWidget extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .labelSmall
-              ?.copyWith(color: const Color(0xFF305680)),
+              ?.copyWith(color: Theme.of(context).primaryColor),
         ),
       ),
     );
