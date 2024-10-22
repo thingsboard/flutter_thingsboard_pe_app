@@ -48,7 +48,7 @@ class _AlarmsFilterPageState extends TbContextState<AlarmsFilterPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AlarmTypesBloc>.value(value: getIt()),
-        BlocProvider<AssigneeBloc>(create: (_) => AssigneeBloc.create()),
+        BlocProvider<AssigneeBloc>.value(value: getIt()),
       ],
       child: Scaffold(
         appBar: TbAppBar(
@@ -64,7 +64,7 @@ class _AlarmsFilterPageState extends TbContextState<AlarmsFilterPage> {
         body: RefreshIndicator(
           onRefresh: () async {
             getIt<AlarmTypesBloc>().add(const AlarmTypesRefreshEvent());
-            context.read<AssigneeBloc>().add(const AssigneeRefreshEvent());
+            getIt<AssigneeBloc>().add(const AssigneeRefreshEvent());
           },
           child: SafeArea(
             bottom: false,
@@ -208,9 +208,9 @@ class _AlarmsFilterPageState extends TbContextState<AlarmsFilterPage> {
     getIt<AlarmTypesBloc>().add(
       const AlarmTypesResetEvent(),
     );
-    context.read<AssigneeBloc>().add(
-          const AssigneeResetEvent(),
-        );
+    getIt<AssigneeBloc>().add(
+      const AssigneeResetEvent(),
+    );
     getIt<AlarmBloc>().add(
       const AlarmFiltersResetEvent(),
     );
@@ -230,9 +230,7 @@ class _AlarmsFilterPageState extends TbContextState<AlarmsFilterPage> {
 
           getIt<AlarmTypesBloc>()
               .add(const AlarmTypesResetUnCommittedChanges());
-          context
-              .read<AssigneeBloc>()
-              .add(const AssigneeResetUnCommittedChanges());
+          getIt<AssigneeBloc>().add(const AssigneeResetUnCommittedChanges());
         });
       }
     });
