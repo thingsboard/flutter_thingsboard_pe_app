@@ -15,6 +15,7 @@ import 'package:thingsboard_app/utils/services/permission/i_permission_service.d
 import 'package:thingsboard_app/utils/services/permission/permission_service.dart';
 import 'package:thingsboard_app/utils/services/user/i_user_service.dart';
 import 'package:thingsboard_app/utils/services/user/user_service.dart';
+import 'package:thingsboard_pe_client/thingsboard_client.dart' hide UserService;
 
 import 'utils/services/firebase/firebase_service.dart';
 
@@ -31,9 +32,12 @@ Future<void> setUpRootDependencies() async {
     ..registerLazySingleton(
       () => TbLogger(),
     )
+    ..registerLazySingleton<TbStorage>(
+      () => secureStorage,
+    )
     ..registerLazySingleton<ILocalDatabaseService>(
       () => LocalDatabaseService(
-        storage: secureStorage,
+        storage: getIt(),
         logger: getIt(),
       ),
     )
