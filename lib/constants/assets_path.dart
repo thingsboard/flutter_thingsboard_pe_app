@@ -11,6 +11,8 @@ abstract class ThingsboardImage {
   static const emailVerified = 'assets/images/email-verified.svg';
   static const dashboardPermissionError =
       'assets/images/dashboard_permission_error.svg';
+  static const noDataImage = 'assets/images/no-data.svg';
+  static const thingsboardBigLogo = 'assets/images/thingsboard_big_logo.svg';
 
   static final oauth2Logos = <String, String>{
     'google-logo': 'assets/images/google-logo.svg',
