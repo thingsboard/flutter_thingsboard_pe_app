@@ -2,6 +2,8 @@ import 'package:event_bus/event_bus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
+import 'package:thingsboard_app/core/usecases/user_details_usecase.dart';
+import 'package:thingsboard_app/thingsboard_client.dart' hide UserService;
 import 'package:thingsboard_app/utils/services/_tb_secure_storage.dart';
 import 'package:thingsboard_app/utils/services/communication/communication_service.dart';
 import 'package:thingsboard_app/utils/services/communication/i_communication_service.dart';
@@ -30,9 +32,12 @@ Future<void> setUpRootDependencies() async {
     ..registerLazySingleton(
       () => TbLogger(),
     )
+    ..registerLazySingleton<TbStorage>(
+      () => secureStorage,
+    )
     ..registerLazySingleton<ILocalDatabaseService>(
       () => LocalDatabaseService(
-        storage: secureStorage,
+        storage: getIt(),
         logger: getIt(),
       ),
     )
@@ -57,5 +62,8 @@ Future<void> setUpRootDependencies() async {
     )
     ..registerLazySingleton<IPermissionService>(
       () => PermissionService(),
+    )
+    ..registerFactory(
+      () => const UserDetailsUseCase(),
     );
 }

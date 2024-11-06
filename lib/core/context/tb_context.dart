@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:thingsboard_app/constants/database_keys.dart';
 import 'package:thingsboard_app/core/auth/oauth2/app_secret_provider.dart';
 import 'package:thingsboard_app/core/auth/oauth2/tb_oauth2_client.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
@@ -28,7 +27,6 @@ enum NotificationType { info, warn, success, error }
 
 class TbContext implements PopEntry {
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-  bool _initialized = false;
   bool isUserLoaded = false;
   final _isAuthenticated = ValueNotifier<bool>(false);
   PlatformType? _oauth2PlatformType;
@@ -41,9 +39,9 @@ class TbContext implements PopEntry {
   final _isLoadingNotifier = ValueNotifier<bool>(false);
   final _log = TbLogger();
   late final WidgetActionHandler _widgetActionHandler;
-  late final AndroidDeviceInfo? _androidInfo;
-  late final IosDeviceInfo? _iosInfo;
-  late final String packageName;
+  AndroidDeviceInfo? _androidInfo;
+  IosDeviceInfo? _iosInfo;
+  late String packageName;
   String? _initialNavigation;
   StreamSubscription? _appLinkStreamSubscription;
 
@@ -54,7 +52,14 @@ class TbContext implements PopEntry {
   final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(false);
 
   @override
-  PopInvokedCallback get onPopInvoked => onPopInvokedImpl;
+  void onPopInvoked(bool didPop) {
+    onPopInvokedImpl(didPop);
+  }
+
+  @override
+  void onPopInvokedWithResult(bool didPop, result) {
+    onPopInvokedImpl(didPop, result);
+  }
 
   GlobalKey<ScaffoldMessengerState> messengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -86,21 +91,14 @@ class TbContext implements PopEntry {
   final bottomNavigationTabChangedStream = StreamController<int>.broadcast();
 
   Future<void> init() async {
-    assert(() {
-      if (_initialized) {
-        throw StateError('TbContext already initialized!');
-      }
-      return true;
-    }());
     _handleRootState = true;
-    _initialized = true;
 
     final endpoint = await getIt<IEndpointService>().getEndpoint();
     log.debug('TbContext::init() endpoint: $endpoint');
 
     tbClient = ThingsboardClient(
       endpoint,
-      storage: getIt<ILocalDatabaseService>(),
+      storage: getIt(),
       onUserLoaded: onUserLoaded,
       onError: onError,
       onLoadStarted: onLoadStarted,
@@ -167,18 +165,20 @@ class TbContext implements PopEntry {
   Future<void> reInit({
     required String endpoint,
     required VoidCallback onDone,
-    required ErrorCallback onError,
+    required ErrorCallback onAuthError,
   }) async {
     log.debug('TbContext:reinit()');
 
     _handleRootState = false;
-    _initialized = false;
 
     tbClient = ThingsboardClient(
       endpoint,
-      storage: getIt<ILocalDatabaseService>(),
+      storage: getIt(),
       onUserLoaded: () => onUserLoaded(onDone: onDone),
-      onError: onError,
+      onError: (error) {
+        onAuthError(error);
+        onError(error);
+      },
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
@@ -191,7 +191,6 @@ class TbContext implements PopEntry {
     );
 
     await tbClient.init();
-    _initialized = true;
   }
 
   Future<void> onFatalError(e) async {
@@ -378,9 +377,7 @@ class TbContext implements PopEntry {
       }
     } finally {
       try {
-        final link = await getIt<ILocalDatabaseService>().getItem(
-          DatabaseKeys.initialAppLink,
-        );
+        final link = getIt<ILocalDatabaseService>().getInitialAppLink();
         navigateByAppLink(link);
       } catch (e) {
         log.error('TbContext:getInitialUri() exception $e');
@@ -400,9 +397,7 @@ class TbContext implements PopEntry {
   Future<void> navigateByAppLink(String? link) async {
     if (link != null) {
       final uri = Uri.parse(link);
-      await getIt<ILocalDatabaseService>().deleteItem(
-        DatabaseKeys.initialAppLink,
-      );
+      await getIt<ILocalDatabaseService>().deleteInitialAppLink();
 
       log.debug('TbContext: navigate by appLink $uri');
       navigateTo(
@@ -546,7 +541,7 @@ class TbContext implements PopEntry {
     String userAgent = 'Mozilla/5.0';
     if (UniversalPlatform.isAndroid) {
       userAgent +=
-          ' (Linux; Android ${_androidInfo!.version.release}; ${_androidInfo.model})';
+          ' (Linux; Android ${_androidInfo!.version.release}; ${_androidInfo?.model})';
     } else if (UniversalPlatform.isIOS) {
       userAgent += ' (${_iosInfo!.model})';
     }
@@ -659,7 +654,7 @@ class TbContext implements PopEntry {
     }
   }
 
-  void onPopInvokedImpl(bool didPop) async {
+  void onPopInvokedImpl<T>(bool didPop, [T? result]) async {
     if (didPop) {
       return;
     }
@@ -667,7 +662,7 @@ class TbContext implements PopEntry {
     if (await currentState!.willPop()) {
       var navigator = Navigator.of(currentState!.context);
       if (navigator.canPop()) {
-        navigator.pop();
+        navigator.pop(result);
       } else {
         SystemNavigator.pop();
       }
