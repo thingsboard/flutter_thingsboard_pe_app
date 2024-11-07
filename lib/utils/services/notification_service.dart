@@ -291,7 +291,8 @@ class NotificationService {
           if (link != null) {
             if (Uri.parse(link).isAbsolute) {
               tbContext.navigateTo('/url/${Uri.encodeComponent(link)}');
-            } else {
+            } else if (link == '/notifications' &&
+                !isOnNotificationsScreenAlready) {
               tbContext.navigateTo(link);
             }
           }

@@ -1,6 +1,8 @@
 abstract class ThingsboardImage {
   static const thingsBoardWithTitle =
       'assets/images/thingsboard_with_title.svg';
+  static const thingsBoardEUWithTitle =
+      'assets/images/logo_title_white_EU_cloud.svg';
   static const thingsboard = 'assets/images/thingsboard.svg';
   static const thingsboardOuter = 'assets/images/thingsboard_outer.svg';
   static const thingsboardCenter = 'assets/images/thingsboard_center.svg';
@@ -12,6 +14,7 @@ abstract class ThingsboardImage {
   static const dashboardPermissionError =
       'assets/images/dashboard_permission_error.svg';
   static const noDataImage = 'assets/images/no-data.svg';
+  static const thingsboardBigLogo = 'assets/images/thingsboard_big_logo.svg';
 
   static final oauth2Logos = <String, String>{
     'google-logo': 'assets/images/google-logo.svg',

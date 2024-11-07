@@ -49,7 +49,10 @@ class _NotificationPageState extends TbContextState<NotificationPage> {
         title: const Text('Notifications'),
         actions: [
           TextButton(
-            child: const Text('Mark all as read'),
+            child: Text(
+              'Mark all as read',
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
             onPressed: () async {
               await notificationRepository.markAllAsRead();
 

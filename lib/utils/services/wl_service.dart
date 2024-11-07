@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thingsboard_app/config/themes/tb_theme_utils.dart';
 import 'package:thingsboard_app/config/themes/wl_theme_widget.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
+import 'package:thingsboard_app/core/auth/login/region.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/utils.dart';
@@ -275,8 +276,12 @@ class WlService {
     Widget image;
     double height = wlParams.logoImageHeight!.toDouble() / 3 * 2;
     if (wlParams.logoImageUrl == DEFAULT_LOGO_URL) {
+      Region? region;
+
       image = SvgPicture.asset(
-        ThingsboardImage.thingsBoardWithTitle,
+        region == Region.europe
+            ? ThingsboardImage.thingsBoardEUWithTitle
+            : ThingsboardImage.thingsBoardWithTitle,
         height: height,
         colorFilter: ColorFilter.mode(themeData.primaryColor, BlendMode.srcIn),
         semanticsLabel: 'ThingsBoard Logo',
