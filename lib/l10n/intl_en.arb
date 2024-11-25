@@ -165,5 +165,6 @@
   "europeRegionShort": "Frankfurt",
   "notifications": "Notifications",
   "deviceList": "Device list",
-  "dashboards": "Dashboards"
+  "dashboards": "Dashboards",
+  "isRequiredText": "is required."
 }

@@ -126,9 +126,11 @@ class _EmailVerificationPageState extends TbPageState<EmailVerificationPage> {
   }
 
   _resendEmail() async {
-    await tbClient
-        .getSignupService()
-        .resendEmailActivation(widget._email, pkgName: tbContext.packageName);
+    await tbClient.getSignupService().resendEmailActivation(
+          widget._email,
+          pkgName: tbContext.packageName,
+          platform: tbContext.platformType,
+        );
     navigateTo(
       '/signup/emailVerification?email=${widget._email}',
       replace: true,

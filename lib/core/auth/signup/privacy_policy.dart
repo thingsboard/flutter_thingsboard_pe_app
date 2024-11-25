@@ -7,6 +7,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/thingsboard_client.dart' show MobileInfoQuery;
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
@@ -24,7 +25,12 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
   void initState() {
     super.initState();
     privacyPolicyFuture =
-        tbContext.tbClient.getSelfRegistrationService().getPrivacyPolicy();
+        tbContext.tbClient.getSelfRegistrationService().getPrivacyPolicy(
+              query: MobileInfoQuery(
+                packageName: tbContext.packageName,
+                platformType: tbContext.platformType,
+              ),
+            );
   }
 
   @override
@@ -35,52 +41,60 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
         tbContext,
         title: Text(S.of(context).privacyPolicy),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: FutureBuilder<String?>(
-                  future: privacyPolicyFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      var privacyPolicy = jsonDecode(snapshot.data ?? '');
-                      dom.Document document =
-                          htmlparser.parse(privacyPolicy ?? '');
-                      return Html.fromDom(
-                        document: document,
-                      );
-                    } else {
-                      return Center(
-                        child: TbProgressIndicator(
-                          tbContext,
-                          size: 50.0,
-                        ),
-                      );
-                    }
-                  },
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                  child: FutureBuilder<String?>(
+                    future: privacyPolicyFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.data?.isEmpty == true) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final privacyPolicy = jsonDecode(snapshot.data ?? '{}');
+                        dom.Document document = htmlparser.parse(
+                          privacyPolicy ?? '',
+                        );
+
+                        return Html.fromDom(
+                          document: document,
+                        );
+                      } else {
+                        return Center(
+                          child: TbProgressIndicator(
+                            tbContext,
+                            size: 50.0,
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 36),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () => pop(false),
-                  child: Text(S.of(context).cancel),
-                ),
-                ElevatedButton(
-                  onPressed: () => pop(true),
-                  child: Text(S.of(context).accept),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 36),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => pop(false),
+                    child: Text(S.of(context).cancel),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => pop(true),
+                    child: Text(S.of(context).accept),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

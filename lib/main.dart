@@ -17,8 +17,6 @@ import 'package:thingsboard_app/firebase_options.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
-import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 void main() async {
@@ -37,15 +35,6 @@ void main() async {
     );
   } catch (e) {
     log('main::FirebaseService.initializeApp() exception $e', error: e);
-  }
-
-  try {
-    final uri = await getInitialUri();
-    if (uri != null) {
-      await getIt<ILocalDatabaseService>().setInitialAppLink(uri.toString());
-    }
-  } catch (e) {
-    log('main::getInitialUri() exception $e', error: e);
   }
 
   if (kDebugMode) {
