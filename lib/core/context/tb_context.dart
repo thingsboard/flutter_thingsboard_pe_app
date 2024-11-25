@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_links/app_links.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/foundation.dart';
@@ -20,7 +21,6 @@ import 'package:thingsboard_app/utils/services/local_database/i_local_database_s
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/widget_action_handler.dart';
 import 'package:thingsboard_app/utils/services/wl_service.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 enum NotificationType { info, warn, success, error }
@@ -44,6 +44,7 @@ class TbContext implements PopEntry {
   late String packageName;
   String? _initialNavigation;
   StreamSubscription? _appLinkStreamSubscription;
+  final appLinks = AppLinks();
 
   bool _closeMainFirst = false;
   late bool _handleRootState;
@@ -61,8 +62,7 @@ class TbContext implements PopEntry {
     onPopInvokedImpl(didPop, result);
   }
 
-  GlobalKey<ScaffoldMessengerState> messengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+  GlobalKey<ScaffoldMessengerState> messengerKey = GlobalKey<ScaffoldMessengerState>();
   late ThingsboardClient tbClient;
   late TbOAuth2Client oauth2Client;
   late final WlService wlService;
@@ -74,8 +74,7 @@ class TbContext implements PopEntry {
 
   bool get isAuthenticated => _isAuthenticated.value;
 
-  bool get hasOAuthClients =>
-      oauth2ClientInfos != null && oauth2ClientInfos!.isNotEmpty;
+  bool get hasOAuthClients => oauth2ClientInfos != null && oauth2ClientInfos!.isNotEmpty;
 
   TbContextState? currentState;
 
@@ -129,14 +128,15 @@ class TbContext implements PopEntry {
         packageName = 'web.app';
       }
       try {
-        final initialUri = await getInitialUri();
+        final initialUri = await appLinks.getInitialLink();
+
         _updateInitialNavigation(initialUri);
       } catch (e) {
         log.error('Failed to get initial uri: $e', e);
       }
       await tbClient.init();
       if (UniversalPlatform.isAndroid || UniversalPlatform.isIOS) {
-        uriLinkStream.listen(
+        appLinks.uriLinkStream.listen(
           (Uri? uri) {
             _updateInitialNavigation(uri);
             handleInitialNavigation();
@@ -194,9 +194,7 @@ class TbContext implements PopEntry {
   }
 
   Future<void> onFatalError(e) async {
-    var message = e is ThingsboardError
-        ? (e.message ?? 'Unknown error.')
-        : 'Unknown error.';
+    var message = e is ThingsboardError ? (e.message ?? 'Unknown error.') : 'Unknown error.';
     message = 'Fatal application error occured:\n$message.';
     await alert(title: 'Fatal error', message: message, ok: 'Close');
     logout();
@@ -256,8 +254,7 @@ class TbContext implements PopEntry {
         label: 'Close',
         textColor: textColor,
         onPressed: () {
-          messengerKey.currentState!
-              .hideCurrentSnackBar(reason: SnackBarClosedReason.dismiss);
+          messengerKey.currentState!.hideCurrentSnackBar(reason: SnackBarClosedReason.dismiss);
         },
       ),
     );
@@ -290,11 +287,8 @@ class TbContext implements PopEntry {
         if (tbClient.getAuthUser()!.userId != null) {
           try {
             userDetails = await tbClient.getUserService().getUser();
-            userPermissions = await tbClient
-                .getUserPermissionsService()
-                .getAllowedPermissions();
-            homeDashboard =
-                await tbClient.getDashboardService().getHomeDashboardInfo();
+            userPermissions = await tbClient.getUserPermissionsService().getAllowedPermissions();
+            homeDashboard = await tbClient.getDashboardService().getHomeDashboardInfo();
           } catch (e) {
             if (!_isConnectionError(e)) {
               logout();
@@ -306,9 +300,7 @@ class TbContext implements PopEntry {
       } else {
         if (tbClient.isPreVerificationToken()) {
           log.debug('authUser: ${tbClient.getAuthUser()}');
-          twoFactorAuthProviders = await tbClient
-              .getTwoFactorAuthService()
-              .getAvailableLoginTwoFaProviders();
+          twoFactorAuthProviders = await tbClient.getTwoFactorAuthService().getAvailableLoginTwoFaProviders();
         } else {
           twoFactorAuthProviders = null;
         }
@@ -322,13 +314,11 @@ class TbContext implements PopEntry {
               requestConfig: RequestConfig(followRedirect: false),
             );
 
-        signUpParams = await tbClient
-            .getSelfRegistrationService()
-            .getSignUpSelfRegistrationParams(pkgName: packageName);
+        signUpParams =
+            await tbClient.getSelfRegistrationService().getSignUpSelfRegistrationParams(pkgName: packageName);
       }
 
-      _isAuthenticated.value =
-          tbClient.isAuthenticated() && !tbClient.isPreVerificationToken();
+      _isAuthenticated.value = tbClient.isAuthenticated() && !tbClient.isPreVerificationToken();
       await wlService.updateWhiteLabeling();
       await updateRouteState();
 
@@ -383,9 +373,9 @@ class TbContext implements PopEntry {
         log.error('TbContext:getInitialUri() exception $e');
       }
 
-      _appLinkStreamSubscription ??= linkStream.listen(
+      _appLinkStreamSubscription ??= appLinks.uriLinkStream.listen(
         (link) {
-          navigateByAppLink(link);
+          navigateByAppLink(link.toString());
         },
         onError: (err) {
           log.error('linkStream.listen $err');
@@ -430,13 +420,10 @@ class TbContext implements PopEntry {
   }
 
   bool _isConnectionError(e) {
-    return e is ThingsboardError &&
-        e.errorCode == ThingsBoardErrorCode.general &&
-        e.message == 'Unable to connect';
+    return e is ThingsboardError && e.errorCode == ThingsBoardErrorCode.general && e.message == 'Unable to connect';
   }
 
-  bool get hasSelfRegistration =>
-      signUpParams != null && signUpParams!.captchaSiteKey != null;
+  bool get hasSelfRegistration => signUpParams != null && signUpParams!.captchaSiteKey != null;
 
   bool hasGenericPermission(Resource resource, Operation operation) {
     if (userPermissions != null) {
@@ -447,8 +434,7 @@ class TbContext implements PopEntry {
   }
 
   bool handleInitialNavigation() {
-    if (_initialNavigation != null &&
-        _initialNavigation!.startsWith('/signup/emailVerified')) {
+    if (_initialNavigation != null && _initialNavigation!.startsWith('/signup/emailVerified')) {
       if (tbClient.isAuthenticated()) {
         tbClient.logout();
       } else {
@@ -540,13 +526,11 @@ class TbContext implements PopEntry {
   String userAgent() {
     String userAgent = 'Mozilla/5.0';
     if (UniversalPlatform.isAndroid) {
-      userAgent +=
-          ' (Linux; Android ${_androidInfo!.version.release}; ${_androidInfo?.model})';
+      userAgent += ' (Linux; Android ${_androidInfo!.version.release}; ${_androidInfo?.model})';
     } else if (UniversalPlatform.isIOS) {
       userAgent += ' (${_iosInfo!.model})';
     }
-    userAgent +=
-        ' AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
+    userAgent += ' AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
     return userAgent;
   }
 
@@ -719,14 +703,12 @@ mixin HasTbContext {
   void setupCurrentState(TbContextState currentState) {
     if (_tbContext.currentState != null) {
       // ignore: deprecated_member_use
-      ModalRoute.of(_tbContext.currentState!.context)
-          ?.unregisterPopEntry(_tbContext);
+      ModalRoute.of(_tbContext.currentState!.context)?.unregisterPopEntry(_tbContext);
     }
     _tbContext.currentState = currentState;
     if (_tbContext.currentState != null) {
       // ignore: deprecated_member_use
-      ModalRoute.of(_tbContext.currentState!.context)
-          ?.registerPopEntry(_tbContext);
+      ModalRoute.of(_tbContext.currentState!.context)?.registerPopEntry(_tbContext);
     }
     if (_tbContext._closeMainFirst) {
       _tbContext._closeMainFirst = false;
@@ -766,11 +748,9 @@ mixin HasTbContext {
   }) =>
       _tbContext.navigateTo(path, replace: replace, clearStack: clearStack);
 
-  void pop<T>([T? result, BuildContext? context]) =>
-      _tbContext.pop<T>(result, context);
+  void pop<T>([T? result, BuildContext? context]) => _tbContext.pop<T>(result, context);
 
-  Future<bool> maybePop<T extends Object?>([T? result]) =>
-      _tbContext.maybePop<T>(result);
+  Future<bool> maybePop<T extends Object?>([T? result]) => _tbContext.maybePop<T>(result);
 
   Future<void> navigateToDashboard(
     String dashboardId, {
@@ -815,8 +795,7 @@ mixin HasTbContext {
       _tbContext.showSuccessNotification(message, duration: duration);
 
   void subscribeRouteObserver(TbPageState pageState) {
-    _tbContext.routeObserver
-        .subscribe(pageState, ModalRoute.of(pageState.context) as PageRoute);
+    _tbContext.routeObserver.subscribe(pageState, ModalRoute.of(pageState.context) as PageRoute);
   }
 
   void unsubscribeRouteObserver(TbPageState pageState) {
