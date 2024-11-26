@@ -496,7 +496,7 @@ class TbContext implements PopEntry {
             bool fullscreen = _userForceFullscreen();
             if (!fullscreen) {
               navigateTo(
-                '/home',
+                '/main',
                 replace: true,
                 closeDashboard: false,
                 transition: TransitionType.none,
