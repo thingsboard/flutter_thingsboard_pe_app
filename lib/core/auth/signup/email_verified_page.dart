@@ -138,6 +138,7 @@ class _EmailVerifiedPageState extends TbPageState<EmailVerifiedPage> {
           await tbClient.getSignupService().activateUserByEmailCode(
                 widget._emailCode,
                 pkgName: tbContext.packageName,
+                platform: tbContext.platformType,
                 requestConfig: RequestConfig(ignoreErrors: false),
               );
       _activatingNotifier.value = false;

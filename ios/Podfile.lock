@@ -94,6 +94,12 @@ PODS:
   - qr_code_scanner (0.2.0):
     - Flutter
     - MTBBarcodeScanner
+  - recaptcha_enterprise_flutter (18.6.0):
+    - Flutter
+    - RecaptchaEnterprise (= 18.6.0)
+  - RecaptchaEnterprise (18.6.0):
+    - RecaptchaInterop (~> 100.0.0)
+  - RecaptchaInterop (100.0.0)
   - uni_links (0.0.1):
     - Flutter
   - url_launcher_ios (0.0.1):
@@ -113,6 +119,7 @@ DEPENDENCIES:
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
+  - recaptcha_enterprise_flutter (from `.symlinks/plugins/recaptcha_enterprise_flutter/ios`)
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
@@ -129,6 +136,8 @@ SPEC REPOS:
     - nanopb
     - OrderedSet
     - PromisesObjC
+    - RecaptchaEnterprise
+    - RecaptchaInterop
 
 EXTERNAL SOURCES:
   device_info_plus:
@@ -157,6 +166,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   qr_code_scanner:
     :path: ".symlinks/plugins/qr_code_scanner/ios"
+  recaptcha_enterprise_flutter:
+    :path: ".symlinks/plugins/recaptcha_enterprise_flutter/ios"
   uni_links:
     :path: ".symlinks/plugins/uni_links/ios"
   url_launcher_ios:
@@ -187,6 +198,9 @@ SPEC CHECKSUMS:
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
+  recaptcha_enterprise_flutter: c1b3bdf21357afe5eed23900feb78e2bf2d04b03
+  RecaptchaEnterprise: 336a5178eb484cd049b2b04bbe1ca1d60fff1227
+  RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 

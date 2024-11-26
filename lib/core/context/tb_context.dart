@@ -12,10 +12,11 @@ import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/domain/entites/dashboard_arguments.dart';
-import 'package:thingsboard_app/modules/main/main_navigation_item.dart';
+import 'package:thingsboard_app/modules/version/version_route.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
+import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/widget_action_handler.dart';
@@ -26,30 +27,35 @@ import 'package:universal_platform/universal_platform.dart';
 enum NotificationType { info, warn, success, error }
 
 class TbContext implements PopEntry {
-  static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+  TbContext(this.router) {
+    _widgetActionHandler = WidgetActionHandler(this);
+    wlService = WlService(this);
+  }
+
+  static final deviceInfoPlugin = DeviceInfoPlugin();
   bool isUserLoaded = false;
   final _isAuthenticated = ValueNotifier<bool>(false);
-  PlatformType? _oauth2PlatformType;
-  List<OAuth2ClientInfo>? oauth2ClientInfos;
-  SignUpSelfRegistrationParams? signUpParams;
+  late PlatformType platformType;
   List<TwoFaProviderInfo>? twoFactorAuthProviders;
   User? userDetails;
   AllowedPermissionsInfo? userPermissions;
   HomeDashboardInfo? homeDashboard;
+  VersionInfo? versionInfo;
   final _isLoadingNotifier = ValueNotifier<bool>(false);
   final _log = TbLogger();
   late final WidgetActionHandler _widgetActionHandler;
   AndroidDeviceInfo? _androidInfo;
   IosDeviceInfo? _iosInfo;
   late String packageName;
-  String? _initialNavigation;
+  late PlatformVersion version;
+
   StreamSubscription? _appLinkStreamSubscription;
 
   bool _closeMainFirst = false;
   late bool _handleRootState;
 
   @override
-  final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(false);
+  final canPopNotifier = ValueNotifier<bool>(false);
 
   @override
   void onPopInvoked(bool didPop) {
@@ -61,28 +67,19 @@ class TbContext implements PopEntry {
     onPopInvokedImpl(didPop, result);
   }
 
-  GlobalKey<ScaffoldMessengerState> messengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+  final messengerKey = GlobalKey<ScaffoldMessengerState>();
   late ThingsboardClient tbClient;
   late TbOAuth2Client oauth2Client;
   late final WlService wlService;
 
   final FluroRouter router;
-  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+  final routeObserver = RouteObserver<PageRoute>();
 
   Listenable get isAuthenticatedListenable => _isAuthenticated;
 
   bool get isAuthenticated => _isAuthenticated.value;
 
-  bool get hasOAuthClients =>
-      oauth2ClientInfos != null && oauth2ClientInfos!.isNotEmpty;
-
   TbContextState? currentState;
-
-  TbContext(this.router) {
-    _widgetActionHandler = WidgetActionHandler(this);
-    wlService = WlService(this);
-  }
 
   TbLogger get log => _log;
 
@@ -115,22 +112,24 @@ class TbContext implements PopEntry {
     try {
       if (UniversalPlatform.isAndroid) {
         _androidInfo = await deviceInfoPlugin.androidInfo;
-        _oauth2PlatformType = PlatformType.ANDROID;
+        platformType = PlatformType.ANDROID;
       } else if (UniversalPlatform.isIOS) {
         _iosInfo = await deviceInfoPlugin.iosInfo;
-        _oauth2PlatformType = PlatformType.IOS;
+        platformType = PlatformType.IOS;
       } else {
-        _oauth2PlatformType = PlatformType.WEB;
+        platformType = PlatformType.WEB;
       }
+
       if (UniversalPlatform.isAndroid || UniversalPlatform.isIOS) {
-        PackageInfo packageInfo = await PackageInfo.fromPlatform();
+        final packageInfo = await PackageInfo.fromPlatform();
         packageName = packageInfo.packageName;
+        version = PlatformVersion.fromString(packageInfo.version);
       } else {
         packageName = 'web.app';
       }
       try {
         final initialUri = await getInitialUri();
-        _updateInitialNavigation(initialUri);
+        await _updateInitialNavigation(initialUri);
       } catch (e) {
         log.error('Failed to get initial uri: $e', e);
       }
@@ -152,13 +151,16 @@ class TbContext implements PopEntry {
     }
   }
 
-  void _updateInitialNavigation(Uri? initialUri) {
+  Future<void> _updateInitialNavigation(Uri? initialUri) async {
+    String? initialNavigation;
+
     if (initialUri != null && initialUri.path.isNotEmpty) {
-      _initialNavigation = initialUri.path;
+      initialNavigation = initialUri.path;
       if (initialUri.hasQuery) {
-        _initialNavigation = '$_initialNavigation?${initialUri.query}';
+        initialNavigation = '$initialNavigation?${initialUri.query}';
       }
-      log.debug('Initial navigation: $_initialNavigation');
+      await getIt<ILocalDatabaseService>().setInitialAppLink(initialNavigation);
+      log.debug('Initial navigation: $initialNavigation');
     }
   }
 
@@ -289,13 +291,24 @@ class TbContext implements PopEntry {
         log.debug('authUser: ${tbClient.getAuthUser()}');
         if (tbClient.getAuthUser()!.userId != null) {
           try {
-            userDetails = await tbClient.getUserService().getUser();
             userPermissions = await tbClient
                 .getUserPermissionsService()
                 .getAllowedPermissions();
-            homeDashboard =
-                await tbClient.getDashboardService().getHomeDashboardInfo();
+
+            final mobileInfo =
+                await tbClient.getMobileService().getUserMobileInfo(
+                      MobileInfoQuery(
+                        platformType: platformType,
+                        packageName: packageName,
+                      ),
+                    );
+
+            userDetails = mobileInfo?.user;
+            homeDashboard = mobileInfo?.homeDashboardInfo;
+            versionInfo = mobileInfo?.versionInfo;
+            getIt<ILayoutService>().cachePageLayouts(mobileInfo?.pages);
           } catch (e) {
+            log.error('TbContext::onUserLoaded error $e');
             if (!_isConnectionError(e)) {
               logout();
             } else {
@@ -316,21 +329,23 @@ class TbContext implements PopEntry {
         userDetails = null;
         userPermissions = null;
         homeDashboard = null;
-        oauth2ClientInfos = await tbClient.getOAuth2Service().getOAuth2Clients(
-              pkgName: packageName,
-              platform: _oauth2PlatformType,
-              requestConfig: RequestConfig(followRedirect: false),
-            );
-
-        signUpParams = await tbClient
-            .getSelfRegistrationService()
-            .getSignUpSelfRegistrationParams(pkgName: packageName);
       }
 
       _isAuthenticated.value =
           tbClient.isAuthenticated() && !tbClient.isPreVerificationToken();
       await wlService.updateWhiteLabeling();
-      await updateRouteState();
+      if (versionInfo != null &&
+          versionInfo?.mobileVersionInfo?.minVersion != null) {
+        if (version.versionInt() <
+            versionInfo!.mobileVersionInfo!.minVersion.versionInt()) {
+          navigateTo(
+            VersionRoutes.updateRequiredRoutePath,
+            replace: true,
+            routeSettings: RouteSettings(arguments: versionInfo),
+          );
+          return;
+        }
+      }
 
       if (isAuthenticated) {
         onDone?.call();
@@ -395,7 +410,7 @@ class TbContext implements PopEntry {
   }
 
   Future<void> navigateByAppLink(String? link) async {
-    if (link != null) {
+    if (link != null && !link.contains('signup/emailVerified')) {
       final uri = Uri.parse(link);
       await getIt<ILocalDatabaseService>().deleteInitialAppLink();
 
@@ -435,9 +450,6 @@ class TbContext implements PopEntry {
         e.message == 'Unable to connect';
   }
 
-  bool get hasSelfRegistration =>
-      signUpParams != null && signUpParams!.captchaSiteKey != null;
-
   bool hasGenericPermission(Resource resource, Operation operation) {
     if (userPermissions != null) {
       return userPermissions!.hasGenericPermission(resource, operation);
@@ -447,22 +459,28 @@ class TbContext implements PopEntry {
   }
 
   bool handleInitialNavigation() {
-    if (_initialNavigation != null &&
-        _initialNavigation!.startsWith('/signup/emailVerified')) {
+    final initialNavigation =
+        getIt<ILocalDatabaseService>().getInitialAppLink();
+
+    log.debug('TbContext::handleInitialNavigation() -> $initialNavigation');
+
+    if (initialNavigation != null &&
+        initialNavigation.startsWith('/signup/emailVerified')) {
       if (tbClient.isAuthenticated()) {
         tbClient.logout();
       } else {
         navigateTo(
-          _initialNavigation!,
+          initialNavigation,
           replace: true,
           clearStack: true,
           transition: TransitionType.fadeIn,
           transitionDuration: const Duration(milliseconds: 750),
         );
-        _initialNavigation = null;
+        getIt<ILocalDatabaseService>().deleteInitialAppLink();
       }
       return true;
     }
+
     return false;
   }
 
@@ -478,7 +496,7 @@ class TbContext implements PopEntry {
             bool fullscreen = _userForceFullscreen();
             if (!fullscreen) {
               navigateTo(
-                '/home',
+                '/main',
                 replace: true,
                 closeDashboard: false,
                 transition: TransitionType.none,
@@ -494,7 +512,7 @@ class TbContext implements PopEntry {
             }
           } else {
             navigateTo(
-              '/home',
+              '/main',
               replace: true,
               transition: TransitionType.fadeIn,
               transitionDuration: const Duration(milliseconds: 750),
@@ -580,10 +598,7 @@ class TbContext implements PopEntry {
           return;
         }
       }
-      if (TbMainNavigationItem.isMainPageState(this, path)) {
-        replace = true;
-        clearStack = true;
-      }
+
       if (transition != TransitionType.nativeModal) {
         transition = TransitionType.none;
       } else if (transition == null) {
