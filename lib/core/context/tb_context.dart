@@ -197,7 +197,9 @@ class TbContext implements PopEntry {
   }
 
   Future<void> onFatalError(e) async {
-    var message = e is ThingsboardError ? (e.message ?? 'Unknown error.') : 'Unknown error.';
+    var message = e is ThingsboardError
+        ? (e.message ?? 'Unknown error.')
+        : 'Unknown error.';
     message = 'Fatal application error occured:\n$message.';
     await alert(title: 'Fatal error', message: message, ok: 'Close');
     logout();
