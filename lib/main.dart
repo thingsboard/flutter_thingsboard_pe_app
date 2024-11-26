@@ -44,27 +44,18 @@ void main() async {
   runApp(const ThingsboardApp());
 }
 
-class ThingsboardApp extends StatefulWidget {
+class ThingsboardApp extends StatelessWidget {
   const ThingsboardApp({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ThingsboardAppState();
-}
-
-class _ThingsboardAppState extends State<ThingsboardApp> {
-  @override
-  void initState() {
+  Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.light,
       ),
     );
-    super.initState();
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return OrientationBuilder(
       builder: (context, orientation) {
         getIt<ILayoutService>().setDeviceScreenSize(

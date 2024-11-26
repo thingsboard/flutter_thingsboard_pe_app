@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_links/app_links.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +22,6 @@ import 'package:thingsboard_app/utils/services/local_database/i_local_database_s
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/widget_action_handler.dart';
 import 'package:thingsboard_app/utils/services/wl_service.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 enum NotificationType { info, warn, success, error }
@@ -50,6 +50,7 @@ class TbContext implements PopEntry {
   late PlatformVersion version;
 
   StreamSubscription? _appLinkStreamSubscription;
+  final appLinks = AppLinks();
 
   bool _closeMainFirst = false;
   late bool _handleRootState;
@@ -128,14 +129,14 @@ class TbContext implements PopEntry {
         packageName = 'web.app';
       }
       try {
-        final initialUri = await getInitialUri();
-        await _updateInitialNavigation(initialUri);
+        final initialUri = await appLinks.getInitialLink();
+        _updateInitialNavigation(initialUri);
       } catch (e) {
         log.error('Failed to get initial uri: $e', e);
       }
       await tbClient.init();
       if (UniversalPlatform.isAndroid || UniversalPlatform.isIOS) {
-        uriLinkStream.listen(
+        appLinks.uriLinkStream.listen(
           (Uri? uri) {
             _updateInitialNavigation(uri);
             handleInitialNavigation();
@@ -398,9 +399,9 @@ class TbContext implements PopEntry {
         log.error('TbContext:getInitialUri() exception $e');
       }
 
-      _appLinkStreamSubscription ??= linkStream.listen(
+      _appLinkStreamSubscription ??= appLinks.uriLinkStream.listen(
         (link) {
-          navigateByAppLink(link);
+          navigateByAppLink(link.toString());
         },
         onError: (err) {
           log.error('linkStream.listen $err');
