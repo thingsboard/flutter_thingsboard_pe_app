@@ -12,6 +12,7 @@ import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/domain/entites/dashboard_arguments.dart';
+import 'package:thingsboard_app/modules/version/version_route.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
@@ -39,6 +40,7 @@ class TbContext implements PopEntry {
   User? userDetails;
   AllowedPermissionsInfo? userPermissions;
   HomeDashboardInfo? homeDashboard;
+  VersionInfo? versionInfo;
   final _isLoadingNotifier = ValueNotifier<bool>(false);
   final _log = TbLogger();
   late final WidgetActionHandler _widgetActionHandler;
@@ -300,8 +302,10 @@ class TbContext implements PopEntry {
                         packageName: packageName,
                       ),
                     );
+
             userDetails = mobileInfo?.user;
             homeDashboard = mobileInfo?.homeDashboardInfo;
+            versionInfo = mobileInfo?.versionInfo;
             getIt<ILayoutService>().cachePageLayouts(mobileInfo?.pages);
           } catch (e) {
             log.error('TbContext::onUserLoaded error $e');
@@ -330,7 +334,18 @@ class TbContext implements PopEntry {
       _isAuthenticated.value =
           tbClient.isAuthenticated() && !tbClient.isPreVerificationToken();
       await wlService.updateWhiteLabeling();
-      await updateRouteState();
+      if (versionInfo != null &&
+          versionInfo?.mobileVersionInfo?.minVersion != null) {
+        if (version.versionInt() <
+            versionInfo!.mobileVersionInfo!.minVersion.versionInt()) {
+          navigateTo(
+            VersionRoutes.updateRequiredRoutePath,
+            replace: true,
+            routeSettings: RouteSettings(arguments: versionInfo),
+          );
+          return;
+        }
+      }
 
       if (isAuthenticated) {
         onDone?.call();

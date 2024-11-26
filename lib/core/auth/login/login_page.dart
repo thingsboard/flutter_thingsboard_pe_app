@@ -71,7 +71,7 @@ class _LoginPageState extends TbPageState<LoginPage>
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AuthBloc>(
-      create: (_) => AuthBloc(tbClient: tbClient)
+      create: (_) => AuthBloc(tbClient: tbClient, tbContext: tbContext)
         ..add(
           AuthFetchEvent(
             packageName: tbContext.packageName,

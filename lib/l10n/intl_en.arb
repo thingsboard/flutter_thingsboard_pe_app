@@ -166,5 +166,7 @@
   "notifications": "Notifications",
   "deviceList": "Device list",
   "dashboards": "Dashboards",
-  "isRequiredText": "is required."
+  "isRequiredText": "is required.",
+  "updateRequired": "Update required",
+  "updateTo": "Update to {version}"
 }
