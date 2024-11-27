@@ -333,6 +333,8 @@ class TbContext implements PopEntry {
         userDetails = null;
         userPermissions = null;
         homeDashboard = null;
+        versionInfo = null;
+        storeInfo = null;
       }
 
       _isAuthenticated.value =
