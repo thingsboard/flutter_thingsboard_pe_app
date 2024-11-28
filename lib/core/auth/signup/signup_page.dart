@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
@@ -414,18 +415,24 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     MobileSelfRegistrationParams signUpParams,
     RecaptchaClient? recaptchaClient,
   ) async {
-    if (signUpParams.recaptcha.version == 'enterprise') {
-      _recaptchaResponseNotifier.value = await recaptchaClient?.execute(
-        RecaptchaAction.SIGNUP(),
-        timeout: 10000,
-      );
-    } else {
-      final recaptchaResponse = await tbContext.navigateTo(
-        '/tbRecaptcha?siteKey=${signUpParams.recaptcha.siteKey}',
-        transition: TransitionType.nativeModal,
-      );
+    try {
+      if (signUpParams.recaptcha.version == 'enterprise') {
+        _recaptchaResponseNotifier.value = await recaptchaClient?.execute(
+          RecaptchaAction.SIGNUP(),
+          timeout: 10000,
+        );
+      } else {
+        final recaptchaResponse = await tbContext.navigateTo(
+          '/tbRecaptcha?siteKey=${signUpParams.recaptcha.siteKey}',
+          transition: TransitionType.nativeModal,
+        );
 
-      _recaptchaResponseNotifier.value = recaptchaResponse;
+        _recaptchaResponseNotifier.value = recaptchaResponse;
+      }
+    } on PlatformException catch (e) {
+      tbContext.showErrorNotification(e.message ?? '');
+    } catch (e) {
+      tbContext.showErrorNotification(e.toString() ?? '');
     }
   }
 
