@@ -52,7 +52,8 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
                     future: privacyPolicyFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.data?.isEmpty == true) {
+                        if (snapshot.data == null ||
+                            snapshot.data?.isEmpty == true) {
                           return const SizedBox.shrink();
                         }
 
