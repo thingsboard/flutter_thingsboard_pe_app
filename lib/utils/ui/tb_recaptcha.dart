@@ -4,16 +4,22 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 
 class TbRecaptcha extends TbPageWidget {
-  final String siteKey;
+  TbRecaptcha(
+    super.tbContext, {
+    required this.siteKey,
+    required this.version,
+    this.logActionName,
+    super.key,
+  });
 
-  TbRecaptcha(TbContext tbContext, {super.key, required this.siteKey})
-      : super(tbContext);
+  final String siteKey;
+  final String version;
+  final String? logActionName;
 
   @override
   State<StatefulWidget> createState() => _TbRecaptchaState();
@@ -43,8 +49,12 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
   @override
   void initState() {
     _initialUrl = WebUri(
-      '${getIt<IEndpointService>().getCachedEndpoint()}/signup/recaptcha?siteKey=${widget.siteKey}',
+      '${getIt<IEndpointService>().getCachedEndpoint()}'
+      '/signup/recaptcha?siteKey=${widget.siteKey}'
+      '&version=${widget.version}'
+      '&logActionName=${widget.logActionName}',
     );
+
     super.initState();
   }
 

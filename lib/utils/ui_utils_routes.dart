@@ -6,16 +6,24 @@ import 'package:thingsboard_app/utils/ui/qr_code_scanner.dart';
 import 'package:thingsboard_app/utils/ui/tb_recaptcha.dart';
 
 class UiUtilsRoutes extends TbRoutes {
-  late var qrCodeScannerHandler = Handler(
+  late final qrCodeScannerHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
       return QrCodeScannerPage(tbContext);
     },
   );
 
-  late var tbRecaptchaHandler = Handler(
+  late final tbRecaptchaHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-      var siteKey = params['siteKey']?.first;
-      return TbRecaptcha(tbContext, siteKey: siteKey);
+      final siteKey = params['siteKey']?.first;
+      final version = params['version']?.first;
+      final logActionName = params['logActionName']?.first;
+
+      return TbRecaptcha(
+        tbContext,
+        siteKey: siteKey,
+        version: version,
+        logActionName: logActionName,
+      );
     },
   );
 

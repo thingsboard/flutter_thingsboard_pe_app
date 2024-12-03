@@ -423,7 +423,9 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
         );
       } else {
         final recaptchaResponse = await tbContext.navigateTo(
-          '/tbRecaptcha?siteKey=${signUpParams.recaptcha.siteKey}',
+          '/tbRecaptcha?siteKey=${signUpParams.recaptcha.siteKey}'
+          '&version=${signUpParams.recaptcha.version}'
+          '&logActionName=${signUpParams.recaptcha.logActionName}',
           transition: TransitionType.nativeModal,
         );
 
@@ -432,7 +434,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     } on PlatformException catch (e) {
       tbContext.showErrorNotification(e.message ?? '');
     } catch (e) {
-      tbContext.showErrorNotification(e.toString() ?? '');
+      tbContext.showErrorNotification(e.toString());
     }
   }
 
