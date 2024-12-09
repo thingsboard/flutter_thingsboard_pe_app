@@ -14,7 +14,16 @@ class DashboardRoutes extends TbRoutes {
 
   late final dashboardsHandler = Handler(
     handlerFunc: (context, params) {
-      return DashboardsPage(tbContext);
+      final hasPermission =
+          getIt<IPermissionService>().haveViewDashboardPermission(
+        tbContext,
+      );
+
+      if (hasPermission) {
+        return DashboardsPage(tbContext);
+      } else {
+        return DashboardPermissionErrorView(tbContext);
+      }
     },
   );
 
@@ -54,7 +63,13 @@ class DashboardRoutes extends TbRoutes {
 
   late final singleDashboard = Handler(
     handlerFunc: (context, parameters) {
-      return SingleDashboardView(tbContext, id: parameters['id']![0]);
+      final havePermission =
+          getIt<IPermissionService>().haveViewDashboardPermission(tbContext);
+      if (havePermission) {
+        return SingleDashboardView(tbContext, id: parameters['id']![0]);
+      }
+
+      return DashboardPermissionErrorView(tbContext);
     },
   );
 
