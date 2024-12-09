@@ -674,14 +674,6 @@ class TbContext implements PopEntry {
     }
   }
 
-  Future<bool> maybePop<T extends Object?>([T? result]) async {
-    if (currentState != null) {
-      return Navigator.of(currentState!.context).maybePop(result);
-    } else {
-      return true;
-    }
-  }
-
   void onPopInvokedImpl<T>(bool didPop, [T? result]) async {
     if (didPop) {
       return;
@@ -796,9 +788,6 @@ mixin HasTbContext {
 
   void pop<T>([T? result, BuildContext? context]) =>
       _tbContext.pop<T>(result, context);
-
-  Future<bool> maybePop<T extends Object?>([T? result]) =>
-      _tbContext.maybePop<T>(result);
 
   Future<void> navigateToDashboard(
     String dashboardId, {
