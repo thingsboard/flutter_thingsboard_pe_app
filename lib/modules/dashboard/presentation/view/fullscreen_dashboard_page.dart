@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashboard_controller.dart';
+import 'package:thingsboard_app/modules/dashboard/presentation/view/dashboard_permission_error_view.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard_widget.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
+import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
 class FullscreenDashboardPage extends TbPageWidget {
@@ -27,9 +29,14 @@ class _FullscreenDashboardPageState
   final showBackValue = ValueNotifier<bool>(false);
 
   DashboardController? _dashboardController;
+  late final bool havePermission;
 
   @override
   Widget build(BuildContext context) {
+    if (!havePermission) {
+      return DashboardPermissionErrorView(tbContext, fullScreen: true);
+    }
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -101,6 +108,8 @@ class _FullscreenDashboardPageState
   @override
   void initState() {
     super.initState();
+    havePermission = getIt<IPermissionService>()
+        .haveViewDashboardPermission(widget.tbContext);
     dashboardTitleValue = ValueNotifier(widget._dashboardTitle ?? 'Dashboard');
   }
 

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashboard_controller.dart';
+import 'package:thingsboard_app/modules/dashboard/presentation/view/dashboard_permission_error_view.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard_widget.dart';
+import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
 class SingleDashboardView extends TbContextWidget {
@@ -32,11 +35,16 @@ class _SingleDashboardViewState extends TbContextState<SingleDashboardView>
 
   late final Animation<double> rightLayoutMenuAnimation;
   late final AnimationController rightLayoutMenuController;
+  late final bool havePermission;
 
   DashboardController? _dashboardController;
 
   @override
   Widget build(BuildContext context) {
+    if (!havePermission) {
+      return DashboardPermissionErrorView(tbContext);
+    }
+
     return Scaffold(
       appBar: TbAppBar(
         tbContext,
@@ -129,6 +137,9 @@ class _SingleDashboardViewState extends TbContextState<SingleDashboardView>
   @override
   void initState() {
     super.initState();
+    havePermission = getIt<IPermissionService>()
+        .haveViewDashboardPermission(widget.tbContext);
+
     rightLayoutMenuController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
