@@ -26,97 +26,100 @@ class _EmailVerificationPageState extends TbPageState<EmailVerificationPage> {
         children: [
           const LoginPageBackground(),
           SizedBox.expand(
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: TbAppBar(tbContext),
-              body: Stack(
-                children: [
-                  SizedBox.expand(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 18),
-                          SvgPicture.asset(
-                            ThingsboardImage.emailVerification,
-                            height: 50,
-                            colorFilter: ColorFilter.mode(
-                              Theme.of(context).primaryColor,
-                              BlendMode.srcIn,
+            child: SafeArea(
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                appBar: TbAppBar(tbContext),
+                body: Stack(
+                  children: [
+                    SizedBox.expand(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 18),
+                            SvgPicture.asset(
+                              ThingsboardImage.emailVerification,
+                              height: 50,
+                              colorFilter: ColorFilter.mode(
+                                Theme.of(context).primaryColor,
+                                BlendMode.srcIn,
+                              ),
+                              semanticsLabel: S.of(context).emailVerification,
                             ),
-                            semanticsLabel: S.of(context).emailVerification,
-                          ),
-                          const SizedBox(height: 48),
-                          Text(
-                            S.of(context).emailVerification,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 24,
-                              height: 32 / 24,
+                            const SizedBox(height: 48),
+                            Text(
+                              S.of(context).emailVerification,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 24,
+                                height: 32 / 24,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
+                            const SizedBox(height: 16),
+                            RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  height: 24 / 14,
+                                  fontWeight: FontWeight.normal,
+                                  color: Color(0xFFAFAFAF),
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        S.of(context).emailVerificationSentText,
+                                  ),
+                                  TextSpan(
+                                    text: widget._email,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(
+                                        Color.getAlphaFromOpacity(0.87),
+                                        0,
+                                        0,
+                                        0,
+                                      ),
+                                    ),
+                                  ),
+                                  const TextSpan(text: '.'),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            Text(
+                              S.of(context).emailVerificationInstructionsText,
                               style: const TextStyle(
                                 fontSize: 14,
                                 height: 24 / 14,
                                 fontWeight: FontWeight.normal,
                                 color: Color(0xFFAFAFAF),
                               ),
+                            ),
+                            const Spacer(),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                TextSpan(
-                                  text: S.of(context).emailVerificationSentText,
-                                ),
-                                TextSpan(
-                                  text: widget._email,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(
-                                      Color.getAlphaFromOpacity(0.87),
-                                      0,
-                                      0,
-                                      0,
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
                                     ),
                                   ),
+                                  onPressed: () {
+                                    _resendEmail();
+                                  },
+                                  child: Text(S.of(context).resend),
                                 ),
-                                const TextSpan(text: '.'),
                               ],
                             ),
-                          ),
-                          const SizedBox(height: 32),
-                          Text(
-                            S.of(context).emailVerificationInstructionsText,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              height: 24 / 14,
-                              fontWeight: FontWeight.normal,
-                              color: Color(0xFFAFAFAF),
-                            ),
-                          ),
-                          const Spacer(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  _resendEmail();
-                                },
-                                child: Text(S.of(context).resend),
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -125,7 +128,7 @@ class _EmailVerificationPageState extends TbPageState<EmailVerificationPage> {
     );
   }
 
-  _resendEmail() async {
+  Future<void> _resendEmail() async {
     await tbClient.getSignupService().resendEmailActivation(
           widget._email,
           pkgName: tbContext.packageName,
