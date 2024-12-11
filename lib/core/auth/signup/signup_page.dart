@@ -498,7 +498,9 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
           if (signupResult == SignUpResult.INACTIVE_USER_EXISTS) {
             _recaptchaResponseNotifier.value = null;
             _isSignUpNotifier.value = false;
-            _promptToResendEmailVerification(formValue['email']);
+            _promptToResendEmailVerification(
+              formValue[SignUpFieldsId.email.toShortString()],
+            );
           } else {
             log.info('Sign up success!');
             _isSignUpNotifier.value = false;
@@ -549,12 +551,13 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
   }
 
   void _promptToResendEmailVerification(String email) async {
-    var res = await confirm(
+    final res = await confirm(
       title: S.of(context).inactiveUserAlreadyExists,
       message: S.of(context).inactiveUserAlreadyExistsMessage,
       cancel: S.of(context).cancel,
       ok: S.of(context).resend,
     );
+
     if (res == true) {
       await tbClient.getSignupService().resendEmailActivation(
             email,
