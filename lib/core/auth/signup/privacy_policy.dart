@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -57,9 +55,8 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
                           return const SizedBox.shrink();
                         }
 
-                        final privacyPolicy = jsonDecode(snapshot.data ?? '{}');
                         dom.Document document = htmlparser.parse(
-                          privacyPolicy ?? '',
+                          snapshot.data ?? '',
                         );
 
                         return Html.fromDom(

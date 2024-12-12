@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -57,9 +55,9 @@ class _TermsOfUseState extends TbPageState<TermsOfUse> {
                           return const SizedBox.shrink();
                         }
 
-                        final termsOfUse = jsonDecode(snapshot.data ?? '{}');
-                        dom.Document document =
-                            htmlparser.parse(termsOfUse ?? '');
+                        dom.Document document = htmlparser.parse(
+                          snapshot.data ?? '',
+                        );
                         return Html.fromDom(
                           document: document,
                         );
