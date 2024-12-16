@@ -4,8 +4,8 @@ import 'package:recaptcha_enterprise_flutter/recaptcha.dart';
 import 'package:recaptcha_enterprise_flutter/recaptcha_client.dart';
 import 'package:thingsboard_app/core/auth/login/bloc/bloc.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
-import 'package:thingsboard_app/modules/version/version_route.dart';
-import 'package:thingsboard_app/modules/version/version_route_arguments.dart';
+import 'package:thingsboard_app/modules/version/route/version_route.dart';
+import 'package:thingsboard_app/modules/version/route/version_route_arguments.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -39,6 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                   (versionInfo.minVersion?.versionInt() ?? 0)) {
                 tbContext.navigateTo(
                   VersionRoutes.updateRequiredRoutePath,
+                  clearStack: true,
                   replace: true,
                   routeSettings: RouteSettings(
                     arguments: VersionRouteArguments(
