@@ -26,11 +26,11 @@ class _EmailVerificationPageState extends TbPageState<EmailVerificationPage> {
         children: [
           const LoginPageBackground(),
           SizedBox.expand(
-            child: SafeArea(
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                appBar: TbAppBar(tbContext),
-                body: Stack(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: TbAppBar(tbContext),
+              body: SafeArea(
+                child: Stack(
                   children: [
                     SizedBox.expand(
                       child: Padding(
@@ -134,9 +134,13 @@ class _EmailVerificationPageState extends TbPageState<EmailVerificationPage> {
           pkgName: tbContext.packageName,
           platform: tbContext.platformType,
         );
+
     navigateTo(
       '/signup/emailVerification?email=${widget._email}',
       replace: true,
+    );
+    showSuccessNotification(
+      S.of(context).emailVersificationSuccessfullySentNotification,
     );
   }
 }

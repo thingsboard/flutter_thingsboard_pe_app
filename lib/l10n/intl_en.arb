@@ -22,6 +22,7 @@
   "passwordResetText": "Enter the email associated with your account and we'll send an email with password reset link",
   "requestPasswordReset": "Request password reset",
   "passwordResetLinkSuccessfullySentNotification": "Password reset link was successfully sent!",
+  "emailVersificationSuccessfullySentNotification": "Email verification link was successfully sent!",
   "or": "OR",
   "no": "No",
   "yes": "Yes",
