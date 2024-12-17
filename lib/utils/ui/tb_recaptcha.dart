@@ -1,56 +1,60 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 
 class TbRecaptcha extends TbPageWidget {
-  final String siteKey;
+  TbRecaptcha(
+    super.tbContext, {
+    required this.siteKey,
+    required this.version,
+    this.logActionName,
+    super.key,
+  });
 
-  TbRecaptcha(TbContext tbContext, {super.key, required this.siteKey})
-      : super(tbContext);
+  final String siteKey;
+  final String version;
+  final String? logActionName;
 
   @override
   State<StatefulWidget> createState() => _TbRecaptchaState();
 }
 
 class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
-  final Completer<InAppWebViewController> _webViewController =
-      Completer<InAppWebViewController>();
+  final _webViewController = Completer<InAppWebViewController>();
 
   bool webViewLoading = true;
-  final ValueNotifier<bool> recaptchaLoading = ValueNotifier(true);
+  final recaptchaLoading = ValueNotifier(true);
 
-  final GlobalKey recaptchaWebViewKey = GlobalKey();
-
+  final recaptchaWebViewKey = GlobalKey();
   late WebUri _initialUrl;
 
-  InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
-    crossPlatform: InAppWebViewOptions(
-      mediaPlaybackRequiresUserGesture: false,
-      javaScriptEnabled: true,
-      cacheEnabled: true,
-      clearCache: true,
-      supportZoom: false,
-    ),
-    android: AndroidInAppWebViewOptions(
-      useHybridComposition: true,
-      thirdPartyCookiesEnabled: true,
-    ),
-    ios: IOSInAppWebViewOptions(
-      allowsInlineMediaPlayback: true,
-    ),
+  final setting = InAppWebViewSettings(
+    mediaPlaybackRequiresUserGesture: false,
+    javaScriptEnabled: true,
+    cacheEnabled: true,
+    clearCache: true,
+    supportZoom: false,
+    useHybridComposition: true,
+    thirdPartyCookiesEnabled: true,
+    allowsInlineMediaPlayback: true,
+    isInspectable: kDebugMode,
   );
 
   @override
   void initState() {
     _initialUrl = WebUri(
-      '${getIt<IEndpointService>().getCachedEndpoint()}/signup/recaptcha?siteKey=${widget.siteKey}',
+      '${getIt<IEndpointService>().getCachedEndpoint()}'
+      '/signup/recaptcha?siteKey=${widget.siteKey}'
+      '&version=${widget.version}'
+      '&logActionName=${widget.logActionName}',
     );
+
     super.initState();
   }
 
@@ -80,7 +84,7 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
         InAppWebView(
           key: recaptchaWebViewKey,
           initialUrlRequest: URLRequest(url: _initialUrl),
-          initialOptions: options,
+          initialSettings: setting,
           onWebViewCreated: (webViewController) {
             webViewController.addJavaScriptHandler(
               handlerName: 'tbMobileRecaptchaLoadedHandler',
@@ -91,14 +95,15 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
             webViewController.addJavaScriptHandler(
               handlerName: 'tbMobileRecaptchaHandler',
               callback: (args) async {
-                var recaptchaResponse = args[0];
+                final recaptchaResponse = args[0];
                 pop(recaptchaResponse);
               },
             );
           },
           onConsoleMessage: (controller, consoleMessage) {
             log.debug(
-              '[JavaScript console] ${consoleMessage.messageLevel}: ${consoleMessage.message}',
+              '[JavaScript console] ${consoleMessage.messageLevel}: '
+              '${consoleMessage.message}',
             );
           },
           onLoadStop: (controller, url) async {
@@ -127,7 +132,7 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
     );
   }
 
-  refresh() async {
+  void refresh() async {
     var windowMessage = <String, dynamic>{'type': 'resetRecaptcha'};
     var controller = await _webViewController.future;
     await controller.postWebMessage(
