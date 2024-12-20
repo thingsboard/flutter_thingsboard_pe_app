@@ -31,46 +31,48 @@ class DashboardsGridWidget extends StatelessWidget {
       onRefresh: () async {
         getIt<DashboardsPaginationRepository>().refresh();
       },
-      child: PaginationGridWidget<PageLink, DashboardInfo>(
-        pagingController:
-            getIt<DashboardsPaginationRepository>().pagingController,
-        builderDelegate: PagedChildBuilderDelegate(
-          itemBuilder: (context, item, index) => EntityGridCard(
-            item,
-            entityCardWidgetBuilder: (_, dashboard) => DashboardGridCard(
-              tbContext,
-              dashboard: dashboard,
-            ),
-            onEntityTap: (dashboard) {
-              final havePermission = getIt<IPermissionService>()
-                  .haveViewDashboardPermission(tbContext);
+      child: SafeArea(
+        child: PaginationGridWidget<PageLink, DashboardInfo>(
+          pagingController:
+              getIt<DashboardsPaginationRepository>().pagingController,
+          builderDelegate: PagedChildBuilderDelegate(
+            itemBuilder: (context, item, index) => EntityGridCard(
+              item,
+              entityCardWidgetBuilder: (_, dashboard) => DashboardGridCard(
+                tbContext,
+                dashboard: dashboard,
+              ),
+              onEntityTap: (dashboard) {
+                final havePermission = getIt<IPermissionService>()
+                    .haveViewDashboardPermission(tbContext);
 
-              if (havePermission) {
-                dashboardPageCtrl.openDashboard(
-                  dashboard.id!.id!,
-                  title: dashboard.title,
-                );
-              } else {
-                tbContext.showErrorNotification(
-                  'You don\'t have permissions to perform this operation!',
-                );
-              }
-            },
-            settings: EntityCardSettings(dropShadow: true),
-          ),
-          firstPageProgressIndicatorBuilder: (_) =>
-              const FirstPageProgressBuilder(),
-          newPageProgressIndicatorBuilder: (_) =>
-              const NewPageProgressBuilder(),
-          noItemsFoundIndicatorBuilder: (context) =>
-              FirstPageExceptionIndicator(
-            title: 'No dashboards found',
-            message: S.of(context).listIsEmptyText,
-            onTryAgain: () {
-              getIt<DashboardsPaginationRepository>()
-                  .pagingController
-                  .refresh();
-            },
+                if (havePermission) {
+                  dashboardPageCtrl.openDashboard(
+                    dashboard.id!.id!,
+                    title: dashboard.title,
+                  );
+                } else {
+                  tbContext.showErrorNotification(
+                    'You don\'t have permissions to perform this operation!',
+                  );
+                }
+              },
+              settings: EntityCardSettings(dropShadow: true),
+            ),
+            firstPageProgressIndicatorBuilder: (_) =>
+                const FirstPageProgressBuilder(),
+            newPageProgressIndicatorBuilder: (_) =>
+                const NewPageProgressBuilder(),
+            noItemsFoundIndicatorBuilder: (context) =>
+                FirstPageExceptionIndicator(
+              title: 'No dashboards found',
+              message: S.of(context).listIsEmptyText,
+              onTryAgain: () {
+                getIt<DashboardsPaginationRepository>()
+                    .pagingController
+                    .refresh();
+              },
+            ),
           ),
         ),
       ),
