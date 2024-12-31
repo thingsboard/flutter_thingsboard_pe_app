@@ -1,6 +1,8 @@
 abstract class ThingsboardImage {
   static const thingsBoardWithTitle =
       'assets/images/thingsboard_with_title.svg';
+  static const thingsBoardEUWithTitle =
+      'assets/images/logo_title_white_EU_cloud.svg';
   static const thingsboard = 'assets/images/thingsboard.svg';
   static const thingsboardOuter = 'assets/images/thingsboard_outer.svg';
   static const thingsboardCenter = 'assets/images/thingsboard_center.svg';

@@ -24,13 +24,11 @@ class _EmailVerifiedPageState extends TbPageState<EmailVerifiedPage> {
   LoginResponse? _loginResponse;
 
   @override
-  void initState() {
-    super.initState();
-    _activateAndGetCredentials();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _activateAndGetCredentials(context),
+    );
+
     return Scaffold(
       body: Stack(
         children: [
@@ -45,8 +43,7 @@ class _EmailVerifiedPageState extends TbPageState<EmailVerifiedPage> {
                       padding: const EdgeInsets.all(24),
                       child: ValueListenableBuilder<bool>(
                         valueListenable: _activatingNotifier,
-                        builder:
-                            (BuildContext context, bool activating, child) {
+                        builder: (context, activating, child) {
                           return Column(
                             children: [
                               const SizedBox(height: 36),
@@ -132,16 +129,27 @@ class _EmailVerifiedPageState extends TbPageState<EmailVerifiedPage> {
     );
   }
 
-  _activateAndGetCredentials() async {
+  _activateAndGetCredentials(BuildContext context) async {
     try {
       _loginResponse =
           await tbClient.getSignupService().activateUserByEmailCode(
                 widget._emailCode,
                 pkgName: tbContext.packageName,
-                requestConfig: RequestConfig(ignoreErrors: false),
+                platform: tbContext.platformType,
               );
       _activatingNotifier.value = false;
-    } catch (_) {}
+    } catch (e) {
+      tbContext.log.error(
+        'EmailVerifiedPage::_activateAndGetCredentials() error -> $e',
+      );
+      if (context.mounted) {
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        } else {
+          tbContext.navigateTo('/login', replace: true, clearStack: true);
+        }
+      }
+    }
   }
 
   _login() {

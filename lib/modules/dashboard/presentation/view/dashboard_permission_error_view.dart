@@ -27,7 +27,7 @@ class _DashboardPermissionErrorViewState
       appBar: TbAppBar(
         tbContext,
         leading: !widget.fullScreen && !widget.home
-            ? BackButton(onPressed: maybePop)
+            ? BackButton(onPressed: () => Navigator.of(context).pop())
             : null,
         showLoadingIndicator: false,
         elevation: 1,

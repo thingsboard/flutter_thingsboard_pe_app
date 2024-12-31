@@ -6,7 +6,7 @@ import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
 import 'assets_list.dart';
 
-class AssetsPage extends TbPageWidget {
+class AssetsPage extends TbContextWidget {
   final bool searchMode;
 
   AssetsPage(TbContext tbContext, {super.key, this.searchMode = false})
@@ -16,7 +16,7 @@ class AssetsPage extends TbPageWidget {
   State<StatefulWidget> createState() => _AssetsPageState();
 }
 
-class _AssetsPageState extends TbPageState<AssetsPage> {
+class _AssetsPageState extends TbContextState<AssetsPage> {
   final PageLinkController _pageLinkController = PageLinkController();
 
   @override
