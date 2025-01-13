@@ -52,16 +52,16 @@ class TbMainNavigationItem {
         case Authority.TENANT_ADMIN:
         case Authority.CUSTOMER_USER:
           items.addAll([
-            TbMainNavigationItem(
-                page: AlarmsPage(tbContext),
-                title: 'Alarms',
-                icon: Icon(Icons.notifications),
-                path: '/alarms'),
+//             TbMainNavigationItem(
+//                 page: AlarmsPage(tbContext),
+//                 title: 'Alarms',
+//                 icon: Icon(Icons.notifications),
+//                 path: '/alarms'),
             TbMainNavigationItem(
                 page: DevicesMainPage(tbContext),
                 title: 'Devices',
                 icon: Icon(Icons.devices_other),
-                path: '/devices')
+                path: '/devices'),
           ]);
           break;
         case Authority.REFRESH_TOKEN:
