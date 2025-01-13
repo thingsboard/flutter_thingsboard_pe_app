@@ -57,11 +57,11 @@ class TbMainNavigationItem {
 //                 title: 'Alarms',
 //                 icon: Icon(Icons.notifications),
 //                 path: '/alarms'),
-            TbMainNavigationItem(
-                page: DevicesMainPage(tbContext),
-                title: 'Devices',
-                icon: Icon(Icons.devices_other),
-                path: '/devices'),
+//             TbMainNavigationItem(
+//                 page: DevicesMainPage(tbContext),
+//                 title: 'Devices',
+//                 icon: Icon(Icons.devices_other),
+//                 path: '/devices'),
           ]);
           break;
         case Authority.REFRESH_TOKEN:
