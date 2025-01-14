@@ -472,7 +472,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
         final appSecret = await AppSecretProvider.local().getAppSecret(
           tbContext.platformType,
         );
-        final signUpRequest = MobileSignUpRequest(
+        final signUpRequest = SignUpRequest(
           fields: Map<SignUpFieldsId, String>.fromEntries(
             signUpParams.fields
                 .where((e) => e.id != SignUpFieldsId.undefined)
@@ -494,7 +494,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
 
         try {
           final signupResult =
-              await tbContext.tbClient.getMobileService().signup(signUpRequest);
+              await tbContext.tbClient.getSignupService().signup(signUpRequest);
           if (signupResult == SignUpResult.INACTIVE_USER_EXISTS) {
             _recaptchaResponseNotifier.value = null;
             _isSignUpNotifier.value = false;
