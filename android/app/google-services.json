@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "924178155173",
+    "project_id": "chinointapp",
+    "storage_bucket": "chinointapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924178155173:android:94369e6d0832174e282f4c",
+        "android_client_info": {
+          "package_name": "com.chinoint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDS-HruBVtHvYCPYqDj7mnfvWrxk6IdzMQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
