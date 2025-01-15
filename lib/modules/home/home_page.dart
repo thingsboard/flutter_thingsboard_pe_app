@@ -48,6 +48,18 @@ class _HomePageState extends TbContextState<HomePage>
                     ? tbContext.wlService.userLogoImage!
                     : SizedBox())),
         actions: [
+          ColorFiltered(
+            // invert the colors of the logo since it is white and the app bar is white
+            colorFilter: const ColorFilter.matrix(<double>[
+              -1.0, 0.0, 0.0, 0.0, 255.0,
+              0.0, -1.0, 0.0, 0.0, 255.0,
+              0.0, 0.0, -1.0, 0.0, 255.0,
+              0.0, 0.0, 0.0, 1.0, 0.0,
+            ]),
+            child: Image.asset(
+              'assets/images/logo.png',
+            ),
+          ),
           if (tbClient.isSystemAdmin())
             IconButton(
               icon: Icon(Icons.search),

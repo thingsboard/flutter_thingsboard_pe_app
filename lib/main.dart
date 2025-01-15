@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -21,8 +22,19 @@ import 'package:universal_platform/universal_platform.dart';
 import 'config/themes/tb_theme.dart';
 import 'generated/l10n.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  final NotificationSettings = await FirebaseMessaging.instance.requestPermission(
+    provisional: true,
+  );
+
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  print("\n\n\n\n\ntoken: " + fcmToken!);
+
 //  await FlutterDownloader.initialize();
 //  await Permission.storage.request();
   await Hive.initFlutter();
