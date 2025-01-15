@@ -29,20 +29,6 @@ class _MorePageState extends TbContextState<MorePage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.account_circle,
-                          size: 48, color: Color(0xFFAFAFAF)),
-                      Spacer(),
-                      IconButton(
-                          icon: Icon(Icons.settings, color: Color(0xFFAFAFAF)),
-                          onPressed: () async {
-                            await navigateTo('/profile');
-                            setState(() {});
-                          })
-                    ],
-                  ),
                   SizedBox(height: 22),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,13 +54,27 @@ class _MorePageState extends TbContextState<MorePage>
                     ],
                   ),
                   SizedBox(height: 2),
-                  Text(_getAuthorityName(context),
-                      style: TextStyle(
-                          color: Color(0xFFAFAFAF),
-                          fontWeight: FontWeight.normal,
-                          fontSize: 14,
-                          height: 16 / 14)),
+                  Text(( _getAuthorityName(context) != "Customer")? _getAuthorityName(context) : tbContext.userDetails!.email,
+                    style: TextStyle(
+                        color: Color(0xFFAFAFAF),
+                        fontWeight: FontWeight.normal,
+                        fontSize: 14,
+                        height: 16 / 14)),
                   SizedBox(height: 24),
+//                   Row(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+// //                       Icon(Icons.account_circle,
+// //                           size: 48, color: Color(0xFFAFAFAF)),
+//                       Spacer(),
+//                       IconButton(
+//                           icon: Icon(Icons.settings, color: Color(0xFFAFAFAF)),
+//                           onPressed: () async {
+//                             await navigateTo('/profile');
+//                             setState(() {});
+//                           })
+//                     ],
+//                   ),
                   Divider(color: Color(0xFFEDEDED)),
                   SizedBox(height: 8),
                   buildMoreMenuItems(context),
@@ -302,6 +302,10 @@ class MoreMenuItem {
           break;
         case Authority.CUSTOMER_USER:
           items.addAll([
+            MoreMenuItem( // in case of error, remove this moreMenuItem
+              title: "Profile", 
+              icon: Icons.settings, 
+              path: '/profile'),
             MoreMenuItem(
                 title: '${S.of(context).assets}',
                 icon: Icons.domain,
