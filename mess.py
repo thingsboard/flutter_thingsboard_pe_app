@@ -1,30 +1,55 @@
 import firebase_admin
+import os
 
 from firebase_admin import messaging
 from firebase_admin import credentials
 
-cred = credentials.Certificate("D:\\chinointapp-firebase-adminsdk-gaul1-e5bbcd4a3b.json")
+from google.cloud import firestore
+
+credPath = "D:\\chinointapp-firebase-adminsdk-gaul1-e5bbcd4a3b.json"
+
+cred = credentials.Certificate(credPath)
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credPath
 
 default_app = firebase_admin.initialize_app(cred)
 
+db = firestore.Client(project='chinointapp')
 
-# This registration token comes from the client FCM SDKs.
-registration_token = 'fAYpru2_TFe8TSm4to8Jou:APA91bFXBMv-2iP1dd7rsrvlg_Tv6hlFFiQtzYiSH6A8I6LfZJhYUBfmIPUkr8kFbhgpMM96yFcgfzttZfPywwOIk-wFLfVV14lQKvJ-LXN7z9htGKek_WQ'
-# 'fAYpru2_TFe8TSm4to8Jou:APA91bFXBMv-2iP1dd7rsrvlg_Tv6hlFFiQtzYiSH6A8I6LfZJhYUBfmIPUkr8kFbhgpMM96yFcgfzttZfPywwOIk-wFLfVV14lQKvJ-LXN7z9htGKek_WQ'
-# 'fAYpru2_TFe8TSm4to8Jou:APA91bHS5O5aJumaM5cgZaSYvIATopGTKenldSz7cY3SnObC0MhtRfPc1-q-5vcYpKhPNRxONDMq3Gw4aGnfXdwuIyuqSlufcQh2TMAqAIjQHVDeqcPmIYE'
 
-# See documentation on defining a message payload.
-message = messaging.Message(
-    data={
-        'score': '850',
-        'time': '2:45',
-    },
-    token=registration_token,
-    notification=messaging.Notification(title='Hello', body='World'),
-)
+def send_to_user():
+    docs = db.collection('users').stream()
 
-# Send a message to the device corresponding to the provided
-# registration token.
-response = messaging.send(message)
-# Response is a message ID string.
-print('Successfully sent message:', response)
+
+    for doc in docs:
+        data = doc.to_dict()
+        if data['email'] == 'karl@chinoint.com':
+            registration_token = data['token']
+            message = messaging.Message(
+                data={
+                    'score': '850',
+                    'time': '2:45',
+                },
+                token=registration_token,
+                notification=messaging.Notification(title='Hello', body='World'),
+            )
+            response = messaging.send(message)
+            print('Successfully sent message:', response)
+
+
+def send_to_topic():
+    # The topic name can be optionally prefixed with "/topics/".
+    customerID = '346e94e0-3b66-11ef-b3ad-5d5b624d6d28'
+
+    # See documentation on defining a message payload.
+    message = messaging.Message(
+        topic=customerID,
+        notification=messaging.Notification(title='Hello', body='World'),
+    )
+
+    # Send a message to the devices subscribed to the provided topic.
+    response = messaging.send(message)
+    # Response is a message ID string.
+    print('Successfully sent message to topic:', response)
+
+send_to_topic()

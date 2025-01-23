@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
@@ -45,6 +46,13 @@ class NotificationService {
 
     _log.debug('NotificationService::init()');
 
+    final customerID = context.userDetails!.customerId.toString();
+    final customerIDonly = customerID.substring(customerID.indexOf('{') + 5, customerID.indexOf('}'));
+    await FirebaseMessaging.instance.subscribeToTopic(
+      customerIDonly,
+      // 'ttt'
+    );
+
     final message = await FirebaseMessaging.instance.getInitialMessage();
     if (message != null) {
       NotificationService.handleClickOnNotification(
@@ -68,7 +76,7 @@ class NotificationService {
         'Notification authorizationStatus: ${settings.authorizationStatus}');
     if (settings.authorizationStatus == AuthorizationStatus.authorized ||
         settings.authorizationStatus == AuthorizationStatus.provisional) {
-      await _getAndSaveToken(context.userDetails!.email);
+      await _getAndSaveToken(context.userDetails!.email, customerIDonly);
 
       _onTokenRefreshSubscription =
           FirebaseMessaging.instance.onTokenRefresh.listen((token) {
@@ -76,7 +84,7 @@ class NotificationService {
           _tbClient.getUserService().removeMobileSession(_fcmToken!).then((_) {
             _fcmToken = token;
             if (_fcmToken != null) {
-              _saveToken(_fcmToken!, context.userDetails!.email);
+              _saveToken(_fcmToken!, context.userDetails!.email, customerIDonly);
             }
           });
         }
@@ -186,16 +194,24 @@ class NotificationService {
     return result;
   }
 
-  Future<String?> _resetToken(String? token) async {
+  Future<String?> _resetToken(String? token, String CustomerID) async {
     if (token != null) {
       _tbClient.getUserService().removeMobileSession(token);
     }
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    db.collection(CustomerID).where('token', isEqualTo: token).get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.delete();
+      });
+    });
 
     await _messaging.deleteToken();
     return await getToken();
   }
 
-  Future<void> _getAndSaveToken(String email) async {
+  Future<void> _getAndSaveToken(String email, String CustomerID) async {
     String? fcmToken = await getToken();
     _log.debug('FCM token: $fcmToken');
 
@@ -209,18 +225,18 @@ class NotificationService {
           // timeAfterCreatedToken > Duration(days: 30).inMilliseconds
           true
         ) {
-          fcmToken = await _resetToken(fcmToken);
+          fcmToken = await _resetToken(fcmToken, CustomerID);
           if (fcmToken != null) {
-            await _saveToken(fcmToken, email);
+            await _saveToken(fcmToken, email, CustomerID);
           }
         }
       } else {
-        await _saveToken(fcmToken, email);
+        await _saveToken(fcmToken, email, CustomerID);
       }
     }
   }
 
-  Future<void> _saveToken(String token, String email) async {
+  Future<void> _saveToken(String token, String email, String CustomerID) async {
     await _tbClient.getUserService().saveMobileSession(
         token, MobileSessionInfo(DateTime.now().millisecondsSinceEpoch));
 
@@ -231,7 +247,7 @@ class NotificationService {
 
     FirebaseFirestore db = FirebaseFirestore.instance;
 
-    db.collection("users").add(user).then((DocumentReference doc) =>
+    db.collection(CustomerID).add(user).then((DocumentReference doc) =>
         print('DocumentSnapshot added with ID: ${doc.id}'));
   }
 
