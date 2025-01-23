@@ -9,7 +9,9 @@ default_app = firebase_admin.initialize_app(cred)
 
 
 # This registration token comes from the client FCM SDKs.
-registration_token = 'fAYpru2_TFe8TSm4to8Jou:APA91bHS5O5aJumaM5cgZaSYvIATopGTKenldSz7cY3SnObC0MhtRfPc1-q-5vcYpKhPNRxONDMq3Gw4aGnfXdwuIyuqSlufcQh2TMAqAIjQHVDeqcPmIYE'
+registration_token = 'fAYpru2_TFe8TSm4to8Jou:APA91bFXBMv-2iP1dd7rsrvlg_Tv6hlFFiQtzYiSH6A8I6LfZJhYUBfmIPUkr8kFbhgpMM96yFcgfzttZfPywwOIk-wFLfVV14lQKvJ-LXN7z9htGKek_WQ'
+# 'fAYpru2_TFe8TSm4to8Jou:APA91bFXBMv-2iP1dd7rsrvlg_Tv6hlFFiQtzYiSH6A8I6LfZJhYUBfmIPUkr8kFbhgpMM96yFcgfzttZfPywwOIk-wFLfVV14lQKvJ-LXN7z9htGKek_WQ'
+# 'fAYpru2_TFe8TSm4to8Jou:APA91bHS5O5aJumaM5cgZaSYvIATopGTKenldSz7cY3SnObC0MhtRfPc1-q-5vcYpKhPNRxONDMq3Gw4aGnfXdwuIyuqSlufcQh2TMAqAIjQHVDeqcPmIYE'
 
 # See documentation on defining a message payload.
 message = messaging.Message(
