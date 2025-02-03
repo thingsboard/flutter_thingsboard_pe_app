@@ -35,6 +35,12 @@ class NotificationService {
 
   factory NotificationService() => _instance;
 
+  String getCusID() {
+    final longCusID = _tbContext.userDetails!.customerId.toString();
+    final customerIDonly = longCusID.substring(longCusID.indexOf('{') + 5, longCusID.indexOf('}'));
+    return customerIDonly;
+  }
+
   Future<void> init(
     ThingsboardClient tbClient,
     TbLogger log,
@@ -46,8 +52,8 @@ class NotificationService {
 
     _log.debug('NotificationService::init()');
 
-    final customerID = context.userDetails!.customerId.toString();
-    final customerIDonly = customerID.substring(customerID.indexOf('{') + 5, customerID.indexOf('}'));
+    String customerIDonly = getCusID();
+
     await FirebaseMessaging.instance.subscribeToTopic(
       customerIDonly,
       // 'ttt'
@@ -130,6 +136,19 @@ class NotificationService {
     await _messaging.setAutoInitEnabled(false);
     await flutterLocalNotificationsPlugin.cancelAll();
     await _localService.clearNotificationBadgeCount();
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+
+    String CustomerID = getCusID();
+
+    db.collection(CustomerID).where('token', isEqualTo: _fcmToken).get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.delete();
+      });
+    });
+
+    await FirebaseMessaging.instance.unsubscribeFromTopic(CustomerID);
   }
 
   Future<void> _configFirebaseMessaging() async {

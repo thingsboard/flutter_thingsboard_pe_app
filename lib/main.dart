@@ -24,16 +24,31 @@ import 'generated/l10n.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+//   final db = FirebaseFirestore.instance;
+
+  // Create a new user with a first and last name
+//   final user = <String, dynamic>{
+//     "first": "Ada",
+//     "last": "Lovelace",
+//     "born": 1815
+//   };
+
+  // Add a new document with a generated ID
+//   db.collection("users").add(user).then((DocumentReference doc) =>
+//       print('DocumentSnapshot added with ID: ${doc.id}'));
 
   final NotificationSettings = await FirebaseMessaging.instance.requestPermission(
     provisional: true,
   );
 
   final fcmToken = await FirebaseMessaging.instance.getToken();
-  print("\n\n\n\n\ntoken: " + fcmToken!);
+  print("token: " + fcmToken!);
 
 //  await FlutterDownloader.initialize();
 //  await Permission.storage.request();

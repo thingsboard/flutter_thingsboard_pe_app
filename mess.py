@@ -36,10 +36,11 @@ def send_to_user():
             response = messaging.send(message)
             print('Successfully sent message:', response)
 
+cust = {'chinoint': '346e94e0-3b66-11ef-b3ad-5d5b624d6d28', 'chinoint-4s': '07adb040-7b9d-11ef-b70b-f3ea6c0c69ea' }
 
 def send_to_topic():
     # The topic name can be optionally prefixed with "/topics/".
-    customerID = '346e94e0-3b66-11ef-b3ad-5d5b624d6d28'
+    customerID = cust['chinoint']
 
     # See documentation on defining a message payload.
     message = messaging.Message(
