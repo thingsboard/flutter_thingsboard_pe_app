@@ -29,6 +29,8 @@ class _NotificationPageState extends TbPageState<NotificationPage> {
   late final NotificationRepository notificationRepository;
   Map<String, dynamic> data = Map();
 
+  List<String> listData = [];
+
   @override
   Widget build(BuildContext context) {
     final longCusID = widget.tbContext.userDetails!.customerId.toString();
@@ -38,13 +40,18 @@ class _NotificationPageState extends TbPageState<NotificationPage> {
     final col = db.collection(customerIDonly);
     final docu = col.doc('ntf');
 
+    Future<void> _load() async {
+      Map<String, dynamic> _data = Map();
+      await docu.get().then((DocumentSnapshot doc) => _data = doc.data() as Map<String, dynamic>);
+      List<String> _listData = _data.toString().split(',');
+      setState(() {listData = _listData;});
+    }
+
 
     return RefreshIndicator(
       onRefresh: () async {
-        Map<String, dynamic> _data = Map();
-        await docu.get().then((DocumentSnapshot doc) => _data = doc.data() as Map<String, dynamic>);
+        await _load();
         // _refresh();
-        setState(() {data = _data;});
       },
       child: Scaffold(
         appBar: TbAppBar(
@@ -69,26 +76,29 @@ class _NotificationPageState extends TbPageState<NotificationPage> {
           ),
           title: const Text('Notifications'),
           actions: [
-            TextButton(
-              child: Text('Mark all as read'),
-              onPressed: () async {
-                await notificationRepository.markAllAsRead();
-
-                if (mounted) {
-                  notificationQueryCtrl.refresh();
-                }
-              },
-            ),
+//             TextButton(
+//               child: Text('Mark all as read'),
+//               onPressed: () async {
+//                 await notificationRepository.markAllAsRead();
+// 
+//                 if (mounted) {
+//                   notificationQueryCtrl.refresh();
+//                 }
+//               },
+//             ),
+            TextButton(onPressed: () => _load(), child: Text('Load')),
           ],
         ),
         body: ListView.builder(
-          itemCount: data.length,
+          itemCount: listData.length,
           prototypeItem: ListTile(
             title: Text('prototype'),
           ),
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(data.toString()),
+              trailing: Text(listData[index].substring(0, listData[index].indexOf(':'))),
+              title: Text(listData[index].substring(listData[index].indexOf(':') + 1, listData[index].indexOf('\\'))),
+              subtitle: Text(listData[index].substring(listData[index].indexOf('\\') + 1)),
             );
           },
         )
