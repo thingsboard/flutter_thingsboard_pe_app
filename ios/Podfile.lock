@@ -3,6 +3,12 @@ PODS:
     - Flutter
   - device_info_plus (0.0.1):
     - Flutter
+  - esp_provisioning_softap (0.0.1):
+    - Flutter
+  - ESPProvision (3.0.2):
+    - ESPProvision/Core (= 3.0.2)
+  - ESPProvision/Core (3.0.2):
+    - SwiftProtobuf (~> 1.22.0)
   - Firebase/CoreOnly (11.2.0):
     - FirebaseCore (= 11.2.0)
   - Firebase/Messaging (11.2.0):
@@ -36,6 +42,9 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 8.0)
     - nanopb (~> 3.30910.0)
   - Flutter (1.0.0)
+  - flutter_esp_ble_prov (0.0.1):
+    - ESPProvision
+    - Flutter
   - flutter_inappwebview_ios (0.0.1):
     - Flutter
     - flutter_inappwebview_ios/Core (= 0.0.1)
@@ -86,12 +95,18 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
+  - open_settings_plus (0.0.1):
+    - Flutter
   - OrderedSet (6.0.3)
   - package_info_plus (0.4.5):
     - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - permission_handler_apple (9.3.0):
+    - Flutter
+  - plugin_wifi_connect (0.0.1):
+    - Flutter
   - PromisesObjC (2.4.0)
   - qr_code_scanner (0.2.0):
     - Flutter
@@ -102,29 +117,39 @@ PODS:
   - RecaptchaEnterprise (18.6.0):
     - RecaptchaInterop (~> 100.0.0)
   - RecaptchaInterop (100.0.0)
+  - SwiftProtobuf (1.22.1)
   - url_launcher_ios (0.0.1):
+    - Flutter
+  - wifi_scan (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - esp_provisioning_softap (from `.symlinks/plugins/esp_provisioning_softap/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
+  - flutter_esp_ble_prov (from `.symlinks/plugins/flutter_esp_ble_prov/ios`)
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_new_badger (from `.symlinks/plugins/flutter_new_badger/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - open_settings_plus (from `.symlinks/plugins/open_settings_plus/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - plugin_wifi_connect (from `.symlinks/plugins/plugin_wifi_connect/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - recaptcha_enterprise_flutter (from `.symlinks/plugins/recaptcha_enterprise_flutter/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - wifi_scan (from `.symlinks/plugins/wifi_scan/ios`)
 
 SPEC REPOS:
   trunk:
+    - ESPProvision
     - Firebase
     - FirebaseCore
     - FirebaseCoreInternal
@@ -138,18 +163,23 @@ SPEC REPOS:
     - PromisesObjC
     - RecaptchaEnterprise
     - RecaptchaInterop
+    - SwiftProtobuf
 
 EXTERNAL SOURCES:
   app_links:
     :path: ".symlinks/plugins/app_links/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
+  esp_provisioning_softap:
+    :path: ".symlinks/plugins/esp_provisioning_softap/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
   firebase_messaging:
     :path: ".symlinks/plugins/firebase_messaging/ios"
   Flutter:
     :path: Flutter
+  flutter_esp_ble_prov:
+    :path: ".symlinks/plugins/flutter_esp_ble_prov/ios"
   flutter_inappwebview_ios:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   flutter_local_notifications:
@@ -162,20 +192,30 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/geolocator_apple/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  open_settings_plus:
+    :path: ".symlinks/plugins/open_settings_plus/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  plugin_wifi_connect:
+    :path: ".symlinks/plugins/plugin_wifi_connect/ios"
   qr_code_scanner:
     :path: ".symlinks/plugins/qr_code_scanner/ios"
   recaptcha_enterprise_flutter:
     :path: ".symlinks/plugins/recaptcha_enterprise_flutter/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
+  wifi_scan:
+    :path: ".symlinks/plugins/wifi_scan/ios"
 
 SPEC CHECKSUMS:
   app_links: e7a6750a915a9e161c58d91bc610e8cd1d4d0ad0
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
+  esp_provisioning_softap: b8bf7f6deb47bc2f988f55a8805d7779fa2713dd
+  ESPProvision: ffc50093a0a3e72a80d03116bbe0d0d4bb4252b7
   Firebase: 98e6bf5278170668a7983e12971a66b2cd57fc8c
   firebase_core: 2bedc3136ec7c7b8561c6123ed0239387b53f2af
   firebase_messaging: 15d114e1a41fc31e4fbabcd48d765a19eec94a38
@@ -184,6 +224,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 6ef4a1c7eb2a61ee1f74727d7f6ce2e72acf1414
   FirebaseMessaging: c9ec7b90c399c7a6100297e9d16f8a27fc7f7152
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_esp_ble_prov: a18fa58626e98c50e663a3d054dd99b9dde6b84d
   flutter_inappwebview_ios: 6f63631e2c62a7c350263b13fa5427aedefe81d4
   flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
   flutter_new_badger: e632df3f84b5bbd7f3b37b8122f105edf1b483b3
@@ -194,16 +235,21 @@ SPEC CHECKSUMS:
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  open_settings_plus: 4bd848866fea2becc124581d868a6164cf768831
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  plugin_wifi_connect: 493c58208e3cea484d9f4e84159c1a96eca36aa9
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   recaptcha_enterprise_flutter: c1b3bdf21357afe5eed23900feb78e2bf2d04b03
   RecaptchaEnterprise: 336a5178eb484cd049b2b04bbe1ca1d60fff1227
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  SwiftProtobuf: 7773c4e96a99d7b8ab7cda0fc30a883732ff93b1
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
+  wifi_scan: 6d20b3b4f59bbad1ddcf3e241560f3acd62f6cbe
 
-PODFILE CHECKSUM: 8a4b2eabe1a99180e46baba5a37492de09c643c4
+PODFILE CHECKSUM: 247417e21c6e70edbee75b4c5f4642a102ec67a9
 
 COCOAPODS: 1.15.2
