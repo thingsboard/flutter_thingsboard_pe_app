@@ -36,6 +36,7 @@ class TbContext implements PopEntry {
   }
 
   static final deviceInfoPlugin = DeviceInfoPlugin();
+  static final rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   bool isUserLoaded = false;
   final _isAuthenticated = ValueNotifier<bool>(false);
   late PlatformType platformType;
@@ -48,8 +49,8 @@ class TbContext implements PopEntry {
   final _isLoadingNotifier = ValueNotifier<bool>(false);
   final _log = TbLogger();
   late final WidgetActionHandler _widgetActionHandler;
-  AndroidDeviceInfo? _androidInfo;
-  IosDeviceInfo? _iosInfo;
+  AndroidDeviceInfo? androidInfo;
+  IosDeviceInfo? iosInfo;
   late String packageName;
   late PlatformVersion version;
 
@@ -72,7 +73,6 @@ class TbContext implements PopEntry {
     onPopInvokedImpl(didPop, result);
   }
 
-  final messengerKey = GlobalKey<ScaffoldMessengerState>();
   late ThingsboardClient tbClient;
   late TbOAuth2Client oauth2Client;
   late final WlService wlService;
@@ -116,10 +116,10 @@ class TbContext implements PopEntry {
 
     try {
       if (UniversalPlatform.isAndroid) {
-        _androidInfo = await deviceInfoPlugin.androidInfo;
+        androidInfo = await deviceInfoPlugin.androidInfo;
         platformType = PlatformType.ANDROID;
       } else if (UniversalPlatform.isIOS) {
-        _iosInfo = await deviceInfoPlugin.iosInfo;
+        iosInfo = await deviceInfoPlugin.iosInfo;
         platformType = PlatformType.IOS;
       } else {
         platformType = PlatformType.WEB;
@@ -214,11 +214,24 @@ class TbContext implements PopEntry {
     showErrorNotification(tbError.message!);
   }
 
-  void showErrorNotification(String message, {Duration? duration}) {
-    showNotification(message, NotificationType.error, duration: duration);
+  void showErrorNotification(
+    String message, {
+    BuildContext? context,
+    Duration? duration,
+  }) {
+    showNotification(
+      message,
+      NotificationType.error,
+      duration: duration,
+      context: context,
+    );
   }
 
-  void showInfoNotification(String message, {Duration? duration}) {
+  void showInfoNotification(
+    String message, {
+    BuildContext? context,
+    Duration? duration,
+  }) {
     showNotification(message, NotificationType.info, duration: duration);
   }
 
@@ -234,6 +247,7 @@ class TbContext implements PopEntry {
     String message,
     NotificationType type, {
     Duration? duration,
+    BuildContext? context,
   }) {
     duration ??= const Duration(days: 1);
     Color backgroundColor;
@@ -263,17 +277,27 @@ class TbContext implements PopEntry {
         label: 'Close',
         textColor: textColor,
         onPressed: () {
-          messengerKey.currentState!
-              .hideCurrentSnackBar(reason: SnackBarClosedReason.dismiss);
+          if (context != null) {
+            ScaffoldMessenger.of(context)
+                .hideCurrentSnackBar(reason: SnackBarClosedReason.dismiss);
+          } else {
+            rootScaffoldMessengerKey.currentState
+                ?.hideCurrentSnackBar(reason: SnackBarClosedReason.dismiss);
+          }
         },
       ),
     );
-    messengerKey.currentState!.removeCurrentSnackBar();
-    messengerKey.currentState!.showSnackBar(snackBar);
+    if (context != null) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      rootScaffoldMessengerKey.currentState?.removeCurrentSnackBar();
+      rootScaffoldMessengerKey.currentState?.showSnackBar(snackBar);
+    }
   }
 
   void hideNotification() {
-    messengerKey.currentState!.removeCurrentSnackBar();
+    rootScaffoldMessengerKey.currentState?.removeCurrentSnackBar();
   }
 
   void onLoadStarted() {
@@ -563,9 +587,9 @@ class TbContext implements PopEntry {
 
   bool isPhysicalDevice() {
     if (UniversalPlatform.isAndroid) {
-      return _androidInfo!.isPhysicalDevice == true;
+      return androidInfo!.isPhysicalDevice == true;
     } else if (UniversalPlatform.isIOS) {
-      return _iosInfo!.isPhysicalDevice;
+      return iosInfo!.isPhysicalDevice;
     } else {
       return false;
     }
@@ -575,9 +599,9 @@ class TbContext implements PopEntry {
     String userAgent = 'Mozilla/5.0';
     if (UniversalPlatform.isAndroid) {
       userAgent +=
-          ' (Linux; Android ${_androidInfo!.version.release}; ${_androidInfo?.model})';
+          ' (Linux; Android ${androidInfo!.version.release}; ${androidInfo?.model})';
     } else if (UniversalPlatform.isIOS) {
-      userAgent += ' (${_iosInfo!.model})';
+      userAgent += ' (${iosInfo!.model})';
     }
     userAgent +=
         ' AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
@@ -659,8 +683,8 @@ class TbContext implements PopEntry {
     );
   }
 
-  Future<T?> showFullScreenDialog<T>(Widget dialog) {
-    return Navigator.of(currentState!.context).push<T>(
+  Future<T?> showFullScreenDialog<T>(Widget dialog, {BuildContext? context}) {
+    return Navigator.of(context ?? currentState!.context).push<T>(
       MaterialPageRoute<T>(
         builder: (BuildContext context) {
           return dialog;

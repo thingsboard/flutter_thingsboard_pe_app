@@ -1,8 +1,8 @@
 import 'dart:developer';
 
+import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -12,21 +12,23 @@ import 'package:thingsboard_app/app_bloc_observer.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/config/themes/tb_theme.dart';
 import 'package:thingsboard_app/config/themes/wl_theme_widget.dart';
+import 'package:thingsboard_app/constants/enviroment_variables.dart';
 import 'package:thingsboard_app/core/auth/login/region.dart';
+import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/firebase_options.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
+import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(RegionAdapter());
-
   await setUpRootDependencies();
   if (UniversalPlatform.isAndroid) {
-    await InAppWebViewController.setWebContentsDebuggingEnabled(true);
+    await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
   }
 
   try {
@@ -37,7 +39,16 @@ void main() async {
     log('main::FirebaseService.initializeApp() exception $e', error: e);
   }
 
-  if (kDebugMode) {
+  try {
+    final uri = await AppLinks().getInitialLink();
+    if (uri != null) {
+      await getIt<ILocalDatabaseService>().setInitialAppLink(uri.toString());
+    }
+  } catch (e) {
+    log('main::getInitialUri() exception $e', error: e);
+  }
+
+  if (kDebugMode || EnvironmentVariables.verbose) {
     Bloc.observer = AppBlocObserver(getIt());
   }
 
@@ -49,13 +60,6 @@ class ThingsboardApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        systemNavigationBarIconBrightness: Brightness.light,
-      ),
-    );
-
     return OrientationBuilder(
       builder: (context, orientation) {
         getIt<ILayoutService>().setDeviceScreenSize(
@@ -66,8 +70,7 @@ class ThingsboardApp extends StatelessWidget {
         return WlThemeWidget(
           getIt<ThingsboardAppRouter>().tbContext,
           wlThemedWidgetBuilder: (context, data, wlParams) => MaterialApp(
-            scaffoldMessengerKey:
-                getIt<ThingsboardAppRouter>().tbContext.messengerKey,
+            scaffoldMessengerKey: TbContext.rootScaffoldMessengerKey,
             localizationsDelegates: const [
               S.delegate,
               GlobalMaterialLocalizations.delegate,
