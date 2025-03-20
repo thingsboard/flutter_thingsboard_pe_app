@@ -535,14 +535,13 @@ class TbContext implements PopEntry {
           if (defaultDashboardId != null) {
             bool fullscreen = _userForceFullscreen();
             if (!fullscreen) {
+              await navigateToDashboard(defaultDashboardId, animate: false);
               navigateTo(
                 '/main',
                 replace: true,
                 closeDashboard: false,
                 transition: TransitionType.none,
               );
-
-              navigateToDashboard(defaultDashboardId, animate: false);
             } else {
               navigateTo(
                 '/fullscreenDashboard/$defaultDashboardId',
