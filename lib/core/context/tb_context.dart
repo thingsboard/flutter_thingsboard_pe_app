@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:thingsboard_app/constants/enviroment_variables.dart';
 import 'package:thingsboard_app/core/auth/oauth2/app_secret_provider.dart';
 import 'package:thingsboard_app/core/auth/oauth2/tb_oauth2_client.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
@@ -106,7 +107,7 @@ class TbContext implements PopEntry {
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
-      debugMode: kDebugMode,
+      debugMode: EnvironmentVariables.apiCalls,
     );
 
     oauth2Client = TbOAuth2Client(
@@ -189,7 +190,7 @@ class TbContext implements PopEntry {
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
-      debugMode: kDebugMode,
+      debugMode: EnvironmentVariables.apiCalls,
     );
 
     oauth2Client = TbOAuth2Client(
@@ -667,7 +668,7 @@ class TbContext implements PopEntry {
     bool? hideToolbar,
     bool animate = true,
   }) async {
-    router.navigateTo(
+    return router.navigateTo(
       currentState!.context,
       '/dashboard',
       routeSettings: RouteSettings(
