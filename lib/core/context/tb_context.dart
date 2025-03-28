@@ -107,7 +107,7 @@ class TbContext implements PopEntry {
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
-      debugMode: EnvironmentVariables.apiCalls,
+      debugMode: EnvironmentVariables.apiCalls || EnvironmentVariables.verbose,
     );
 
     oauth2Client = TbOAuth2Client(
@@ -190,7 +190,7 @@ class TbContext implements PopEntry {
       onLoadStarted: onLoadStarted,
       onLoadFinished: onLoadFinished,
       computeFunc: <Q, R>(callback, message) => compute(callback, message),
-      debugMode: EnvironmentVariables.apiCalls,
+      debugMode: EnvironmentVariables.apiCalls || EnvironmentVariables.verbose,
     );
 
     oauth2Client = TbOAuth2Client(
