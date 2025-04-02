@@ -536,12 +536,14 @@ class TbContext implements PopEntry {
                 '/main',
                 replace: true,
                 closeDashboard: false,
+                clearStack: true,
                 transition: TransitionType.none,
               );
             } else {
               navigateTo(
                 '/fullscreenDashboard/$defaultDashboardId',
                 replace: true,
+                clearStack: true,
                 transition: TransitionType.fadeIn,
               );
             }
@@ -549,6 +551,7 @@ class TbContext implements PopEntry {
             navigateTo(
               '/main',
               replace: true,
+              clearStack: true,
               transition: TransitionType.fadeIn,
               transitionDuration: const Duration(milliseconds: 750),
             );
