@@ -29,7 +29,9 @@ mixin DeviceProfilesBase on EntitiesBase<DeviceProfileInfo, PageLink> {
 
   @override
   void onEntityTap(DeviceProfileInfo deviceProfile) {
-    navigateTo('/deviceList?deviceType=${Uri.encodeComponent(deviceProfile.name)}');
+    navigateTo(
+      '/deviceList?deviceType=${Uri.encodeComponent(deviceProfile.name)}',
+    );
   }
 
   @override
@@ -409,7 +411,9 @@ class _DeviceProfileCardState extends TbContextState<DeviceProfileCard> {
               },
             ),
             onTap: () {
-              navigateTo('/deviceList?active=true&deviceType=${Uri.encodeComponent(entity.name)}');
+              navigateTo(
+                '/deviceList?active=true&deviceType=${Uri.encodeComponent(entity.name)}',
+              );
             },
           ),
           const Divider(height: 1),

@@ -24,6 +24,6 @@ class InitRoutes extends TbRoutes {
 
   @override
   void doRegisterRoutes(router) {
-    router.define('/', handler: initHandler);
+    router.define('/', handler: regionSelectedHandler);
   }
 }
