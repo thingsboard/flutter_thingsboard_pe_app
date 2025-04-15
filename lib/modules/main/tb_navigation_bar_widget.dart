@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:thingsboard_app/modules/main/main_navigation_item.dart';
 
+import '../../constants/app_constants.dart';
+
 class TbNavigationBarWidget extends StatelessWidget {
   const TbNavigationBarWidget({
     super.key,
@@ -88,7 +90,7 @@ class BottomNavbarItems extends StatelessWidget {
   });
 
   final String label;
-  final IconData icon;
+  final String icon;
   final int? currentIndex;
   final int index;
   final Function(int) onTap;
@@ -129,17 +131,17 @@ class BottomNavbarItems extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 7),
               child: Column(
                 children: [
+                  const SizedBox(height: 5),
                   Padding(
                     padding: EdgeInsets.only(left: showAdditionalIcon ? 18 : 0),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
+                        Image.asset(
                           icon,
-                          size: 26,
                           color: isSelected
-                              ? bottomTheme.selectedItemColor
-                              : bottomTheme.unselectedItemColor,
+                              ? ThingsboardAppConstants.primaryColor
+                              : ThingsboardAppConstants.primaryColor2,
                         ),
                         ConstrainedBox(
                           constraints: const BoxConstraints(
@@ -155,12 +157,12 @@ class BottomNavbarItems extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 5),
-                  Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: isSelected ? selectedTextStyle : unSelectedTextStyle,
-                  ),
+                  // Text(
+                  //   label,
+                  //   textAlign: TextAlign.center,
+                  //   overflow: TextOverflow.ellipsis,
+                  //   style: isSelected ? selectedTextStyle : unSelectedTextStyle,
+                  // ),
                 ],
               ),
             ),

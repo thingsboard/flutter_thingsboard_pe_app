@@ -47,6 +47,26 @@ class _MorePageState extends TbContextState<MorePage> {
                     shortName: userDetails.shortName,
                     color: UiUtils.colorFromString(userDetails.displayName),
                   ),
+                  Flexible(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                      Text(
+                        userDetails.displayName,
+                        style: TbTextStyles.labelLarge.copyWith(
+                          color: Colors.black.withOpacity(.76),
+                        ),
+                      ),
+                      Text(
+                        _getAuthorityName(context),
+                        style: TbTextStyles.labelSmall.copyWith(
+                          color: Colors.black.withOpacity(.38),
+                        ),
+                      ),
+                    ],),
+                  ),
+                  const Spacer(),
                   SizedBox(
                     height: 32,
                     width: 32,
@@ -54,7 +74,7 @@ class _MorePageState extends TbContextState<MorePage> {
                       icon: Icon(
                         Icons.settings,
                         color: Colors.black.withOpacity(.54),
-                        size: 18,
+                        size: 25,
                       ),
                       onPressed: () async {
                         await navigateTo('/profile');
@@ -65,37 +85,21 @@ class _MorePageState extends TbContextState<MorePage> {
                 ],
               ),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Text(
-                      userDetails.displayName,
-                      style: TbTextStyles.labelLarge.copyWith(
-                        color: Colors.black.withOpacity(.76),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: EndpointNameWidget(
-                      endpoint: getIt<IEndpointService>().getCachedEndpoint(),
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                _getAuthorityName(context),
-                style: TbTextStyles.labelSmall.copyWith(
-                  color: Colors.black.withOpacity(.38),
-                ),
-              ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Divider(
                   color: Colors.black.withOpacity(.05),
                   thickness: 1,
                   height: 0,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 16),
+                child: Text(
+                  'Profile',
+                  style: TbTextStyles.labelLarge.copyWith(
+                    color: Colors.black.withOpacity(.76),
+                  ),
                 ),
               ),
               Flexible(
@@ -112,7 +116,7 @@ class _MorePageState extends TbContextState<MorePage> {
               MoreMenuItemWidget(
                 TbMainNavigationItem(
                   title: S.of(context).logout,
-                  icon: Icons.logout,
+                  icon: 'assets/images/logout.png',
                   page: const SizedBox.shrink(),
                   path: '',
                 ),

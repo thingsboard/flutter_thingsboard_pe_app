@@ -181,7 +181,9 @@ class _AllDevicesCardState extends TbContextState<AllDevicesCard> {
                             stream: _activeDevicesCount.stream,
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
+                                // rami
                                 var deviceCount = snapshot.data!;
+                                // return Container();
                                 return _buildDeviceCount(
                                   context,
                                   true,
@@ -343,22 +345,23 @@ class _DeviceProfileCardState extends TbContextState<DeviceProfileCard> {
       borderRadius: BorderRadius.circular(4),
       child: Column(
         children: [
-          Expanded(
-            child: Stack(
-              children: [
-                SizedBox.expand(
-                  child: Padding(
-                    padding: EdgeInsets.all(padding),
-                    child: FittedBox(
-                      clipBehavior: Clip.hardEdge,
-                      fit: imageFit,
-                      child: image,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // rami
+          // Expanded(
+          //   child: Stack(
+          //     children: [
+          //       SizedBox.expand(
+          //         child: Padding(
+          //           padding: EdgeInsets.all(padding),
+          //           child: FittedBox(
+          //             clipBehavior: Clip.hardEdge,
+          //             fit: imageFit,
+          //             child: image,
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
           SizedBox(
             height: 44,
             child: Padding(
@@ -472,6 +475,7 @@ Widget _buildDeviceCount(BuildContext context, bool active, int count) {
           children: [
             Stack(
               children: [
+                // rami
                 Icon(Icons.devices_other, size: 16, color: color),
                 if (!active)
                   CustomPaint(

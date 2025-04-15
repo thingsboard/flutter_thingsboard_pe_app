@@ -49,7 +49,7 @@ dependencies:
   flutter_local_notifications: ^17.1.2
   flutter_new_badger: ^1.0.1
   timeago: ^3.6.1
-  flutter_slidable: ^3.0.1
+  flutter_slidable: ^4.0.0
   flutter_bloc: ^8.1.5
   get_it: ^7.6.7
   equatable: ^2.0.5

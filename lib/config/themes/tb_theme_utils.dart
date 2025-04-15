@@ -7,8 +7,7 @@ abstract class TbThemeUtils {
 
   static const Color _tbTextColor = Color(0xFF282828);
 
-  static final tbPrimary =
-      _mergeColors(Colors.teal, {'500': Colors.teal[800]!.value});
+  static const tbPrimary = Colors.indigo;
   static final tbAccent = _mergeColors(Colors.deepOrange, {});
 
   static ThemeData createTheme(PaletteSettings? paletteSettings) {

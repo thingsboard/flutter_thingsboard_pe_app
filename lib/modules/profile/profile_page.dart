@@ -39,7 +39,7 @@ class _ProfilePageState extends TbPageState<ProfilePage> {
       backgroundColor: Colors.white,
       appBar: TbAppBar(
         tbContext,
-        title: const Text('Profile'),
+        title: const Text('Update Profile'),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
@@ -80,39 +80,75 @@ class _ProfilePageState extends TbPageState<ProfilePage> {
                           ),
                         ]),
                         decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10), // Make it round
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                          ),
                           labelText: S.of(context).emailStar,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                         ),
                       ),
+
                       const SizedBox(height: 24),
                       FormBuilderTextField(
                         name: 'firstName',
                         decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10), // Make it round
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                          ),
                           labelText: S.of(context).firstNameUpper,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                         ),
                       ),
                       const SizedBox(height: 24),
                       FormBuilderTextField(
                         name: 'lastName',
                         decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10), // Make it round
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                          ),
                           labelText: S.of(context).lastNameUpper,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                         ),
                       ),
                       const SizedBox(height: 24),
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.all(16),
-                          alignment: Alignment.centerLeft,
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          alignment: Alignment.center,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50), // Makes it pill-like
+                          ),
                         ),
                         onPressed: () {
                           _changePassword();
                         },
-                        child: Center(
-                          child: Text(S.of(context).changePassword),
-                        ),
+                        child: Text(S.of(context).changePassword),
                       ),
+
                     ],
                   ),
                 ),

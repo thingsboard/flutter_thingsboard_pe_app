@@ -25,22 +25,26 @@ class DashboardsAppbar extends StatelessWidget {
               )
             : null,
         elevation: dashboardState ? 0 : 8,
-        title: Center(
-          child: SizedBox(
-            height: kToolbarHeight - 8,
-            child: tbContext.wlService.userLogoImage != null
-                ? tbContext.wlService.userLogoImage!
-                : const SizedBox(),
-          ),
+        title: SizedBox(
+          height: kToolbarHeight - 8,
+          child: tbContext.wlService.userLogoImage != null
+              ? tbContext.wlService.userLogoImage!
+              : const SizedBox(),
         ),
         actions: [
           if (tbContext.tbClient.isSystemAdmin())
             IconButton(
-              icon: const Icon(Icons.search),
+              icon: Image.asset('assets/images/search.png'),
               onPressed: () {
                 tbContext.navigateTo('/tenants?search=true');
               },
             ),
+          IconButton(
+            icon: Image.asset('assets/images/notifications.png',color: Colors.black,),
+            onPressed: () {
+              tbContext.navigateTo('/notifications');
+            },
+          ),
         ],
       ),
       body: body,

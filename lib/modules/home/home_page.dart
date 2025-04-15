@@ -33,7 +33,8 @@ class _HomePageState extends TbContextState<HomePage>
   Widget _buildDashboardHome(
     BuildContext context,
     HomeDashboardInfo dashboard,
-  ) {
+  )
+  {
     final hasPermission =
         getIt<IPermissionService>().haveViewDashboardPermission(
       tbContext,
@@ -50,7 +51,8 @@ class _HomePageState extends TbContextState<HomePage>
     }
   }
 
-  Widget _buildDefaultHome(BuildContext context) {
+  Widget _buildDefaultHome(BuildContext context)
+  {
     if (tbClient.isSystemAdmin()) {
       return _buildSysAdminHome(context);
     } else {
