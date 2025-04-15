@@ -428,7 +428,7 @@ class TbContext implements PopEntry {
       }
     } finally {
       try {
-        final link = getIt<ILocalDatabaseService>().getInitialAppLink();
+        final link = await getIt<ILocalDatabaseService>().getInitialAppLink();
         navigateByAppLink(link);
       } catch (e) {
         log.error('TbContext:getInitialUri() exception $e');
@@ -494,9 +494,9 @@ class TbContext implements PopEntry {
     }
   }
 
-  bool handleInitialNavigation() {
+  Future<bool> handleInitialNavigation() async {
     final initialNavigation =
-        getIt<ILocalDatabaseService>().getInitialAppLink();
+        await getIt<ILocalDatabaseService>().getInitialAppLink();
 
     log.debug('TbContext::handleInitialNavigation() -> $initialNavigation');
 
@@ -525,7 +525,7 @@ class TbContext implements PopEntry {
       'TbContext:updateRouteState() ${currentState != null && currentState!.mounted}',
     );
     if (currentState != null) {
-      if (!handleInitialNavigation()) {
+      if (!await handleInitialNavigation()) {
         if (tbClient.isAuthenticated() && !tbClient.isPreVerificationToken()) {
           var defaultDashboardId = _defaultDashboardId();
           if (defaultDashboardId != null) {
