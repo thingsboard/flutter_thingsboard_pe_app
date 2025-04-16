@@ -101,70 +101,67 @@ mixin ContactBasedBase<T extends ContactBased, P> on EntitiesBase<T, P> {
     var address = Utils.contactToShortAddress(contact);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Flexible(
-            fit: FlexFit.tight,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        contact.getName(),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TbTextStyles.labelLarge.copyWith(
-                          color: Colors.black.withOpacity(.87),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      entityDateFormat.format(
-                        DateTime.fromMillisecondsSinceEpoch(
-                          contact.createdTime!,
-                        ),
-                      ),
-                      style: TbTextStyles.bodyMedium.copyWith(
-                        color: Colors.black.withOpacity(.54),
-                      ),
-                    ),
-                  ],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  contact.getName(),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TbTextStyles.labelLarge.copyWith(
+                    color: Colors.black.withOpacity(.87),
+                  ),
                 ),
-                const SizedBox(height: 4),
-                if (contact.email != null)
-                  Text(
-                    contact.email!,
-                    style: const TextStyle(
-                      color: Color(0xFFAFAFAF),
-                      fontSize: 12,
-                      fontWeight: FontWeight.normal,
-                      height: 16 / 12,
-                    ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                entityDateFormat.format(
+                  DateTime.fromMillisecondsSinceEpoch(
+                    contact.createdTime!,
                   ),
-                if (contact.email == null) const SizedBox(height: 16),
-                if (address != null) const SizedBox(height: 4),
-                if (address != null)
-                  Text(
-                    address,
-                    style: const TextStyle(
-                      color: Color(0xFFAFAFAF),
-                      fontSize: 12,
-                      fontWeight: FontWeight.normal,
-                      height: 16 / 12,
-                    ),
-                  ),
-              ],
-            ),
+                ),
+                style: TbTextStyles.bodyMedium.copyWith(
+                  color: Colors.black.withOpacity(.54),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
-          const Icon(Icons.chevron_right, color: Color(0xFFACACAC)),
-          const SizedBox(width: 8),
+          const SizedBox(height: 4),
+          // if (contact.email != null)
+          //   Text(
+          //     contact.email!,
+          //     style: const TextStyle(
+          //       color: Color(0xFFAFAFAF),
+          //       fontSize: 12,
+          //       fontWeight: FontWeight.normal,
+          //       height: 16 / 12,
+          //     ),
+          //   ),
+          // if (contact.email == null) const SizedBox(height: 16),
+          // if (address != null) const SizedBox(height: 4),
+          // if (address != null)
+          //   Text(
+          //     address,
+          //     style: const TextStyle(
+          //       color: Color(0xFFAFAFAF),
+          //       fontSize: 12,
+          //       fontWeight: FontWeight.normal,
+          //       height: 16 / 12,
+          //     ),
+          //   ),
+          const Divider(),
+          const SizedBox(height: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.grey),
+            ),
+            child: const Text('Details'),
+          )
         ],
       ),
     );

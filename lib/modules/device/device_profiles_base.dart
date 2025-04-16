@@ -123,156 +123,64 @@ class _AllDevicesCardState extends TbContextState<AllDevicesCard> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha((255 * 0.05).ceil()),
-              blurRadius: 6.0,
-              offset: const Offset(0, 4),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha((255 * 0.05).ceil()),
+            blurRadius: 6.0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            InkWell(
+              onTap: (){
+                navigateTo('/deviceList');
+              },
+              child: Container(
+                // margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.grey[300]!),
+                    color: Colors.white
+                ),
+                child: Text(S.of(context).allDevices),
+              ),
+            ),
+            InkWell(
+              onTap: (){
+                navigateTo('/deviceList?active=true');
+              },
+              child: Container(
+                // margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey[300]!),
+                  color: Colors.white
+                ),
+                child: const Text('Active Devices'),
+              ),
+            ),
+            InkWell(
+              onTap: (){
+                navigateTo('/deviceList?active=false');
+              },
+              child: Container(
+                // margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.grey[300]!),
+                    color: Colors.white
+                ),
+                child: const Text('Inactive Devices'),
+              ),
             ),
           ],
-        ),
-        child: Card(
-          margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
-          elevation: 0,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 15),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      S.of(context).allDevices,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                        height: 20 / 14,
-                      ),
-                    ),
-                    const Icon(Icons.arrow_forward, size: 18),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              Padding(
-                padding: const EdgeInsets.all(0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: StreamBuilder<int?>(
-                            stream: _activeDevicesCount.stream,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                // rami
-                                var deviceCount = snapshot.data!;
-                                // return Container();
-                                return _buildDeviceCount(
-                                  context,
-                                  true,
-                                  deviceCount,
-                                );
-                              } else {
-                                return Center(
-                                  child: SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation(
-                                        Theme.of(
-                                          tbContext.currentState!.context,
-                                        ).colorScheme.primary,
-                                      ),
-                                      strokeWidth: 2.5,
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                        onTap: () {
-                          navigateTo('/deviceList?active=true');
-                        },
-                      ),
-                    ),
-                    // SizedBox(width: 4),
-                    const SizedBox(
-                      width: 1,
-                      height: 40,
-                      child: VerticalDivider(width: 1),
-                    ),
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: StreamBuilder<int?>(
-                            stream: _inactiveDevicesCount.stream,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                var deviceCount = snapshot.data!;
-                                return _buildDeviceCount(
-                                  context,
-                                  false,
-                                  deviceCount,
-                                );
-                              } else {
-                                return Center(
-                                  child: SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation(
-                                        Theme.of(
-                                          tbContext.currentState!.context,
-                                        ).colorScheme.primary,
-                                      ),
-                                      strokeWidth: 2.5,
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                        onTap: () {
-                          navigateTo('/deviceList?active=false');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      onTap: () {
-        navigateTo('/deviceList');
-      },
+        )
     );
   }
 }
@@ -346,22 +254,23 @@ class _DeviceProfileCardState extends TbContextState<DeviceProfileCard> {
       child: Column(
         children: [
           // rami
-          // Expanded(
-          //   child: Stack(
-          //     children: [
-          //       SizedBox.expand(
-          //         child: Padding(
-          //           padding: EdgeInsets.all(padding),
-          //           child: FittedBox(
-          //             clipBehavior: Clip.hardEdge,
-          //             fit: imageFit,
-          //             child: image,
-          //           ),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
+          const SizedBox(height: 8,),
+          Stack(
+            children: [
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: Padding(
+                  padding: EdgeInsets.all(padding),
+                  child: FittedBox(
+                    clipBehavior: Clip.hardEdge,
+                    fit: imageFit,
+                    child: image,
+                  ),
+                ),
+              ),
+            ],
+          ),
           SizedBox(
             height: 44,
             child: Padding(
@@ -375,86 +284,90 @@ class _DeviceProfileCardState extends TbContextState<DeviceProfileCard> {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontWeight: FontWeight.w500,
-                    fontSize: 14,
+                    fontSize: 16,
                     height: 20 / 14,
                   ),
                 ),
               ),
             ),
           ),
-          const Divider(height: 1),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            child: FutureBuilder<int>(
-              future: activeDevicesCount,
-              builder: (context, snapshot) {
-                if (snapshot.hasData &&
-                    snapshot.connectionState == ConnectionState.done) {
-                  var deviceCount = snapshot.data!;
-                  return _buildDeviceCount(context, true, deviceCount);
-                } else {
-                  return SizedBox(
-                    height: 40,
-                    child: Center(
-                      child: SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(
-                            Theme.of(
-                              tbContext.currentState!.context,
-                            ).colorScheme.primary,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                child: FutureBuilder<int>(
+                  future: activeDevicesCount,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData &&
+                        snapshot.connectionState == ConnectionState.done) {
+                      var deviceCount = snapshot.data!;
+                      return _buildDeviceCount(context, true, deviceCount);
+                    } else {
+                      return SizedBox(
+                        height: 40,
+                        child: Center(
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation(
+                                Theme.of(
+                                  tbContext.currentState!.context,
+                                ).colorScheme.primary,
+                              ),
+                              strokeWidth: 2.5,
+                            ),
                           ),
-                          strokeWidth: 2.5,
                         ),
-                      ),
-                    ),
+                      );
+                    }
+                  },
+                ),
+                onTap: () {
+                  navigateTo(
+                    '/deviceList?active=true&deviceType=${Uri.encodeComponent(entity.name)}',
                   );
-                }
-              },
-            ),
-            onTap: () {
-              navigateTo(
-                '/deviceList?active=true&deviceType=${Uri.encodeComponent(entity.name)}',
-              );
-            },
-          ),
-          const Divider(height: 1),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            child: FutureBuilder<int>(
-              future: inactiveDevicesCount,
-              builder: (context, snapshot) {
-                if (snapshot.hasData &&
-                    snapshot.connectionState == ConnectionState.done) {
-                  var deviceCount = snapshot.data!;
-                  return _buildDeviceCount(context, false, deviceCount);
-                } else {
-                  return SizedBox(
-                    height: 40,
-                    child: Center(
-                      child: SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(
-                            Theme.of(
-                              tbContext.currentState!.context,
-                            ).colorScheme.primary,
+                },
+              ),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                child: FutureBuilder<int>(
+                  future: inactiveDevicesCount,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData &&
+                        snapshot.connectionState == ConnectionState.done) {
+                      var deviceCount = snapshot.data!;
+                      return _buildDeviceCount(context, false, deviceCount);
+                    } else {
+                      return SizedBox(
+                        height: 40,
+                        child: Center(
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation(
+                                Theme.of(
+                                  tbContext.currentState!.context,
+                                ).colorScheme.primary,
+                              ),
+                              strokeWidth: 2.5,
+                            ),
                           ),
-                          strokeWidth: 2.5,
                         ),
-                      ),
-                    ),
+                      );
+                    }
+                  },
+                ),
+                onTap: () {
+                  navigateTo(
+                    '/deviceList?active=false&deviceType=${Uri.encodeComponent(entity.name)}',
                   );
-                }
-              },
-            ),
-            onTap: () {
-              navigateTo(
-                '/deviceList?active=false&deviceType=${Uri.encodeComponent(entity.name)}',
-              );
-            },
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -465,49 +378,46 @@ class _DeviceProfileCardState extends TbContextState<DeviceProfileCard> {
 Widget _buildDeviceCount(BuildContext context, bool active, int count) {
   Color color = active ? const Color(0xFF008A00) : const Color(0xFFAFAFAF);
   return Padding(
-    padding: const EdgeInsets.all(12),
-    child: Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            Stack(
-              children: [
-                // rami
-                Icon(Icons.devices_other, size: 16, color: color),
-                if (!active)
-                  CustomPaint(
-                    size: const Size.square(16),
-                    painter: StrikeThroughPainter(color: color, offset: 2),
-                  ),
-              ],
+    padding: const EdgeInsets.all(4),
+    child: Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey[300]!),
+          color: Colors.white
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            active ? S.of(context).active : S.of(context).inactive,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              height: 16 / 12,
+              color: color,
             ),
-            const SizedBox(width: 8.67),
-            Text(
-              active ? S.of(context).active : S.of(context).inactive,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                height: 16 / 12,
-                color: color,
+          ),
+          const SizedBox(height: 8.67),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                count.toString(),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  height: 16 / 12,
+                  color: color,
+                ),
               ),
-            ),
-            const SizedBox(width: 8.67),
-            Text(
-              count.toString(),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                height: 16 / 12,
-                color: color,
-              ),
-            ),
-          ],
-        ),
-        const Icon(Icons.chevron_right, size: 16, color: Color(0xFFACACAC)),
-      ],
+              const SizedBox(width: 8.67),
+              const Icon(Icons.chevron_right, size: 16, color: Color(0xFFACACAC)),
+            ],
+          ),
+        ],
+      ),
     ),
   );
 }
