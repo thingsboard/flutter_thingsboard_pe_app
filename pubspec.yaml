@@ -28,7 +28,10 @@ dependencies:
   image_picker: ^1.0.4
   mime: ^1.0.4
   logger: ^2.5.0
-  qr_code_scanner: ^1.0.1
+  qr_code_scanner:
+    git:
+      url: https://github.com/juliuscanute/qr_code_scanner.git
+      ref: f45239305d2824d5c39480ca0087273bfc70adc4
   device_info_plus: ^10.1.0
   geolocator: ^12.0.0
   geolocator_android: 4.6.1
@@ -66,7 +69,10 @@ dependencies:
   recaptcha_enterprise_flutter: ^18.6.1
   flutter_esp_ble_prov: ^0.1.7
   #  esp_smartconfig: ^2.0.4
-  esp_provisioning_softap: ^1.0.3
+  esp_provisioning_softap:
+    git:
+      url: https://github.com/RamiZain922/esp_provisioning_softap.git
+      ref: 08ec2caedc1612dcdd4a6f9abcff3bf385801974
   permission_handler: ^11.3.1
   wifi_scan: ^0.4.1+1
   open_settings_plus: ^0.4.0

@@ -393,10 +393,11 @@ packages:
   esp_provisioning_softap:
     dependency: "direct main"
     description:
-      name: esp_provisioning_softap
-      sha256: "5b2a8f51df905c32a72490aca0b61ab8ed9948f7dccfdc467a379bc8741ce278"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "08ec2caedc1612dcdd4a6f9abcff3bf385801974"
+      resolved-ref: "08ec2caedc1612dcdd4a6f9abcff3bf385801974"
+      url: "https://github.com/RamiZain922/esp_provisioning_softap.git"
+    source: git
     version: "1.0.3"
   event_bus:
     dependency: "direct main"
@@ -1502,11 +1503,12 @@ packages:
   qr_code_scanner:
     dependency: "direct main"
     description:
-      name: qr_code_scanner
-      sha256: f23b68d893505a424f0bd2e324ebea71ed88465d572d26bb8d2e78a4749591fd
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
+      path: "."
+      ref: f45239305d2824d5c39480ca0087273bfc70adc4
+      resolved-ref: f45239305d2824d5c39480ca0087273bfc70adc4
+      url: "https://github.com/juliuscanute/qr_code_scanner.git"
+    source: git
+    version: "1.0.0"
   recaptcha_enterprise_flutter:
     dependency: "direct main"
     description:
