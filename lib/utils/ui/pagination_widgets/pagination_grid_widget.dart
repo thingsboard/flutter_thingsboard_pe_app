@@ -38,7 +38,7 @@ class PaginationGridWidget<T, B> extends StatelessWidget {
               builderDelegate: builderDelegate,
               gridDelegate: gridDelegate ??
                   SliverGridDelegateWithFixedCrossAxisCount(
-                    childAspectRatio: gridChildAspectRatio ?? 156 / 150,
+                    childAspectRatio: gridChildAspectRatio ?? 160 / 150,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                     crossAxisCount: Orientation.portrait == orientation

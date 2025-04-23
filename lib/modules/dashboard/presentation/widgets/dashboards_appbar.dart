@@ -27,9 +27,7 @@ class DashboardsAppbar extends StatelessWidget {
         elevation: dashboardState ? 0 : 8,
         title: SizedBox(
           height: kToolbarHeight - 8,
-          child: tbContext.wlService.userLogoImage != null
-              ? tbContext.wlService.userLogoImage!
-              : const SizedBox(),
+          child: Image.asset('assets/images/logo.png'),
         ),
         actions: [
           if (tbContext.tbClient.isSystemAdmin())

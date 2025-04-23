@@ -48,6 +48,7 @@ class _ThingsBoardAppState extends State<ThingsboardApp> {
           navigatorObservers: [
             getIt<ThingsboardAppRouter>().tbContext.routeObserver,
           ],
+          debugShowCheckedModeBanner: false,
         ),
       ),
     );

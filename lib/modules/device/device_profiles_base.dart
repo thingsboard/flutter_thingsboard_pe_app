@@ -134,8 +134,9 @@ class _AllDevicesCardState extends TbContextState<AllDevicesCard> {
           ),
         ],
       ),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.center,
+          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             InkWell(
               onTap: (){
@@ -143,7 +144,7 @@ class _AllDevicesCardState extends TbContextState<AllDevicesCard> {
               },
               child: Container(
                 // margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 5),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.grey[300]!),
                     color: Colors.white
@@ -151,13 +152,14 @@ class _AllDevicesCardState extends TbContextState<AllDevicesCard> {
                 child: Text(S.of(context).allDevices),
               ),
             ),
+            const SizedBox(width: 2,),
             InkWell(
               onTap: (){
                 navigateTo('/deviceList?active=true');
               },
               child: Container(
                 // margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 5),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: Colors.grey[300]!),
                   color: Colors.white
@@ -165,13 +167,14 @@ class _AllDevicesCardState extends TbContextState<AllDevicesCard> {
                 child: const Text('Active Devices'),
               ),
             ),
+            const SizedBox(width: 2,),
             InkWell(
               onTap: (){
                 navigateTo('/deviceList?active=false');
               },
               child: Container(
                 // margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 5),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.grey[300]!),
                     color: Colors.white

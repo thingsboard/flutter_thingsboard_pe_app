@@ -121,15 +121,7 @@ class _LoginPageState extends TbPageState<LoginPage>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        tbContext.wlService.loginLogoImage !=
-                                                null
-                                            ? SizedBox(
-                                                height: 29,
-                                                width: 133,
-                                                child: tbContext
-                                                    .wlService.loginLogoImage!,
-                                              )
-                                            : const SizedBox(height: 25),
+                                        Image.asset('assets/images/logo.png',fit: BoxFit.cover,),
                                         Visibility(
                                           visible: selectedRegion != null,
                                           child: TextButton(
