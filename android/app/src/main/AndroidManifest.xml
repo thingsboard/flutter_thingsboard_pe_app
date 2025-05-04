@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.thingsboard.pe.app">
+    package="org.bnan.pe.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission

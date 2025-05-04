@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "170403587386",
+    "project_id": "bnan-9fec3",
+    "storage_bucket": "bnan-9fec3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170403587386:android:0499d259d470d38ad6dc03",
+        "android_client_info": {
+          "package_name": "org.bnan.pe.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_CU3sI_0UMOnt-ENTDIPH6caiwXhr00Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
