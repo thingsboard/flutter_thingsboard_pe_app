@@ -4,3 +4,4 @@ output-localization-file: messages.dart
 output-class: S
 preferred-supported-locales: [ en ]
 nullable-getter: false
+untranslated-messages-file: untranslated_messages.json

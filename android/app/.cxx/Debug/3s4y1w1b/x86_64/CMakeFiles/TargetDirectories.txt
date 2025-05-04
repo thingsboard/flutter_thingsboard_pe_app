@@ -1,0 +1,2 @@
+/Users/ramizain/Documents/GitHub/flutter_thingsboard_pe_app/android/app/.cxx/Debug/3s4y1w1b/x86_64/CMakeFiles/edit_cache.dir
+/Users/ramizain/Documents/GitHub/flutter_thingsboard_pe_app/android/app/.cxx/Debug/3s4y1w1b/x86_64/CMakeFiles/rebuild_cache.dir

@@ -31,6 +31,7 @@ class DashboardsGridWidget extends StatelessWidget {
       onRefresh: () async {
         getIt<DashboardsPaginationRepository>().refresh();
       },
+      // rami
       child: SafeArea(
         child: PaginationGridWidget<PageLink, DashboardInfo>(
           pagingController:

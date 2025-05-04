@@ -8,6 +8,8 @@ import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
 
+import '../../../constants/app_constants.dart';
+
 class SelectRegionScreen extends TbContextStatelessWidget {
   SelectRegionScreen(super.tbContext, {super.key});
 
@@ -17,7 +19,9 @@ class SelectRegionScreen extends TbContextStatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            SvgPicture.asset(ThingsboardImage.thingsboardBigLogo),
+            // SvgPicture.asset(ThingsboardImage.thingsboardBigLogo),
+            const SizedBox(height: 32),
+            Image.asset('assets/images/logo.png',fit: BoxFit.cover,),
             const SizedBox(height: 166),
             Expanded(
               child: Padding(
@@ -30,42 +34,28 @@ class SelectRegionScreen extends TbContextStatelessWidget {
                         color: Colors.black.withOpacity(.76),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          getIt<IEndpointService>()
-                              .setRegion(Region.northAmerica);
-                          navigateTo('/');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          textStyle: TbTextStyles.labelMedium,
-                        ),
-                        child: Text(S.of(context).northAmerica),
-                      ),
+                    const SizedBox(height: 24),
+                    DefaultButton2(
+                      isMobileDevice: true,
+                      onPressed: () {
+                        getIt<IEndpointService>()
+                            .setRegion(Region.northAmerica);
+                        navigateTo('/');
+                      },
+                      buttonTitle: S.of(context).northAmerica,
+                      color: ThingsboardAppConstants.primaryColor,
+
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          getIt<IEndpointService>().setRegion(Region.europe);
-                          navigateTo('/');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          textStyle: TbTextStyles.labelMedium,
-                        ),
-                        child: Text(S.of(context).europe),
-                      ),
+                    const SizedBox(height: 16),
+                    DefaultButton2(
+                      isMobileDevice: true,
+                      onPressed: () {
+                        getIt<IEndpointService>().setRegion(Region.europe);
+                        navigateTo('/');
+                      },
+                      buttonTitle: S.of(context).europe,
+                      color: ThingsboardAppConstants.primaryColor,
+
                     ),
                   ],
                 ),
@@ -73,6 +63,60 @@ class SelectRegionScreen extends TbContextStatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+  Widget DefaultButton2({
+    required bool isMobileDevice,
+    required void Function()? onPressed,
+    required String buttonTitle,
+    required Color color,
+    IconData? icon,
+    Color? iconColor = Colors.white,
+    String? iconImage,
+    Color titleColor = Colors.white,
+    Color borderColor = Colors.white,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        side: BorderSide(color: borderColor),
+        backgroundColor: color,
+        //disabledBackgroundColor: primaryColor.withOpacity(0.5),
+        padding: EdgeInsets.symmetric(
+            vertical: isMobileDevice ? 14 : 16, horizontal: 35),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusDirectional.circular(
+            20,
+          ),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (icon != null)
+            Icon(
+              icon,
+              color: iconColor,
+            ),
+          if (icon != null)
+            const SizedBox(
+              width: 24,
+            ),
+          if (iconImage != null) Image.asset(iconImage),
+          if (iconImage != null)
+            const SizedBox(
+              width: 24,
+            ),
+          Text(
+            buttonTitle,
+            style: TextStyle(
+              color: titleColor,
+              fontSize: isMobileDevice ? 18 : 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

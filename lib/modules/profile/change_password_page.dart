@@ -73,8 +73,19 @@ class _ChangePasswordPageState extends TbContextState<ChangePasswordPage> {
                                       !_showCurrentPasswordNotifier.value;
                                 },
                               ),
-                              border: const OutlineInputBorder(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10), // Make it round
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                              ),
                               labelText: S.of(context).currentPasswordStar,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                             ),
                           );
                         },
@@ -107,8 +118,19 @@ class _ChangePasswordPageState extends TbContextState<ChangePasswordPage> {
                                       !_showNewPasswordNotifier.value;
                                 },
                               ),
-                              border: const OutlineInputBorder(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10), // Make it round
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                              ),
                               labelText: S.of(context).newPasswordStar,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                             ),
                           );
                         },
@@ -142,8 +164,19 @@ class _ChangePasswordPageState extends TbContextState<ChangePasswordPage> {
                                       !_showNewPassword2Notifier.value;
                                 },
                               ),
-                              border: const OutlineInputBorder(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10), // Make it round
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                              ),
                               labelText: S.of(context).newPassword2Star,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                             ),
                           );
                         },
@@ -151,16 +184,18 @@ class _ChangePasswordPageState extends TbContextState<ChangePasswordPage> {
                       const SizedBox(height: 24),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.all(16),
-                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          alignment: Alignment.center,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50), // Makes it pill-like
+                          ),
                         ),
                         onPressed: () {
                           _changePassword();
                         },
-                        child: Center(
-                          child: Text(S.of(context).changePassword),
-                        ),
+                        child: Text(S.of(context).changePassword),
                       ),
+
                     ],
                   ),
                 ),
