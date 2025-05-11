@@ -15,7 +15,7 @@ class TbMainNavigationItem extends Equatable {
 
   final Widget page;
   final String title;
-  final IconData icon;
+  final String icon;
   final String path;
   final String? id;
   final bool showAdditionalIcon;

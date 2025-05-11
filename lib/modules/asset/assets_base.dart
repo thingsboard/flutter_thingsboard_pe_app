@@ -41,66 +41,75 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
         Flexible(
           fit: FlexFit.tight,
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+            child: Column(
               children: [
-                const SizedBox(width: 16),
-                Flexible(
-                  fit: FlexFit.tight,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Row(
+                  children: [
+                    Image.asset('assets/images/assets_icon.png'),
+                    const SizedBox(width: 5,),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Flexible(
-                            child: FittedBox(
-                              fit: BoxFit.fitWidth,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                asset.name,
-                                style: const TextStyle(
-                                  color: Color(0xFF282828),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  height: 20 / 14,
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: FittedBox(
+                                  fit: BoxFit.fitWidth,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    asset.name,
+                                    style: const TextStyle(
+                                      color: Color(0xFF282828),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      height: 20 / 14,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              Text(
+                                entityDateFormat.format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                    asset.createdTime!,
+                                  ),
+                                ),
+                                style: const TextStyle(
+                                  color: Color(0xFFAFAFAF),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.normal,
+                                  height: 16 / 12,
+                                ),
+                              ),
+                            ],
                           ),
                           Text(
-                            entityDateFormat.format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                asset.createdTime!,
-                              ),
-                            ),
+                            asset.type,
                             style: const TextStyle(
                               color: Color(0xFFAFAFAF),
-                              fontSize: 12,
+                              fontSize: 10,
                               fontWeight: FontWeight.normal,
-                              height: 16 / 12,
+                              height: 1.33,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        asset.type,
-                        style: const TextStyle(
-                          color: Color(0xFFAFAFAF),
-                          fontSize: 12,
-                          fontWeight: FontWeight.normal,
-                          height: 1.33,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 16),
-                const Icon(Icons.chevron_right, color: Color(0xFFACACAC)),
-                const SizedBox(width: 16),
+                const SizedBox(height: 4),
+                const Divider(),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: const Text('Details'),
+                )
               ],
             ),
           ),

@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarm_details/bloc.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/details/alarm_status_button.dart';
-import 'package:thingsboard_app/utils/ui/tb_alert_dialog.dart';
 import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
+
+import '../activity/edit_dialog.dart';
 
 class AlarmControlButtons extends StatelessWidget {
   const AlarmControlButtons({super.key});
@@ -38,48 +39,48 @@ class AlarmControlButtons extends StatelessWidget {
                     text: S.of(context).clear,
                     onTap: state.clear
                         ? () async {
-                            final response = await showDialog<bool>(
-                              context: context,
-                              builder: (context) {
-                                return TbAlertDialog(
-                                  title: Text(S.of(context).alarmClearTitle),
-                                  content: Text(S.of(context).alarmClearText),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(false);
-                                      },
-                                      child: Text(
-                                        S.of(context).no.toUpperCase(),
-                                        style: TbTextStyles.labelLarge.copyWith(
-                                          color: Colors.black.withOpacity(.87),
-                                        ),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(true);
-                                      },
-                                      child: Text(
-                                        S.of(context).yes.toUpperCase(),
-                                        style: TbTextStyles.labelLarge.copyWith(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                      final response = await showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return EditDialogAlertMessage(
+                            title: Text(S.of(context).alarmClearTitle),
+                            content: Text(S.of(context).alarmClearText),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(false);
+                                },
+                                child: Text(
+                                  S.of(context).no.toUpperCase(),
+                                  style: TbTextStyles.labelLarge.copyWith(
+                                    color: Colors.black.withOpacity(.87),
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(true);
+                                },
+                                child: Text(
+                                  S.of(context).yes.toUpperCase(),
+                                  style: TbTextStyles.labelLarge.copyWith(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
 
-                            if (context.mounted && response == true) {
-                              context.read<AlarmDetailsBloc>().add(
-                                    ClearAlarmEvent(
-                                      state.alarmInfo.id!,
-                                    ),
-                                  );
-                            }
-                          }
+                      if (context.mounted && response == true) {
+                        context.read<AlarmDetailsBloc>().add(
+                          ClearAlarmEvent(
+                            state.alarmInfo.id!,
+                          ),
+                        );
+                      }
+                    }
                         : null,
                   ),
                 ),
@@ -89,50 +90,50 @@ class AlarmControlButtons extends StatelessWidget {
                     text: S.of(context).acknowledge,
                     onTap: state.acknowledge
                         ? () async {
-                            final response = await showDialog<bool>(
-                              context: context,
-                              builder: (context) {
-                                return TbAlertDialog(
-                                  title:
-                                      Text(S.of(context).alarmAcknowledgeTitle),
-                                  content:
-                                      Text(S.of(context).alarmAcknowledgeText),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(false);
-                                      },
-                                      child: Text(
-                                        S.of(context).no.toUpperCase(),
-                                        style: TbTextStyles.labelLarge.copyWith(
-                                          color: Colors.black.withOpacity(.87),
-                                        ),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(true);
-                                      },
-                                      child: Text(
-                                        S.of(context).yes.toUpperCase(),
-                                        style: TbTextStyles.labelLarge.copyWith(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                      final response = await showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return EditDialogAlertMessage(
+                            title:
+                            Text(S.of(context).alarmAcknowledgeTitle),
+                            content:
+                            Text(S.of(context).alarmAcknowledgeText),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(false);
+                                },
+                                child: Text(
+                                  S.of(context).no.toUpperCase(),
+                                  style: TbTextStyles.labelLarge.copyWith(
+                                    color: Colors.black.withOpacity(.87),
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(true);
+                                },
+                                child: Text(
+                                  S.of(context).yes.toUpperCase(),
+                                  style: TbTextStyles.labelLarge.copyWith(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
 
-                            if (context.mounted && response == true) {
-                              context.read<AlarmDetailsBloc>().add(
-                                    AcknowledgeAlarmEvent(
-                                      state.alarmInfo.id!,
-                                    ),
-                                  );
-                            }
-                          }
+                      if (context.mounted && response == true) {
+                        context.read<AlarmDetailsBloc>().add(
+                          AcknowledgeAlarmEvent(
+                            state.alarmInfo.id!,
+                          ),
+                        );
+                      }
+                    }
                         : null,
                   ),
                 ),

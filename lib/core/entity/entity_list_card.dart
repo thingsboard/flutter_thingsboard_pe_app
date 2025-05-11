@@ -34,7 +34,7 @@ class EntityListCard<T> extends StatelessWidget {
                   style: BorderStyle.solid,
                   width: 1,
                 ),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(16),
               )
             : BoxDecoration(
                 boxShadow: [
@@ -48,7 +48,7 @@ class EntityListCard<T> extends StatelessWidget {
         child: Card(
           margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(16),
           ),
           elevation: 0,
           child: _entityCardWidgetBuilder(context, _entity),

@@ -19,8 +19,8 @@ class UserInfoAvatarWidget extends StatelessWidget {
         color: color,
       ),
       padding: const EdgeInsets.all(4),
-      height: 32,
-      width: 32,
+      height: 40,
+      width: 40,
       child: Center(
         child: Text(
           shortName,
