@@ -31,6 +31,7 @@ class _NotificationPageState extends TbContextState<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: TbAppBar(
         tbContext,
         leading: BackButtonWidget(
@@ -76,10 +77,7 @@ class _NotificationPageState extends TbContextState<NotificationPage> {
 
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

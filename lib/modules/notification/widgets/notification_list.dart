@@ -58,7 +58,7 @@ class NotificationsList extends StatelessWidget {
         ),
         noItemsFoundIndicatorBuilder: (_) => const NoNotificationsFoundWidget(),
       ),
-      separatorBuilder: (_, __) => const Divider(thickness: 1),
+      separatorBuilder: (_, __) => const SizedBox(height: 16,),
     );
   }
 }
