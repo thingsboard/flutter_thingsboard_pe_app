@@ -96,7 +96,7 @@ class _TbProgressIndicatorState extends State<TbProgressIndicator>
         ),
       );
     } else {
-      return Image.asset('assets/images/rolling11.gif');
+      return Image.asset('assets/images/rolling15.gif');
       //   Stack(
       //   children: [
       //     SvgPicture.asset(

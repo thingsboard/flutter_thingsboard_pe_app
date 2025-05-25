@@ -27,7 +27,7 @@ class DashboardsAppbar extends StatelessWidget {
         elevation: dashboardState ? 0 : 8,
         title: SizedBox(
           height: kToolbarHeight - 8,
-          child: Image.asset('assets/images/logo.png'),
+          child: Image.asset('assets/images/splash.png'),
         ),
         actions: [
           if (tbContext.tbClient.isSystemAdmin())

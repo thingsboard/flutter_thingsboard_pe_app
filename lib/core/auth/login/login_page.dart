@@ -121,7 +121,7 @@ class _LoginPageState extends TbPageState<LoginPage>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Image.asset('assets/images/logo.png',fit: BoxFit.cover,),
+                                        Image.asset('assets/images/splash.png'),
                                         Visibility(
                                           visible: selectedRegion != null,
                                           child: TextButton(
