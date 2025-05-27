@@ -72,7 +72,7 @@ class LayoutPagesBloc extends Bloc<LayoutPagesEvent, LayoutPagesState> {
               child: MorePage(tbContext),
             ),
             title: S.of(event.context).more,
-            icon: Icons.menu_outlined,
+            icon: "assets/images/more.png",
             path: '/more',
           ),
         );
@@ -171,33 +171,33 @@ class LayoutPagesBloc extends Bloc<LayoutPagesEvent, LayoutPagesState> {
     }
   }
 
-  IconData getIcon(PageLayout pageLayout) {
-    if (pageLayout.icon != null) {
-      return getIconFromString(pageLayout.icon);
-    }
+  String getIcon(PageLayout pageLayout) {
+    // if (pageLayout.icon != null) {
+    //   return getIconFromString(pageLayout.icon);
+    // }
 
     switch (pageLayout.id) {
       case Pages.home:
-        return Icons.home_outlined;
+        return 'assets/images/home.png';
       case Pages.alarms:
-        return Icons.notifications_outlined;
+        return 'assets/images/alarms.png';
       case Pages.devices:
-        return Icons.devices_other_outlined;
+        return 'assets/images/devices.png';
       case Pages.customers:
-        return Icons.supervisor_account_outlined;
+        return 'assets/images/customers.png';
       case Pages.assets:
-        return Icons.domain_outlined;
+        return 'assets/images/assets.png';
       case Pages.audit_logs:
-        return Icons.track_changes_outlined;
+        return 'assets/images/assets.png';
       case Pages.notifications:
-        return Icons.notifications_active_outlined;
+        return 'assets/images/notifications.png';
       case Pages.device_list:
-        return Icons.devices;
+        return 'assets/images/devices.png';
       case Pages.dashboards:
-        return Icons.dashboard_outlined;
+        return 'assets/images/more.png';
       case Pages.undefined:
       case null:
-        return getIconFromString(pageLayout.icon);
+      return 'assets/images/home.png';
     }
   }
 

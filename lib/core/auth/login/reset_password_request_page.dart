@@ -26,7 +26,7 @@ class _ResetPasswordRequestPageState
     return Scaffold(
       body: Stack(
         children: [
-          const LoginPageBackground(),
+          // const LoginPageBackground(),
           SizedBox.expand(
             child: Scaffold(
               backgroundColor: Colors.transparent,

@@ -7,10 +7,10 @@ import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 abstract class EntityDetailsPage<T extends BaseData> extends TbContextWidget {
   final labelTextStyle =
-      const TextStyle(color: Color(0xFF757575), fontSize: 14, height: 20 / 14);
+      const TextStyle(color: Color(0xFF282828), fontSize: 16, height: 20 / 14);
 
   final valueTextStyle =
-      const TextStyle(color: Color(0xFF282828), fontSize: 14, height: 20 / 14);
+      const TextStyle(color: Color(0xFF757575), fontSize: 14, height: 20 / 14);
 
   final String _defaultTitle;
   final String _entityId;
@@ -169,7 +169,7 @@ abstract class ContactBasedDetailsPage<T extends ContactBased>
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Text('Title', style: labelTextStyle),
+          Text('Customer Name', style: labelTextStyle),
           Text(entity.getName(), style: valueTextStyle),
           const SizedBox(height: 16),
           Text('Country', style: labelTextStyle),
@@ -206,10 +206,10 @@ abstract class ContactBasedDetailsPage<T extends ContactBased>
           Text('Zip / Postal Code', style: labelTextStyle),
           Text(entity.zip ?? '', style: valueTextStyle),
           const SizedBox(height: 16),
-          Text('Address', style: labelTextStyle),
+          Text('Address Line 1', style: labelTextStyle),
           Text(entity.address ?? '', style: valueTextStyle),
           const SizedBox(height: 16),
-          Text('Address 2', style: labelTextStyle),
+          Text('Address Line 2', style: labelTextStyle),
           Text(entity.address2 ?? '', style: valueTextStyle),
           const SizedBox(height: 16),
           Text('Phone', style: labelTextStyle),

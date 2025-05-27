@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.thingsboard.pe.app">
+    package="org.bnan.pe.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
@@ -46,7 +46,7 @@
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/launcher_icon"
-        android:label="ThingsBoard PE App"
+        android:label="Bnan"
         android:networkSecurityConfig="@xml/network_security_config"
         android:requestLegacyExternalStorage="true">
         <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.

@@ -27,10 +27,8 @@ class MoreMenuItemWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            Icon(
+            Image.asset(
               menuItem.icon,
-              color: color ?? Colors.black.withOpacity(.76),
-              size: 18,
             ),
             Visibility(
               visible: menuItem.showAdditionalIcon,
