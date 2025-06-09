@@ -819,7 +819,7 @@ packages:
     source: hosted
     version: "12.0.0"
   geolocator_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: geolocator_android
       sha256: "7aefc530db47d90d0580b552df3242440a10fe60814496a979aa67aa98b1fd47"
@@ -954,6 +954,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  iconsax_flutter:
+    dependency: transitive
+    description:
+      name: iconsax_flutter
+      sha256: d14b4cec8586025ac15276bdd40f6eea308cb85748135965bb6255f14beb2564
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   image:
     dependency: transitive
     description:
@@ -1322,6 +1330,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
+  pausable_timer:
+    dependency: transitive
+    description:
+      name: pausable_timer
+      sha256: "6ef1a95441ec3439de6fb63f39a011b67e693198e7dae14e20675c3c00e86074"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0+3"
   permission_handler:
     dependency: "direct main"
     description:
@@ -1397,11 +1413,9 @@ packages:
   plugin_wifi_connect:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: a2df1b11c699159bd7360470ef77c17bfdd47a85
-      url: "git@github.com:ybeshkarov/plugin_wifi_connect.git"
-    source: git
+      path: plugin_wifi_connect
+      relative: true
+    source: path
     version: "1.0.3"
   pointycastle:
     dependency: transitive
@@ -1652,10 +1666,10 @@ packages:
     dependency: "direct main"
     description:
       name: thingsboard_pe_client
-      sha256: "5e1973f0bea38ae8bba1c96bb9aa748a08a159980f4c09d9da182ff98b3757cb"
+      sha256: d0c47ba7db471d23e7c7f1c6342c98180d76f45356dafba2fd9f91919046ea2a
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.1"
+    version: "4.0.0"
   timeago:
     dependency: "direct main"
     description:
@@ -1680,6 +1694,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  toastification:
+    dependency: "direct main"
+    description:
+      name: toastification
+      sha256: "4d97fbfa463dfe83691044cba9f37cb185a79bb9205cfecb655fa1f6be126a13"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
   typed_data:
     dependency: transitive
     description:

@@ -88,6 +88,8 @@ dev_dependencies:
 dependency_overrides:
   logger: ^2.5.0
   http: ^1.3.0
+  plugin_wifi_connect:
+    path: ./plugin_wifi_connect
 
 flutter:
   uses-material-design: true
