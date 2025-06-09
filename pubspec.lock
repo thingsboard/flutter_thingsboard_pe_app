@@ -1413,7 +1413,7 @@ packages:
   plugin_wifi_connect:
     dependency: "direct main"
     description:
-      path: plugin_wifi_connect
+      path: "../plugin_wifi_connect"
       relative: true
     source: path
     version: "1.0.3"
