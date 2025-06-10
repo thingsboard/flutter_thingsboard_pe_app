@@ -1413,9 +1413,11 @@ packages:
   plugin_wifi_connect:
     dependency: "direct main"
     description:
-      path: "../plugin_wifi_connect"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: a2df1b11c699159bd7360470ef77c17bfdd47a85
+      url: "https://github.com/ybeshkarov/plugin_wifi_connect"
+    source: git
     version: "1.0.3"
   pointycastle:
     dependency: transitive
