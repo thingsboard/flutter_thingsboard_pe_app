@@ -6,20 +6,8 @@ class PermissionService implements IPermissionService {
   @override
   bool haveViewDashboardPermission(TbContext context) {
     return context.hasGenericPermission(
-          Resource.WIDGETS_BUNDLE,
-          Operation.READ,
-        ) &&
-        context.hasGenericPermission(
-          Resource.WIDGET_TYPE,
-          Operation.READ,
-        ) &&
-        context.hasGenericPermission(
-          Resource.DASHBOARD,
-          Operation.READ,
-        ) &&
-        context.hasGenericPermission(
-          Resource.DASHBOARD_GROUP,
-          Operation.READ,
-        );
+      Resource.DASHBOARD,
+      Operation.READ,
+    );
   }
 }
