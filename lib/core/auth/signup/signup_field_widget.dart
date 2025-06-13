@@ -24,6 +24,7 @@ class SingUpFieldWidget extends StatelessWidget {
     }
 
     return FormBuilderTextField(
+      autofillHints: getHintsFromId(),
       obscureText: obscureText,
       name: field.id.toShortString(),
       keyboardType: keyboardTypeFromId(),
@@ -38,7 +39,35 @@ class SingUpFieldWidget extends StatelessWidget {
       ),
     );
   }
-
+List<String>? getHintsFromId() {
+    switch (field.id) {
+      case SignUpFieldsId.email:
+        return [AutofillHints.email];
+      case SignUpFieldsId.first_name:
+        return [AutofillHints.givenName];
+      case SignUpFieldsId.last_name:
+        return [AutofillHints.familyName];
+      case SignUpFieldsId.phone:
+        return [AutofillHints.telephoneNumber];
+      case SignUpFieldsId.address:
+        return [AutofillHints.streetAddressLine1];
+      case SignUpFieldsId.address2:
+        return [AutofillHints.streetAddressLine2];
+      case SignUpFieldsId.country:
+        return [AutofillHints.countryName];
+      case SignUpFieldsId.city:
+        return [AutofillHints.addressCity];
+      case SignUpFieldsId.state:
+        return [AutofillHints.addressState];
+      case SignUpFieldsId.zip:
+        return [AutofillHints.postalCode];
+      case SignUpFieldsId.repeat_password:
+      case SignUpFieldsId.password:
+        return [AutofillHints.newPassword, AutofillHints.password];
+      default:
+        return null;
+    }
+}
   TextInputType? keyboardTypeFromId() {
     switch (field.id) {
       case SignUpFieldsId.email:
