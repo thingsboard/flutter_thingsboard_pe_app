@@ -198,16 +198,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                           ),
                                                 child: Row(
                                                   children: [
-                                                    Icon(
-                                                      hasRecaptchaResponse
-                                                          ? Icons
-                                                              .check_box_outlined
-                                                          : Icons
-                                                              .check_box_outline_blank,
-                                                      color: const Color(
-                                                        0xFF666666,
-                                                      ),
-                                                    ),
+                                                   
                                                     const SizedBox(width: 24),
                                                     Text(
                                                       S.of(context).imNotARobot,
