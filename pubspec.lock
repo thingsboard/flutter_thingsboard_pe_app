@@ -1400,7 +1400,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: a2df1b11c699159bd7360470ef77c17bfdd47a85
-      url: "git@github.com:ybeshkarov/plugin_wifi_connect.git"
+      url: "https://github.com/thingsboard/flutter_wifi_connect"
     source: git
     version: "1.0.3"
   pointycastle:
