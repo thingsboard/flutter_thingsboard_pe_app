@@ -256,7 +256,7 @@ class NotificationService {
         case 'DASHBOARD':
           final dashboardId =
               data['dashboardId'] ?? data['onClick.dashboardId'];
-          dynamic entityId;
+          EntityId? entityId;
           if ((data['stateEntityId'] ?? data['onClick.stateEntityId']) !=
                   null &&
               (data['stateEntityType'] ?? data['onClick.stateEntityType']) !=

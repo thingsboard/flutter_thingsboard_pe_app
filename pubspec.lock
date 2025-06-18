@@ -258,10 +258,10 @@ packages:
     dependency: transitive
     description:
       name: cli_util
-      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
+      sha256: c05b7406fdabc7a49a3929d4af76bcaccbbffcbcdcf185b082e1ae07da323d19
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.2"
+    version: "0.4.1"
   clock:
     dependency: transitive
     description:
@@ -274,10 +274,10 @@ packages:
     dependency: transitive
     description:
       name: code_builder
-      sha256: "0ec10bf4a89e4c613960bf1e8b42c64127021740fb21640c29c909826a5eea3e"
+      sha256: f692079e25e7869c14132d39f223f8eec9830eb76131925143b2129c4bb01b37
       url: "https://pub.dev"
     source: hosted
-    version: "4.10.1"
+    version: "4.10.0"
   collection:
     dependency: "direct main"
     description:
@@ -828,10 +828,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_svg
-      sha256: de82e6bf958cec7190fbc1c5298282c851228e35ae2b14e2b103e7f777818c64
+      sha256: "7b4ca6cf3304575fe9c8ec64813c8d02ee41d2afe60bcfe0678bcb5375d596a2"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.13"
+    version: "2.0.10+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -1430,18 +1430,18 @@ packages:
     dependency: transitive
     description:
       name: path_parsing
-      sha256: "883402936929eac138ee0a45da5b0f2c80f89913e6dc3bf77eb65b84b409c6ca"
+      sha256: "45f7d6bba1128761de5540f39d5ca000ea8a1f22f06b76b61094a60a2997bd0e"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "1.0.2"
   path_provider:
     dependency: transitive
     description:
       name: path_provider
-      sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
+      sha256: fec0d61223fba3154d87759e3cc27fe2c8dc498f6386c6d6fc80d1afdd1bf378
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.5"
+    version: "2.1.4"
   path_provider_android:
     dependency: transitive
     description:
@@ -1568,7 +1568,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: a2df1b11c699159bd7360470ef77c17bfdd47a85
-      url: "https://github.com/ybeshkarov/plugin_wifi_connect"
+      url: "https://github.com/thingsboard/flutter_wifi_connect"
     source: git
     version: "1.0.3"
   pointycastle:
@@ -1643,14 +1643,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  recaptcha_enterprise_flutter:
-    dependency: "direct main"
-    description:
-      name: recaptcha_enterprise_flutter
-      sha256: b3cac0816ab219508e1aa079f1f5910e8b58e82ad879a4e154e819e60989f787
-      url: "https://pub.dev"
-    source: hosted
-    version: "18.6.1"
   rxdart:
     dependency: transitive
     description:
@@ -1872,11 +1864,11 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.4"
-  thingsboard_pe_client:
+  thingsboard_client:
     dependency: "direct main"
     description:
-      name: thingsboard_pe_client
-      sha256: d0c47ba7db471d23e7c7f1c6342c98180d76f45356dafba2fd9f91919046ea2a
+      name: thingsboard_client
+      sha256: "0914b59fde780e247cab2df8722c5ab235e1ffece7fc3a3cb86c1d178408becc"
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
@@ -1956,10 +1948,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_android
-      sha256: "6fc2f56536ee873eeb867ad176ae15f304ccccc357848b351f6f0d8d4a40d193"
+      sha256: "0dea215895a4d254401730ca0ba8204b29109a34a99fb06ae559a2b60988d2de"
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.14"
+    version: "6.3.13"
   url_launcher_ios:
     dependency: transitive
     description:
@@ -2020,26 +2012,26 @@ packages:
     dependency: transitive
     description:
       name: vector_graphics
-      sha256: "773c9522d66d523e1c7b25dfb95cc91c26a1e17b107039cfe147285e92de7878"
+      sha256: "32c3c684e02f9bc0afb0ae0aa653337a2fe022e8ab064bcd7ffda27a74e288e3"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.14"
+    version: "1.1.11+1"
   vector_graphics_codec:
     dependency: transitive
     description:
       name: vector_graphics_codec
-      sha256: "2430b973a4ca3c4dbc9999b62b8c719a160100dcbae5c819bae0cacce32c9cdb"
+      sha256: c86987475f162fadff579e7320c7ddda04cd2fdeffbe1129227a85d9ac9e03da
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.12"
+    version: "1.1.11+1"
   vector_graphics_compiler:
     dependency: transitive
     description:
       name: vector_graphics_compiler
-      sha256: "26d520739b7c6b5d2a2b3274427874a8390831fd4cd5bb8cfbd7d913477d3a2e"
+      sha256: "12faff3f73b1741a36ca7e31b292ddeb629af819ca9efe9953b70bd63fc8cd81"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.14"
+    version: "1.1.11+1"
   vector_math:
     dependency: transitive
     description:
