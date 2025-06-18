@@ -115,192 +115,200 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                           ),
                                         ],
                                       ),
-                                    FormBuilder(
-                                      key: _signUpFormKey,
-                                      autovalidateMode:
-                                          AutovalidateMode.disabled,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          ListView.separated(
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            shrinkWrap: true,
-                                            itemBuilder: (context, index) {
-                                              final field = state
-                                                  .selfRegistrationParams!
-                                                  .fields[index];
-                                              final passwordFiled = field.id ==
-                                                      SignUpFieldsId.password ||
-                                                  field.id ==
-                                                      SignUpFieldsId
-                                                          .repeat_password;
-
-                                              return SingUpFieldWidget(
-                                                field: state
+                                    AutofillGroup(
+                                      child: FormBuilder(
+                                        key: _signUpFormKey,
+                                        autovalidateMode:
+                                            AutovalidateMode.disabled,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          children: [
+                                            ListView.separated(
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              shrinkWrap: true,
+                                              itemBuilder: (context, index) {
+                                                final field = state
                                                     .selfRegistrationParams!
-                                                    .fields[index],
-                                                suffixIcon: passwordFiled
-                                                    ? IconButton(
-                                                        icon: Icon(
-                                                          _showPassword
-                                                              ? Icons.visibility
-                                                              : Icons
-                                                                  .visibility_off,
-                                                        ),
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            _showPassword =
-                                                                !_showPassword;
-                                                          });
-                                                        },
-                                                      )
-                                                    : null,
-                                                obscureText: passwordFiled
-                                                    ? !_showPassword
-                                                    : false,
-                                              );
-                                            },
-                                            separatorBuilder: (_, __) =>
-                                                const SizedBox(height: 12),
-                                            itemCount: state
-                                                .selfRegistrationParams!
-                                                .fields
-                                                .length,
-                                          ),
-                                          const SizedBox(height: 24),
-                                          ValueListenableBuilder(
-                                            valueListenable:
-                                                _recaptchaResponseNotifier,
-                                            builder: (
-                                              BuildContext context,
-                                              String? recaptchaResponse,
-                                              child,
-                                            ) {
-                                              bool hasRecaptchaResponse =
-                                                  recaptchaResponse != null &&
-                                                      recaptchaResponse
-                                                          .isNotEmpty;
-                                              return TextButton(
-                                                style: const ButtonStyle(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                ),
-                                                onPressed: () =>
-                                                    hasRecaptchaResponse
-                                                        ? null
-                                                        : _openRecaptcha(
-                                                            state
-                                                                .selfRegistrationParams!,
-                                                            state
-                                                                .recaptchaClient,
+                                                    .fields[index];
+                                                final passwordFiled = field.id ==
+                                                        SignUpFieldsId.password ||
+                                                    field.id ==
+                                                        SignUpFieldsId
+                                                            .repeat_password;
+                                      
+                                                return SingUpFieldWidget(
+                                                  field: state
+                                                      .selfRegistrationParams!
+                                                      .fields[index],
+                                                  suffixIcon: passwordFiled
+                                                      ? IconButton(
+                                                          icon: Icon(
+                                                            _showPassword
+                                                                ? Icons.visibility
+                                                                : Icons
+                                                                    .visibility_off,
                                                           ),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              _showPassword =
+                                                                  !_showPassword;
+                                                            });
+                                                          },
+                                                        )
+                                                      : null,
+                                                  obscureText: passwordFiled
+                                                      ? !_showPassword
+                                                      : false,
+                                                );
+                                              },
+                                              separatorBuilder: (_, __) =>
+                                                  const SizedBox(height: 12),
+                                              itemCount: state
+                                                  .selfRegistrationParams!
+                                                  .fields
+                                                  .length,
+                                            ),
+                                            const SizedBox(height: 24),
+                                            ValueListenableBuilder(
+                                              valueListenable:
+                                                  _recaptchaResponseNotifier,
+                                              builder: (
+                                                BuildContext context,
+                                                String? recaptchaResponse,
+                                                child,
+                                              ) {
+                                                bool hasRecaptchaResponse =
+                                                    recaptchaResponse != null &&
+                                                        recaptchaResponse
+                                                            .isNotEmpty;
+                                                return TextButton(
+                                                  style: const ButtonStyle(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                  ),
+                                                  onPressed: () =>
                                                       hasRecaptchaResponse
-                                                          ? Icons
-                                                              .check_box_outlined
-                                                          : Icons
-                                                              .check_box_outline_blank,
-                                                      color: const Color(
-                                                        0xFF666666,
+                                                          ? null
+                                                          : _openRecaptcha(
+                                                              state
+                                                                  .selfRegistrationParams!,
+                                                              state
+                                                                  .recaptchaClient,
+                                                            ),
+                                                  child: Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        width: 24,
+                                                        height: 24,
+                                                        child: Checkbox(
+                                                            value:
+                                                                hasRecaptchaResponse,
+                                                            onChanged: (_) {
+                                                              hasRecaptchaResponse
+                                                                  ? null
+                                                                  : _openRecaptcha(
+                                                                      state
+                                                                          .selfRegistrationParams!,
+                                                                      state
+                                                                          .recaptchaClient,
+                                                                    );
+                                                            },),),
+                                                      const SizedBox(width: 24),
+                                                      Text(
+                                                        S.of(context).imNotARobot,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            if (state.selfRegistrationParams!
+                                                .showPrivacyPolicy)
+                                              FormBuilderCheckbox(
+                                                title: Row(
+                                                  children: [
+                                                    Text(
+                                                      S.of(context).accept,
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        height: 20 / 14,
                                                       ),
                                                     ),
-                                                    const SizedBox(width: 24),
-                                                    Text(
-                                                      S.of(context).imNotARobot,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium,
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        _openPrivacyPolicy();
+                                                      },
+                                                      child: Text(
+                                                        S
+                                                            .of(context)
+                                                            .privacyPolicy,
+                                                        style: TextStyle(
+                                                          color: Theme.of(context)
+                                                              .colorScheme
+                                                              .primary,
+                                                          letterSpacing: 1,
+                                                          fontSize: 14,
+                                                          height: 20 / 14,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
-                                              );
-                                            },
-                                          ),
-                                          if (state.selfRegistrationParams!
-                                              .showPrivacyPolicy)
-                                            FormBuilderCheckbox(
-                                              title: Row(
-                                                children: [
-                                                  Text(
-                                                    S.of(context).accept,
-                                                    style: const TextStyle(
-                                                      fontSize: 14,
-                                                      height: 20 / 14,
-                                                    ),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      _openPrivacyPolicy();
-                                                    },
-                                                    child: Text(
-                                                      S
-                                                          .of(context)
-                                                          .privacyPolicy,
-                                                      style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .primary,
-                                                        letterSpacing: 1,
+                                                contentPadding: EdgeInsets.zero,
+                                                name: 'acceptPrivacyPolicy',
+                                                initialValue: false,
+                                                decoration:
+                                                    InputDecoration.collapsed(
+                                                  hintText:
+                                                      S.of(context).privacyPolicy,
+                                                ),
+                                              ),
+                                            if (state.selfRegistrationParams!
+                                                .showTermsOfUse)
+                                              FormBuilderCheckbox(
+                                                title: Row(
+                                                  children: [
+                                                    Text(
+                                                      S.of(context).accept,
+                                                      style: const TextStyle(
                                                         fontSize: 14,
                                                         height: 20 / 14,
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              contentPadding: EdgeInsets.zero,
-                                              name: 'acceptPrivacyPolicy',
-                                              initialValue: false,
-                                              decoration:
-                                                  InputDecoration.collapsed(
-                                                hintText:
-                                                    S.of(context).privacyPolicy,
-                                              ),
-                                            ),
-                                          if (state.selfRegistrationParams!
-                                              .showTermsOfUse)
-                                            FormBuilderCheckbox(
-                                              title: Row(
-                                                children: [
-                                                  Text(
-                                                    S.of(context).accept,
-                                                    style: const TextStyle(
-                                                      fontSize: 14,
-                                                      height: 20 / 14,
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        _openTermsOfUse();
+                                                      },
+                                                      child: Text(
+                                                        S.of(context).termsOfUse,
+                                                        style: TextStyle(
+                                                          color: Theme.of(context)
+                                                              .colorScheme
+                                                              .primary,
+                                                          letterSpacing: 1,
+                                                          fontSize: 14,
+                                                          height: 20 / 14,
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      _openTermsOfUse();
-                                                    },
-                                                    child: Text(
+                                                  ],
+                                                ),
+                                                contentPadding: EdgeInsets.zero,
+                                                name: 'acceptTermsOfUse',
+                                                initialValue: false,
+                                                decoration:
+                                                    InputDecoration.collapsed(
+                                                  hintText:
                                                       S.of(context).termsOfUse,
-                                                      style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .primary,
-                                                        letterSpacing: 1,
-                                                        fontSize: 14,
-                                                        height: 20 / 14,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
+                                                ),
                                               ),
-                                              contentPadding: EdgeInsets.zero,
-                                              name: 'acceptTermsOfUse',
-                                              initialValue: false,
-                                              decoration:
-                                                  InputDecoration.collapsed(
-                                                hintText:
-                                                    S.of(context).termsOfUse,
-                                              ),
-                                            ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],

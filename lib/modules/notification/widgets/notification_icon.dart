@@ -20,12 +20,13 @@ class NotificationIcon extends StatelessWidget {
       if (hexColor.length == 6) {
         hexColor = 'FF$hexColor';
       }
-
       if (hexColor.length == 8) {
-        final value = int.tryParse('0x$hexColor');
-        if (value != null) {
-          return Color(value);
-        }
+        final alpha = hexColor.substring(6, 8);
+        hexColor = '$alpha${hexColor.substring(0, 6)}';
+      }
+      final value = int.tryParse(hexColor, radix: 16);
+      if (value != null) {
+        return Color(value);
       }
     }
 
@@ -42,13 +43,8 @@ class NotificationIcon extends StatelessWidget {
           color: _toColor(data['color']),
         );
       }
-
-      return Icon(
-        materialIconsMap[imageData],
-        color: _toColor(
-          data['color'],
-        ),
-      );
+      final color = _toColor(data['color']);
+      return Icon(materialIconsMap[imageData], color: color);
     }
 
     return const Icon(Icons.notifications, color: Colors.black54);

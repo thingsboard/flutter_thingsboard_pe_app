@@ -22,6 +22,8 @@ class MorePage extends TbContextWidget {
   State<StatefulWidget> createState() => _MorePageState();
 }
 
+
+
 class _MorePageState extends TbContextState<MorePage> {
   @override
   Widget build(BuildContext context) {
@@ -70,7 +72,7 @@ class _MorePageState extends TbContextState<MorePage> {
                 children: [
                   Flexible(
                     child: Text(
-                      userDetails.displayName,
+                     userDetails.displayName ,
                       style: TbTextStyles.labelLarge.copyWith(
                         color: Colors.black.withOpacity(.76),
                       ),

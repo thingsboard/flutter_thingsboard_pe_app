@@ -106,9 +106,11 @@
             android:exported="true">
             <intent-filter android:label="tb_web_auth">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="org.thingsboard.pe.app.auth" />
+
+                <data android:scheme="${authScheme}" />
             </intent-filter>
         </activity>
 
