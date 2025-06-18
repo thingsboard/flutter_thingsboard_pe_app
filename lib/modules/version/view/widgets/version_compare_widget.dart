@@ -64,20 +64,15 @@ class _VersionCompareWidgetState extends TbContextState<VersionCompareWidget>
                 ],
               ),
               Expanded(
-                child: SizedBox(
-                                   //   width: 1000,
-                  child: HtmlWidget(
-                   releaseNotes,
-                   
-                    onTapUrl: (link) async {
-                      
-                        launchUrlString(
-                          link,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      return true;
-                    },
-                  ),
+                child: HtmlWidget(
+                  releaseNotes,
+                  onTapUrl: (link) async {
+                    launchUrlString(
+                      link,
+                      mode: LaunchMode.externalApplication,
+                    );
+                    return true;
+                  },
                 ),
               ),
               Align(
