@@ -691,7 +691,18 @@ class TbContext implements PopEntry {
       ),
     );
   }
-
+static showFullScreenDialogStatic<T>(
+    BuildContext context,
+    Widget dialog) {
+    return Navigator.of(context).push<T>(
+      MaterialPageRoute<T>(
+        builder: (BuildContext context) {
+          return dialog;
+        },
+        fullscreenDialog: true,
+      ),
+    );
+  }
   void pop<T>([T? result, BuildContext? context]) async {
     var targetContext = context ?? currentState?.context;
     if (targetContext != null) {

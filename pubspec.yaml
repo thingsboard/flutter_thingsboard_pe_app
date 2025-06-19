@@ -72,20 +72,25 @@ dependencies:
   open_settings_plus: ^0.4.0
   plugin_wifi_connect:
     git:
-      url: https://github.com/ybeshkarov/plugin_wifi_connect
+      url: https://github.com/thingsboard/flutter_wifi_connect
   toastification: ^2.3.0
   flutter_widget_from_html: ^0.16.0
   file_picker: ^9.0.0
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+  
 
 dev_dependencies:
   flutter_test:
      sdk: flutter
   flutter_launcher_icons: ^0.13.1
   mocktail: ^1.0.3
+  build_runner: ^2.4.13
   bloc_test: ^9.1.7
   flutter_lints: ^2.0.0
   hive_generator: ^2.0.1
-  build_runner: ^2.4.9
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
 
 dependency_overrides:
   logger: ^2.5.0

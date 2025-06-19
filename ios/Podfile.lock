@@ -52,12 +52,7 @@ PODS:
     - FirebaseMessaging (~> 11.2.0)
   - firebase_core (3.6.0):
     - Firebase/CoreOnly (= 11.2.0)
-    - FirebaseMessaging (~> 11.2.0)
-  - firebase_core (3.6.0):
-    - Firebase/CoreOnly (= 11.2.0)
     - Flutter
-  - firebase_messaging (15.1.3):
-    - Firebase/Messaging (= 11.2.0)
   - firebase_messaging (15.1.3):
     - Firebase/Messaging (= 11.2.0)
     - firebase_core
@@ -87,23 +82,13 @@ PODS:
     - ESPProvision
     - Flutter
   - flutter_inappwebview_ios (0.0.1):
-  - flutter_esp_ble_prov (0.0.1):
-    - ESPProvision
-    - Flutter
-  - flutter_inappwebview_ios (0.0.1):
     - Flutter
     - flutter_inappwebview_ios/Core (= 0.0.1)
     - OrderedSet (~> 6.0.3)
   - flutter_inappwebview_ios/Core (0.0.1):
-    - flutter_inappwebview_ios/Core (= 0.0.1)
-    - OrderedSet (~> 6.0.3)
-  - flutter_inappwebview_ios/Core (0.0.1):
     - Flutter
-    - OrderedSet (~> 6.0.3)
     - OrderedSet (~> 6.0.3)
   - flutter_local_notifications (0.0.1):
-    - Flutter
-  - flutter_new_badger (0.0.1):
     - Flutter
   - flutter_new_badger (0.0.1):
     - Flutter
@@ -128,7 +113,6 @@ PODS:
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Privacy
-    - GoogleUtilities/Privacy
     - GoogleUtilities/Reachability
   - "GoogleUtilities/NSData+zlib (8.1.0)":
     - GoogleUtilities/Privacy
@@ -139,24 +123,12 @@ PODS:
   - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-    - GoogleUtilities/Privacy
   - image_picker_ios (0.0.1):
     - Flutter
   - just_audio (0.0.1):
     - Flutter
     - FlutterMacOS
-  - just_audio (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - MTBBarcodeScanner (5.0.11)
-  - nanopb (3.30910.0):
-    - nanopb/decode (= 3.30910.0)
-    - nanopb/encode (= 3.30910.0)
-  - nanopb/decode (3.30910.0)
-  - nanopb/encode (3.30910.0)
-  - open_settings_plus (0.0.1):
-    - Flutter
-  - OrderedSet (6.0.3)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -175,20 +147,17 @@ PODS:
   - plugin_wifi_connect (0.0.1):
     - Flutter
   - PromisesObjC (2.4.0)
-  - permission_handler_apple (9.3.0):
-    - Flutter
-  - plugin_wifi_connect (0.0.1):
-    - Flutter
-  - PromisesObjC (2.4.0)
   - qr_code_scanner (0.2.0):
     - Flutter
     - MTBBarcodeScanner
-  - recaptcha_enterprise_flutter (18.6.0):
+  - recaptcha_enterprise_flutter (18.7.1):
     - Flutter
-    - RecaptchaEnterprise (= 18.6.0)
-  - RecaptchaEnterprise (18.6.0):
-    - RecaptchaInterop (~> 100.0.0)
-  - RecaptchaInterop (100.0.0)
+    - RecaptchaEnterprise (<= 18.7.1, >= 18.7.0)
+  - RecaptchaEnterprise (18.7.0):
+    - RecaptchaEnterpriseSDK (= 18.7.0)
+    - RecaptchaInterop (~> 101.0.0)
+  - RecaptchaEnterpriseSDK (18.7.0)
+  - RecaptchaInterop (101.0.0)
   - SDWebImage (5.21.1):
     - SDWebImage/Core (= 5.21.1)
   - SDWebImage/Core (5.21.1)
@@ -209,25 +178,11 @@ PODS:
     - FlutterMacOS
   - wifi_scan (0.0.1):
     - Flutter
-  - video_player_avfoundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
-  - wakelock_plus (0.0.1):
-    - Flutter
-  - webview_flutter_wkwebview (0.0.1):
-    - Flutter
-    - FlutterMacOS
-  - wifi_scan (0.0.1):
-    - Flutter
 
 DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
-  - app_links (from `.symlinks/plugins/app_links/ios`)
-  - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
-  - esp_provisioning_softap (from `.symlinks/plugins/esp_provisioning_softap/ios`)
-  - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - esp_provisioning_softap (from `.symlinks/plugins/esp_provisioning_softap/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -235,22 +190,15 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_esp_ble_prov (from `.symlinks/plugins/flutter_esp_ble_prov/ios`)
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
-  - flutter_esp_ble_prov (from `.symlinks/plugins/flutter_esp_ble_prov/ios`)
-  - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
-  - flutter_new_badger (from `.symlinks/plugins/flutter_new_badger/ios`)
   - flutter_new_badger (from `.symlinks/plugins/flutter_new_badger/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/darwin`)
   - open_settings_plus (from `.symlinks/plugins/open_settings_plus/ios`)
-  - just_audio (from `.symlinks/plugins/just_audio/darwin`)
-  - open_settings_plus (from `.symlinks/plugins/open_settings_plus/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
-  - plugin_wifi_connect (from `.symlinks/plugins/plugin_wifi_connect/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - plugin_wifi_connect (from `.symlinks/plugins/plugin_wifi_connect/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
@@ -261,16 +209,9 @@ DEPENDENCIES:
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
   - wifi_scan (from `.symlinks/plugins/wifi_scan/ios`)
-  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
-  - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
-  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
-  - wifi_scan (from `.symlinks/plugins/wifi_scan/ios`)
 
 SPEC REPOS:
   trunk:
-    - DKImagePickerController
-    - DKPhotoGallery
-    - ESPProvision
     - DKImagePickerController
     - DKPhotoGallery
     - ESPProvision
@@ -286,6 +227,7 @@ SPEC REPOS:
     - OrderedSet
     - PromisesObjC
     - RecaptchaEnterprise
+    - RecaptchaEnterpriseSDK
     - RecaptchaInterop
     - SDWebImage
     - SwiftProtobuf
@@ -296,16 +238,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/app_links/ios"
   audio_session:
     :path: ".symlinks/plugins/audio_session/ios"
-  app_links:
-    :path: ".symlinks/plugins/app_links/ios"
-  audio_session:
-    :path: ".symlinks/plugins/audio_session/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
-  esp_provisioning_softap:
-    :path: ".symlinks/plugins/esp_provisioning_softap/ios"
-  file_picker:
-    :path: ".symlinks/plugins/file_picker/ios"
   esp_provisioning_softap:
     :path: ".symlinks/plugins/esp_provisioning_softap/ios"
   file_picker:
@@ -320,14 +254,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_esp_ble_prov/ios"
   flutter_inappwebview_ios:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
-  flutter_esp_ble_prov:
-    :path: ".symlinks/plugins/flutter_esp_ble_prov/ios"
-  flutter_inappwebview_ios:
-    :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
-  flutter_new_badger:
-    :path: ".symlinks/plugins/flutter_new_badger/ios"
   flutter_new_badger:
     :path: ".symlinks/plugins/flutter_new_badger/ios"
   flutter_secure_storage:
@@ -340,18 +268,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/just_audio/darwin"
   open_settings_plus:
     :path: ".symlinks/plugins/open_settings_plus/ios"
-  just_audio:
-    :path: ".symlinks/plugins/just_audio/darwin"
-  open_settings_plus:
-    :path: ".symlinks/plugins/open_settings_plus/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  permission_handler_apple:
-    :path: ".symlinks/plugins/permission_handler_apple/ios"
-  plugin_wifi_connect:
-    :path: ".symlinks/plugins/plugin_wifi_connect/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   plugin_wifi_connect:
@@ -364,14 +284,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite_darwin/darwin"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
-  video_player_avfoundation:
-    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
-  wakelock_plus:
-    :path: ".symlinks/plugins/wakelock_plus/ios"
-  webview_flutter_wkwebview:
-    :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
-  wifi_scan:
-    :path: ".symlinks/plugins/wifi_scan/ios"
   video_player_avfoundation:
     :path: ".symlinks/plugins/video_player_avfoundation/darwin"
   wakelock_plus:
@@ -418,9 +330,10 @@ SPEC CHECKSUMS:
   plugin_wifi_connect: c3ec7b1449a225b34cd0e7e0e9b1939d3234514d
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   qr_code_scanner: d77f94ecc9abf96d9b9b8fc04ef13f611e5a147a
-  recaptcha_enterprise_flutter: ded4c2b9799dcc8b55430339e5df899da2ecbaa3
-  RecaptchaEnterprise: 336a5178eb484cd049b2b04bbe1ca1d60fff1227
-  RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  recaptcha_enterprise_flutter: 00b38414c923503e20fecd7170e6b2c4094265b6
+  RecaptchaEnterprise: a5914ad9db6ff79eaca7258d82ecef6f10009936
+  RecaptchaEnterpriseSDK: 5e72d7f19d2f679b68c25071c33b40f817e21149
+  RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
   SwiftProtobuf: 7773c4e96a99d7b8ab7cda0fc30a883732ff93b1
