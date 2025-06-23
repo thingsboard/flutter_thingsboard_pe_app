@@ -40,102 +40,109 @@ class _MorePageState extends TbContextState<MorePage> {
         body: Container(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
           child: Column(
+      
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  UserInfoAvatarWidget(
-                    shortName: userDetails.shortName,
-                    color: UiUtils.colorFromString(userDetails.displayName),
-                  ),
-                  SizedBox(
-                    height: 32,
-                    width: 32,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.settings,
-                        color: Colors.black.withOpacity(.54),
-                        size: 18,
-                      ),
-                      onPressed: () async {
-                        await navigateTo('/profile');
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Text(
-                     userDetails.displayName ,
-                      style: TbTextStyles.labelLarge.copyWith(
-                        color: Colors.black.withOpacity(.76),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: EndpointNameWidget(
-                      endpoint: getIt<IEndpointService>().getCachedEndpoint(),
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                _getAuthorityName(context),
-                style: TbTextStyles.labelSmall.copyWith(
-                  color: Colors.black.withOpacity(.38),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Divider(
-                  color: Colors.black.withOpacity(.05),
-                  thickness: 1,
-                  height: 0,
-                ),
-              ),
               Flexible(
-                child: buildMoreMenuItems(context),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Divider(
-                  color: Colors.black.withOpacity(.05),
-                  thickness: 1,
-                  height: 0,
-                ),
-              ),
-              MoreMenuItemWidget(
-                TbMainNavigationItem(
-                  title: S.of(context).logout,
-                  icon: Icons.logout,
-                  page: const SizedBox.shrink(),
-                  path: '',
-                ),
-                color: const Color(0xffD12730),
-                onTap: () {
-                  tbContext.logout(
-                    requestConfig: RequestConfig(ignoreErrors: true),
-                  );
-                },
-              ),
-              if (tbContext.wlService.showNameVersion == true) const Spacer(),
-              if (tbContext.wlService.showNameVersion == true)
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [ 
+                  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    UserInfoAvatarWidget(
+                      shortName: userDetails.shortName,
+                      color: UiUtils.colorFromString(userDetails.displayName),
+                    ),
+                    SizedBox(
+                      height: 32,
+                      width: 32,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.settings,
+                          color: Colors.black.withOpacity(.54),
+                          size: 18,
+                        ),
+                        onPressed: () async {
+                          await navigateTo('/profile');
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Text(
+                       userDetails.displayName ,
+                        style: TbTextStyles.labelLarge.copyWith(
+                          color: Colors.black.withOpacity(.76),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: EndpointNameWidget(
+                        endpoint: getIt<IEndpointService>().getCachedEndpoint(),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  _getAuthorityName(context),
+                  style: TbTextStyles.labelSmall.copyWith(
+                    color: Colors.black.withOpacity(.38),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Divider(
+                    color: Colors.black.withOpacity(.05),
+                    thickness: 1,
+                    height: 0,
+                  ),
+                ),
+                Flexible(
+                  child: buildMoreMenuItems(context),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Divider(
+                    color: Colors.black.withOpacity(.05),
+                    thickness: 1,
+                    height: 0,
+                  ),
+                ),
+                MoreMenuItemWidget(
+                  TbMainNavigationItem(
+                    title: S.of(context).logout,
+                    icon: Icons.logout,
+                    page: const SizedBox.shrink(),
+                    path: '',
+                  ),
+                  color: const Color(0xffD12730),
+                  onTap: () {
+                    tbContext.logout(
+                      requestConfig: RequestConfig(ignoreErrors: true),
+                    );
+                  },
+                ),
+                          ],),
+              ),
+             
+              if (tbContext.wlService.showNameVersion == true)
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: Text(
                       tbContext.wlService.platformNameAndVersion,
                       style: const TextStyle(fontSize: 12),
                     ),
-                  ],
+                  ),
                 ),
             ],
           ),
