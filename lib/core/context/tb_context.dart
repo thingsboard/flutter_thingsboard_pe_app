@@ -22,7 +22,7 @@ import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart'
 import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
-import 'package:thingsboard_app/utils/services/widget_action_handler.dart';
+
 import 'package:thingsboard_app/utils/services/wl_service.dart';
 import 'package:toastification/toastification.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -33,7 +33,6 @@ enum NotificationType { info, warn, success, error }
 
 class TbContext implements PopEntry {
   TbContext(this.router) {
-    _widgetActionHandler = WidgetActionHandler(this);
     wlService = WlService(this);
   }
 
@@ -49,7 +48,6 @@ class TbContext implements PopEntry {
   StoreInfo? storeInfo;
   final _isLoadingNotifier = ValueNotifier<bool>(false);
   final _log = TbLogger();
-  late final WidgetActionHandler _widgetActionHandler;
   AndroidDeviceInfo? androidInfo;
   IosDeviceInfo? iosInfo;
   late String packageName;
@@ -88,9 +86,6 @@ class TbContext implements PopEntry {
   TbContextState? currentState;
 
   TbLogger get log => _log;
-
-  WidgetActionHandler get widgetActionHandler => _widgetActionHandler;
-
   final bottomNavigationTabChangedStream = StreamController<int>.broadcast();
 
   Future<void> init() async {

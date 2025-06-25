@@ -36,9 +36,6 @@ mixin HasTbContext {
   TbLogger get log => _tbContext.log;
 
   bool get isPhysicalDevice => _tbContext.isPhysicalDevice();
-
-  WidgetActionHandler get widgetActionHandler => _tbContext.widgetActionHandler;
-
   ValueNotifier<bool> get loadingNotifier => _tbContext._isLoadingNotifier;
 
   ThingsboardClient get tbClient => _tbContext.tbClient;
