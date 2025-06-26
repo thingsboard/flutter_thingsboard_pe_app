@@ -8,13 +8,17 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:recaptcha_enterprise_flutter/recaptcha_action.dart';
 import 'package:recaptcha_enterprise_flutter/recaptcha_client.dart';
+import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/auth/login/bloc/bloc.dart';
 import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
 import 'package:thingsboard_app/core/auth/oauth2/app_secret_provider.dart';
 import 'package:thingsboard_app/core/auth/signup/signup_field_widget.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
+import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class SignUpPage extends TbPageWidget {
@@ -33,18 +37,18 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
 
   @override
   Future<bool> willPop() async {
-    navigateTo('/login', replace: true);
+   getIt<ThingsboardAppRouter>().navigateTo('/login', replace: true);
     return false;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AuthBloc>(
-      create: (_) => AuthBloc(tbClient: tbClient, tbContext: tbContext)
+      create: (_) => AuthBloc(tbClient: tbClient, deviceService: getIt())
         ..add(
           AuthFetchEvent(
-            packageName: tbContext.packageName,
-            platformType: tbContext.platformType,
+            packageName: getIt<IDeviceInfoService>().getApplicationId(),
+            platformType: getIt<IDeviceInfoService>().getPlatformType(),
           ),
         ),
       child: BlocBuilder<AuthBloc, AuthState>(
@@ -430,7 +434,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
           timeout: 10000,
         );
       } else {
-        final recaptchaResponse = await tbContext.navigateTo(
+        final recaptchaResponse = await getIt<ThingsboardAppRouter>().navigateTo(
           '/tbRecaptcha?siteKey=${signUpParams.recaptcha.siteKey}'
           '&version=${signUpParams.recaptcha.version}'
           '&logActionName=${signUpParams.recaptcha.logActionName}',
@@ -440,14 +444,14 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
         _recaptchaResponseNotifier.value = recaptchaResponse;
       }
     } on PlatformException catch (e) {
-      tbContext.showErrorNotification(e.message ?? '');
+      getIt<IOverlayService>().showErrorNotification(e.message ?? '');
     } catch (e) {
-      tbContext.showErrorNotification(e.toString());
+       getIt<IOverlayService>().showErrorNotification(e.toString());
     }
   }
 
   void _openPrivacyPolicy() async {
-    bool? acceptPrivacyPolicy = await tbContext.navigateTo(
+    bool? acceptPrivacyPolicy = await getIt<ThingsboardAppRouter>().navigateTo(
       '/signup/privacyPolicy',
       transition: TransitionType.nativeModal,
     );
@@ -458,7 +462,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
   }
 
   void _openTermsOfUse() async {
-    bool? acceptTermsOfUse = await tbContext.navigateTo(
+    bool? acceptTermsOfUse = await getIt<ThingsboardAppRouter>().navigateTo(
       '/signup/termsOfUse',
       transition: TransitionType.nativeModal,
     );
@@ -469,7 +473,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
   }
 
   void _login() async {
-    navigateTo('/login', replace: true);
+    getIt<ThingsboardAppRouter>().navigateTo('/login', replace: true);
   }
 
   void _signUp(MobileSelfRegistrationParams signUpParams) async {
@@ -478,7 +482,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
       final formValue = _signUpFormKey.currentState!.value;
       if (_validateSignUpRequest(formValue, signUpParams)) {
         final appSecret = await AppSecretProvider.local().getAppSecret(
-          tbContext.platformType,
+          getIt<IDeviceInfoService>().getPlatformType(),
         );
         final signUpRequest = SignUpRequest(
           fields: Map<SignUpFieldsId, String>.fromEntries(
@@ -493,9 +497,9 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                 .where((e) => e.value != 'null'),
           ),
           recaptchaResponse: _recaptchaResponseNotifier.value!,
-          pkgName: tbContext.packageName,
+          pkgName: getIt<IDeviceInfoService>().getApplicationId(),
           appSecret: appSecret,
-          platform: tbContext.platformType,
+          platform: getIt<IDeviceInfoService>().getPlatformType(),
         );
 
         _isSignUpNotifier.value = true;
@@ -513,7 +517,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
             log.info('Sign up success!');
             _isSignUpNotifier.value = false;
             _recaptchaResponseNotifier.value = null;
-            navigateTo(
+            getIt<ThingsboardAppRouter>().navigateTo(
               '/signup/emailVerification?'
               'email=${formValue[SignUpFieldsId.email.toShortString()]}',
             );
@@ -532,26 +536,26 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
   ) {
     if (formValue[SignUpFieldsId.password.toShortString()] !=
         formValue[SignUpFieldsId.repeat_password.toShortString()]) {
-      showErrorNotification(S.of(context).passwordErrorNotification);
+   getIt<IOverlayService>().showErrorNotification(S.of(context).passwordErrorNotification);
       return false;
     } else if (formValue[SignUpFieldsId.password.toShortString()].length < 6) {
-      showErrorNotification(S.of(context).invalidPasswordLengthMessage);
+      getIt<IOverlayService>().showErrorNotification(S.of(context).invalidPasswordLengthMessage);
       return false;
     }
 
     final recaptchaResponse = _recaptchaResponseNotifier.value;
     if (recaptchaResponse == null || recaptchaResponse.isEmpty) {
-      showErrorNotification(S.of(context).confirmNotRobotMessage);
+       getIt<IOverlayService>().showErrorNotification(S.of(context).confirmNotRobotMessage);
       return false;
     }
     if (signUpParams.showPrivacyPolicy &&
         formValue['acceptPrivacyPolicy'] != true) {
-      showErrorNotification(S.of(context).acceptPrivacyPolicyMessage);
+       getIt<IOverlayService>().showErrorNotification(S.of(context).acceptPrivacyPolicyMessage);
       return false;
     }
 
     if (signUpParams.showTermsOfUse && formValue['acceptTermsOfUse'] != true) {
-      showErrorNotification(S.of(context).acceptTermsOfUseMessage);
+       getIt<IOverlayService>().showErrorNotification(S.of(context).acceptTermsOfUseMessage);
       return false;
     }
 
@@ -569,11 +573,11 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     if (res == true) {
       await tbClient.getSignupService().resendEmailActivation(
             email,
-            pkgName: tbContext.packageName,
-            platform: tbContext.platformType,
+            pkgName: getIt<IDeviceInfoService>().getApplicationId(),
+            platform: getIt<IDeviceInfoService>().getPlatformType(),
           );
       log.info('Resend email activation!');
-      navigateTo('/signup/emailVerification?email=$email');
+       getIt<ThingsboardAppRouter>().navigateTo('/signup/emailVerification?email=$email');
     }
   }
 }

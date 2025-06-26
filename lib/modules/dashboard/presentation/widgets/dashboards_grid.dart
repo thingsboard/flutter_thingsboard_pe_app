@@ -9,6 +9,7 @@ import 'package:thingsboard_app/modules/dashboard/domain/pagination/dashboards_p
 import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashboard_page_controller.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard_grid_card.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_exception_widget.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_progress_builder.dart';
@@ -52,7 +53,7 @@ class DashboardsGridWidget extends StatelessWidget {
                     title: dashboard.title,
                   );
                 } else {
-                  tbContext.showErrorNotification(
+                  getIt<IOverlayService>().showErrorNotification(
                     'You don\'t have permissions to perform this operation!',
                   );
                 }

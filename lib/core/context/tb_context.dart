@@ -374,7 +374,7 @@ class TbContext implements PopEntry {
       if (tbClient.isAuthenticated()) {
         tbClient.logout();
       } else {
-        navigateTo(
+       getIt<ThingsboardAppRouter>().navigateTo(
           initialNavigation,
           replace: true,
           clearStack: true,

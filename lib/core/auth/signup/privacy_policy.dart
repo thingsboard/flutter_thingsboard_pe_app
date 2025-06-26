@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:html/dom.dart' as dom;
-import 'package:html/parser.dart' as htmlparser;
+import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart' show MobileInfoQuery;
+import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -27,8 +27,8 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
     privacyPolicyFuture =
         tbContext.tbClient.getSelfRegistrationService().getPrivacyPolicy(
               query: MobileInfoQuery(
-                packageName: tbContext.packageName,
-                platformType: tbContext.platformType,
+                packageName: getIt<IDeviceInfoService>().getApplicationId(),
+          platformType: getIt<IDeviceInfoService>().getPlatformType(),
               ),
             );
   }
@@ -86,11 +86,11 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                    onPressed: () => pop(false),
+                    onPressed: () => getIt<ThingsboardAppRouter>().pop(false, context),
                     child: Text(S.of(context).cancel),
                   ),
                   ElevatedButton(
-                    onPressed: () => pop(true),
+                    onPressed: () => getIt<ThingsboardAppRouter>().pop(true, context),
                     child: Text(S.of(context).accept),
                   ),
                 ],

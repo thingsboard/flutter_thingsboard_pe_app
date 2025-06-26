@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
 import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class EmailVerifiedPage extends TbPageWidget {
@@ -134,8 +137,8 @@ class _EmailVerifiedPageState extends TbPageState<EmailVerifiedPage> {
       _loginResponse =
           await tbClient.getSignupService().activateUserByEmailCode(
                 widget._emailCode,
-                pkgName: tbContext.packageName,
-                platform: tbContext.platformType,
+                pkgName: getIt<IDeviceInfoService>().getApplicationId(),
+          platform: getIt<IDeviceInfoService>().getPlatformType(),
               );
       _activatingNotifier.value = false;
     } catch (e) {
@@ -146,7 +149,7 @@ class _EmailVerifiedPageState extends TbPageState<EmailVerifiedPage> {
         if (Navigator.of(context).canPop()) {
           Navigator.of(context).pop();
         } else {
-          tbContext.navigateTo('/login', replace: true, clearStack: true);
+          getIt<ThingsboardAppRouter>().navigateTo('/login', replace: true, clearStack: true);
         }
       }
     }

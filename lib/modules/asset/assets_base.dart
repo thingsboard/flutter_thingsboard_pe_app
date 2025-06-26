@@ -17,7 +17,7 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
   }
 
   @override
-  void onEntityTap(AssetInfo asset) {
+  void onEntityTap(Asset asset) {
     getIt<ThingsboardAppRouter>().navigateTo('/asset/${asset.id!.id}');
   }
 

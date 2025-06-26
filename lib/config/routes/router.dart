@@ -4,6 +4,7 @@ import 'package:thingsboard_app/config/routes/route_not_found_widget.dart';
 import 'package:thingsboard_app/core/auth/auth_routes.dart';
 import 'package:thingsboard_app/core/auth/noauth/routes/noauth_routes.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
+import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/core/init/init_routes.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/locator.dart';
@@ -56,7 +57,14 @@ class ThingsboardAppRouter {
     if (navigatorKey.currentContext == null) {
       return;
     }
-
+    //TODO; Refactor this to avoid merge logic
+    if (navigatorKey.currentState is TbMainState) {
+      var mainState = navigatorKey.currentState as TbMainState;
+      if (mainState.canNavigate(path) && !replace) {
+        mainState.navigateToPath(path);
+        return;
+      }
+    }
     return router.navigateTo(
       navigatorKey.currentContext!,
       path,
@@ -97,8 +105,9 @@ class ThingsboardAppRouter {
     );
   }
 
+//TODO: &&  !link.contains('signup/emailVerified') is merge conflict, need to refactor
   Future<void> navigateByAppLink(String? link) async {
-    if (link != null) {
+    if (link != null && !link.contains('signup/emailVerified')) {
       final uri = Uri.parse(link);
       await getIt<ILocalDatabaseService>().deleteInitialAppLink();
 
@@ -112,7 +121,8 @@ class ThingsboardAppRouter {
     }
   }
 
-  ThingsboardAppRouter({required this.overlayService, required TbContext tbContext})
+  ThingsboardAppRouter(
+      {required this.overlayService, required TbContext tbContext})
       : _tbContext = tbContext {
     router.notFoundHandler = notFoundHandler;
     _initRoutes();
@@ -144,6 +154,7 @@ class ThingsboardAppRouter {
     VersionRoutes(_tbContext).doRegisterRoutes(router);
     EspProvisioningRoute(_tbContext).doRegisterRoutes(router);
   }
+
   TbContext get tbContext => _tbContext;
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 }
