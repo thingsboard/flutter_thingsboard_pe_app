@@ -37,6 +37,7 @@ mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
       device.entityId.id!,
     );
     if (profile.defaultDashboardId != null) {
+  //TODO: Merge conflict here
       if (hasGenericPermission(Resource.WIDGETS_BUNDLE, Operation.READ) &&
           hasGenericPermission(Resource.WIDGET_TYPE, Operation.READ)) {
         var dashboardId = profile.defaultDashboardId!.id!;

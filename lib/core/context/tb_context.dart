@@ -354,7 +354,7 @@ class TbContext implements PopEntry {
         e.errorCode == ThingsBoardErrorCode.general &&
         e.message == 'Unable to connect';
   }
-
+///TODO: Mergeconflict here
   bool hasGenericPermission(Resource resource, Operation operation) {
     if (userPermissions != null) {
       return userPermissions!.hasGenericPermission(resource, operation);
@@ -362,7 +362,7 @@ class TbContext implements PopEntry {
       return false;
     }
   }
-
+///TODO: Mergeconflict here
   Future<bool> handleInitialNavigation() async {
     final initialNavigation =
         await getIt<ILocalDatabaseService>().getInitialAppLink();
