@@ -481,7 +481,7 @@ class TbContext implements PopEntry {
   }
 static showFullScreenDialogStatic<T>(
     BuildContext context,
-    Widget dialog) {
+    Widget dialog,) {
     return Navigator.of(context).push<T>(
       MaterialPageRoute<T>(
         builder: (BuildContext context) {
