@@ -486,10 +486,10 @@ class _TwoFactorAuthenticationPageState
               _disableSendButton.value = false;
             });
           } else {
-            showErrorNotification(e.message ?? 'Code verification failed!');
+            overlayService.showErrorNotification(e.message ?? 'Code verification failed!');
           }
         } else {
-          showErrorNotification('Code verification failed!');
+          overlayService.showErrorNotification('Code verification failed!');
         }
       }
     }

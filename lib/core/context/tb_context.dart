@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/constants/enviroment_variables.dart';
 import 'package:thingsboard_app/core/auth/oauth2/app_secret_provider.dart';
 import 'package:thingsboard_app/core/auth/oauth2/tb_oauth2_client.dart';
@@ -17,11 +18,13 @@ import 'package:thingsboard_app/modules/dashboard/domain/entites/dashboard_argum
 import 'package:thingsboard_app/modules/version/route/version_route.dart';
 import 'package:thingsboard_app/modules/version/route/version_route_arguments.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
+import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 
 import 'package:thingsboard_app/utils/services/wl_service.dart';
 import 'package:toastification/toastification.dart';
@@ -29,30 +32,24 @@ import 'package:universal_platform/universal_platform.dart';
 
 part 'has_tb_context.dart';
 
-enum NotificationType { info, warn, success, error }
-
 class TbContext implements PopEntry {
-  TbContext(this.router) {
+  TbContext() {
     wlService = WlService(this);
   }
 
   static final deviceInfoPlugin = DeviceInfoPlugin();
   bool isUserLoaded = false;
   final _isAuthenticated = ValueNotifier<bool>(false);
-  late PlatformType platformType;
   List<TwoFaProviderInfo>? twoFactorAuthProviders;
   User? userDetails;
   AllowedPermissionsInfo? userPermissions;
   HomeDashboardInfo? homeDashboard;
   VersionInfo? versionInfo;
   StoreInfo? storeInfo;
+  final IOverlayService _overlayService = getIt<IOverlayService>();
+  final _deviceInfoService = getIt<IDeviceInfoService>();
   final _isLoadingNotifier = ValueNotifier<bool>(false);
   final _log = TbLogger();
-  AndroidDeviceInfo? androidInfo;
-  IosDeviceInfo? iosInfo;
-  late String packageName;
-  late PlatformVersion version;
-
   StreamSubscription? _appLinkStreamSubscription;
   final appLinks = AppLinks();
 
@@ -73,18 +70,16 @@ class TbContext implements PopEntry {
   }
 
   late ThingsboardClient tbClient;
-  late TbOAuth2Client oauth2Client;
   late final WlService wlService;
 
-  final FluroRouter router;
-  final routeObserver = RouteObserver<PageRoute>();
+ final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   Listenable get isAuthenticatedListenable => _isAuthenticated;
 
   bool get isAuthenticated => _isAuthenticated.value;
 
   TbContextState? currentState;
-
+  late final ThingsboardAppRouter thingsboardAppRouter = getIt();
   TbLogger get log => _log;
   final bottomNavigationTabChangedStream = StreamController<int>.broadcast();
 
@@ -105,29 +100,7 @@ class TbContext implements PopEntry {
       debugMode: EnvironmentVariables.apiCalls || EnvironmentVariables.verbose,
     );
 
-    oauth2Client = TbOAuth2Client(
-      tbContext: this,
-      appSecretProvider: AppSecretProvider.local(),
-    );
-
     try {
-      if (UniversalPlatform.isAndroid) {
-        androidInfo = await deviceInfoPlugin.androidInfo;
-        platformType = PlatformType.ANDROID;
-      } else if (UniversalPlatform.isIOS) {
-        iosInfo = await deviceInfoPlugin.iosInfo;
-        platformType = PlatformType.IOS;
-      } else {
-        platformType = PlatformType.WEB;
-      }
-
-      if (UniversalPlatform.isAndroid || UniversalPlatform.isIOS) {
-        final packageInfo = await PackageInfo.fromPlatform();
-        packageName = packageInfo.packageName;
-        version = PlatformVersion.fromString(packageInfo.version);
-      } else {
-        packageName = 'web.app';
-      }
       try {
         final initialUri = await appLinks.getInitialLink();
         _updateInitialNavigation(initialUri);
@@ -188,11 +161,6 @@ class TbContext implements PopEntry {
       debugMode: EnvironmentVariables.apiCalls || EnvironmentVariables.verbose,
     );
 
-    oauth2Client = TbOAuth2Client(
-      tbContext: this,
-      appSecretProvider: AppSecretProvider.local(),
-    );
-
     await tbClient.init();
   }
 
@@ -207,88 +175,7 @@ class TbContext implements PopEntry {
 
   void onError(ThingsboardError tbError) {
     log.error('onError', tbError, tbError.getStackTrace());
-    showErrorNotification(tbError.message!);
-  }
-
-  void showErrorNotification(
-    String message, {
-    Duration? duration,
-  }) {
-    showNotification(
-      message,
-      NotificationType.error,
-      duration: duration,
-    );
-  }
-
-  void showInfoNotification(
-    String message, {
-    BuildContext? context,
-    Duration? duration,
-  }) {
-    showNotification(message, NotificationType.info, duration: duration);
-  }
-
-  void showWarnNotification(String message, {Duration? duration}) {
-    showNotification(message, NotificationType.warn, duration: duration);
-  }
-
-  void showSuccessNotification(String message, {Duration? duration}) {
-    showNotification(message, NotificationType.success, duration: duration);
-  }
-
-  void showNotification(
-    String message,
-    NotificationType type, {
-    Duration? duration,
-  }) {
-    duration ??= const Duration(days: 1);
-    Color backgroundColor;
-    ToastificationType toastificationType;
-    switch (type) {
-      case NotificationType.info:
-        backgroundColor = const Color(0xFF323232);
-        toastificationType = ToastificationType.info;
-        break;
-      case NotificationType.warn:
-        backgroundColor = const Color(0xFFdc6d1b);
-        toastificationType = ToastificationType.warning;
-        break;
-      case NotificationType.success:
-        backgroundColor = const Color(0xFF008000);
-        toastificationType = ToastificationType.success;
-        break;
-      case NotificationType.error:
-        backgroundColor = const Color(0xFF800000);
-        toastificationType = ToastificationType.error;
-        break;
-    }
-
-    toastification.show(
-      type: toastificationType,
-      style: ToastificationStyle.fillColored,
-      primaryColor: backgroundColor,
-      backgroundColor: Colors.white,
-      alignment: Alignment.bottomCenter,
-      autoCloseDuration: duration,
-      title: Text(message, maxLines: 10, overflow: TextOverflow.ellipsis),
-      closeOnClick: false,
-      dragToClose: true,
-      showProgressBar: false,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x07000000),
-          blurRadius: 16,
-          offset: Offset(0, 16),
-          spreadRadius: 0,
-        ),
-      ],
-    );
-  }
-
-  void hideNotification() {
-    toastification.dismissAll();
+    _overlayService.showErrorNotification(tbError.message!);
   }
 
   void onLoadStarted() {
@@ -318,8 +205,8 @@ class TbContext implements PopEntry {
             final mobileInfo =
                 await tbClient.getMobileService().getUserMobileInfo(
                       MobileInfoQuery(
-                        platformType: platformType,
-                        packageName: packageName,
+                        platformType: _deviceInfoService.getPlatformType(),
+                        packageName: _deviceInfoService.getApplicationId(),
                       ),
                     );
 
@@ -361,9 +248,9 @@ class TbContext implements PopEntry {
           tbClient.isAuthenticated() && !tbClient.isPreVerificationToken();
       await wlService.updateWhiteLabeling();
       if (versionInfo != null && versionInfo?.minVersion != null) {
-        if (version.versionInt() <
+        if (_deviceInfoService.getAppVersion().versionInt() <
             (versionInfo!.minVersion?.versionInt() ?? 0)) {
-          navigateTo(
+         thingsboardAppRouter.navigateTo(
             VersionRoutes.updateRequiredRoutePath,
             clearStack: true,
             replace: true,
@@ -404,7 +291,7 @@ class TbContext implements PopEntry {
         if (res == true) {
           onUserLoaded();
         } else {
-          navigateTo(
+          thingsboardAppRouter.navigateTo(
             '/login',
             replace: true,
             clearStack: true,
@@ -413,7 +300,7 @@ class TbContext implements PopEntry {
           );
         }
       } else {
-        navigateTo(
+        thingsboardAppRouter.navigateTo(
           '/login',
           replace: true,
           clearStack: true,
@@ -424,14 +311,14 @@ class TbContext implements PopEntry {
     } finally {
       try {
         final link = await getIt<ILocalDatabaseService>().getInitialAppLink();
-        navigateByAppLink(link);
+        thingsboardAppRouter.navigateByAppLink(link);
       } catch (e) {
         log.error('TbContext:getInitialUri() exception $e');
       }
 
       _appLinkStreamSubscription ??= appLinks.uriLinkStream.listen(
         (link) {
-          navigateByAppLink(link.toString());
+          thingsboardAppRouter.navigateByAppLink(link.toString());
         },
         onError: (err) {
           log.error('linkStream.listen $err');
@@ -440,20 +327,7 @@ class TbContext implements PopEntry {
     }
   }
 
-  Future<void> navigateByAppLink(String? link) async {
-    if (link != null && !link.contains('signup/emailVerified')) {
-      final uri = Uri.parse(link);
-      await getIt<ILocalDatabaseService>().deleteInitialAppLink();
-
-      log.debug('TbContext: navigate by appLink $uri');
-      navigateTo(
-        uri.path,
-        routeSettings: RouteSettings(
-          arguments: {...uri.queryParameters, 'uri': uri},
-        ),
-      );
-    }
-  }
+  
 
   Future<void> logout({
     RequestConfig? requestConfig,
@@ -526,8 +400,8 @@ class TbContext implements PopEntry {
           if (defaultDashboardId != null) {
             bool fullscreen = _userForceFullscreen();
             if (!fullscreen) {
-              await navigateToDashboard(defaultDashboardId, animate: false);
-              navigateTo(
+              await thingsboardAppRouter.navigateToDashboard(defaultDashboardId, animate: false);
+           thingsboardAppRouter.navigateTo(
                 '/main',
                 replace: true,
                 closeDashboard: false,
@@ -535,7 +409,7 @@ class TbContext implements PopEntry {
                 transition: TransitionType.none,
               );
             } else {
-              navigateTo(
+               thingsboardAppRouter.navigateTo(
                 '/fullscreenDashboard/$defaultDashboardId',
                 replace: true,
                 clearStack: true,
@@ -543,7 +417,7 @@ class TbContext implements PopEntry {
               );
             }
           } else {
-            navigateTo(
+             thingsboardAppRouter.navigateTo(
               '/main',
               replace: true,
               clearStack: true,
@@ -552,7 +426,7 @@ class TbContext implements PopEntry {
             );
           }
         } else {
-          navigateTo(
+           thingsboardAppRouter.navigateTo(
             '/login',
             replace: true,
             clearStack: true,
@@ -578,23 +452,13 @@ class TbContext implements PopEntry {
             userDetails!.additionalInfo!['defaultDashboardFullscreen'] == true);
   }
 
-  bool isPhysicalDevice() {
-    if (UniversalPlatform.isAndroid) {
-      return androidInfo!.isPhysicalDevice == true;
-    } else if (UniversalPlatform.isIOS) {
-      return iosInfo!.isPhysicalDevice;
-    } else {
-      return false;
-    }
-  }
-
   String userAgent() {
     String userAgent = 'Mozilla/5.0';
     if (UniversalPlatform.isAndroid) {
       userAgent +=
-          ' (Linux; Android ${androidInfo!.version.release}; ${androidInfo?.model})';
+          ' (Linux; Android ${_deviceInfoService.getSystemVersion()}; ${_deviceInfoService.getDeviceModel()})';
     } else if (UniversalPlatform.isIOS) {
-      userAgent += ' (${iosInfo!.model})';
+      userAgent += ' (${_deviceInfoService.getDeviceModel()})';
     }
     userAgent +=
         ' AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
@@ -611,70 +475,7 @@ class TbContext implements PopEntry {
     return false;
   }
 
-  Future<dynamic> navigateTo(
-    String path, {
-    bool replace = false,
-    bool clearStack = false,
-    closeDashboard = true,
-    TransitionType? transition,
-    Duration? transitionDuration,
-    bool restoreDashboard = true,
-    RouteSettings? routeSettings,
-  }) async {
-    if (currentState != null) {
-      hideNotification();
-
-      if (currentState is TbMainState) {
-        var mainState = currentState as TbMainState;
-        if (mainState.canNavigate(path) && !replace) {
-          mainState.navigateToPath(path);
-          return;
-        }
-      }
-
-      if (transition != TransitionType.nativeModal) {
-        transition = TransitionType.none;
-      } else if (transition == null) {
-        if (replace) {
-          transition = TransitionType.fadeIn;
-        } else {
-          transition = TransitionType.native;
-        }
-      }
-
-      return await router.navigateTo(
-        currentState!.context,
-        path,
-        transition: transition,
-        transitionDuration: transitionDuration,
-        replace: replace,
-        clearStack: clearStack,
-        routeSettings: routeSettings,
-      );
-    }
-  }
-
-  Future<void> navigateToDashboard(
-    String dashboardId, {
-    String? dashboardTitle,
-    String? state,
-    bool? hideToolbar,
-    bool animate = true,
-  }) async {
-    return router.navigateTo(
-      currentState!.context,
-      '/dashboard',
-      routeSettings: RouteSettings(
-        arguments: DashboardArgumentsEntity(
-          dashboardId,
-          title: dashboardTitle,
-          state: state,
-          hideToolbar: hideToolbar,
-          animate: animate,
-        ),
-      ),
-    );
-  }
+  
 
   Future<T?> showFullScreenDialog<T>(Widget dialog, {BuildContext? context}) {
     return Navigator.of(context ?? currentState!.context).push<T>(
@@ -697,12 +498,6 @@ static showFullScreenDialogStatic<T>(
         fullscreenDialog: true,
       ),
     );
-  }
-  void pop<T>([T? result, BuildContext? context]) async {
-    var targetContext = context ?? currentState?.context;
-    if (targetContext != null) {
-      router.pop<T>(targetContext, result);
-    }
   }
 
   void onPopInvokedImpl<T>(bool didPop, [T? result]) async {
@@ -731,7 +526,8 @@ static showFullScreenDialogStatic<T>(
         title: Text(title),
         content: Text(message),
         actions: [
-          TextButton(onPressed: () => pop(null, context), child: Text(ok)),
+          TextButton(
+              onPressed: () => thingsboardAppRouter.pop(null, context), child: Text(ok)),
         ],
       ),
     );
@@ -750,10 +546,10 @@ static showFullScreenDialogStatic<T>(
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => pop(false, context),
+            onPressed: () => getIt<ThingsboardAppRouter>().pop(false, context),
             child: Text(cancel),
           ),
-          TextButton(onPressed: () => pop(true, context), child: Text(ok)),
+          TextButton(onPressed: () => getIt<ThingsboardAppRouter>().pop(true, context), child: Text(ok)),
         ],
       ),
     );

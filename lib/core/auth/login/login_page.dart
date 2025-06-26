@@ -9,15 +9,22 @@ import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
 import 'package:thingsboard_app/core/auth/login/bloc/auth_bloc.dart';
 import 'package:thingsboard_app/core/auth/login/bloc/auth_events.dart';
 import 'package:thingsboard_app/core/auth/login/bloc/auth_states.dart';
-import 'package:thingsboard_app/core/auth/login/choose_region_screen.dart';
-import 'package:thingsboard_app/core/auth/login/region.dart';
+import 'package:thingsboard_app/core/auth/login/di/login_di.dart';
+import 'package:thingsboard_app/core/auth/login/select_region/choose_region_screen.dart';
+import 'package:thingsboard_app/core/auth/login/select_region/model/region.dart';
+import 'package:thingsboard_app/core/auth/oauth2/i_oauth2_client.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
+import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
+import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
@@ -39,7 +46,8 @@ class _LoginPageState extends TbPageState<LoginPage>
 
   final _isLoginNotifier = ValueNotifier<bool>(false);
   final _showPasswordNotifier = ValueNotifier<bool>(false);
-
+  final IDeviceInfoService _deviceInfoService = getIt<IDeviceInfoService>();
+  final IOverlayService _overlayService = getIt<IOverlayService>();
   final _loginFormKey = GlobalKey<FormBuilderState>();
 
   Region? selectedRegion;
@@ -48,17 +56,27 @@ class _LoginPageState extends TbPageState<LoginPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    LoginDi.init();
     if (tbClient.isPreVerificationToken()) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        navigateTo('/login/mfa');
+        getIt<ThingsboardAppRouter>().navigateTo('/login/mfa');
       });
     }
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      final region = await getIt<IEndpointService>().getSelectedRegion();
+      if (region != null && region != Region.custom) {
+        setState(() {
+          selectedRegion = region;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    LoginDi.dispose();
   }
 
   @override
@@ -71,13 +89,14 @@ class _LoginPageState extends TbPageState<LoginPage>
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AuthBloc>(
-      create: (_) => AuthBloc(tbClient: tbClient, tbContext: tbContext)
-        ..add(
-          AuthFetchEvent(
-            packageName: tbContext.packageName,
-            platformType: tbContext.platformType,
-          ),
-        ),
+      create: (_) =>
+          AuthBloc(tbClient: tbClient, deviceService: _deviceInfoService)
+            ..add(
+              AuthFetchEvent(
+                packageName: _deviceInfoService.getApplicationId(),
+                platformType: _deviceInfoService.getPlatformType(),
+              ),
+            ),
       child: Scaffold(
         body: Stack(
           children: [
@@ -217,9 +236,9 @@ class _LoginPageState extends TbPageState<LoginPage>
                                                   FocusScope.of(context)
                                                       .unfocus();
                                                   try {
-                                                    final barcode =
-                                                        await tbContext
-                                                            .navigateTo(
+                                                    final barcode = await getIt<
+                                                            ThingsboardAppRouter>()
+                                                        .navigateTo(
                                                       '/qrCodeScan',
                                                       transition: TransitionType
                                                           .nativeModal,
@@ -227,7 +246,7 @@ class _LoginPageState extends TbPageState<LoginPage>
 
                                                     if (barcode != null &&
                                                         barcode.code != null) {
-                                                      tbContext
+                                                      getIt<ThingsboardAppRouter>()
                                                           .navigateByAppLink(
                                                         barcode.code,
                                                       );
@@ -316,29 +335,34 @@ class _LoginPageState extends TbPageState<LoginPage>
                                               keyboardType:
                                                   TextInputType.emailAddress,
                                               validator:
-                                                  FormBuilderValidators.compose([
-                                                FormBuilderValidators.required(
-                                                  errorText: S
-                                                      .of(context)
-                                                      .emailRequireText,
-                                                ),
-                                                FormBuilderValidators.email(
-                                                  errorText: S
-                                                      .of(context)
-                                                      .emailInvalidText,
-                                                ),
-                                              ]),
+                                                  FormBuilderValidators.compose(
+                                                [
+                                                  FormBuilderValidators
+                                                      .required(
+                                                    errorText: S
+                                                        .of(context)
+                                                        .emailRequireText,
+                                                  ),
+                                                  FormBuilderValidators.email(
+                                                    errorText: S
+                                                        .of(context)
+                                                        .emailInvalidText,
+                                                  ),
+                                                ],
+                                              ),
                                               decoration: InputDecoration(
                                                 border:
                                                     const OutlineInputBorder(),
-                                                enabledBorder: OutlineInputBorder(
+                                                enabledBorder:
+                                                    OutlineInputBorder(
                                                   borderSide: BorderSide(
                                                     color: Colors.black
                                                         .withOpacity(.12),
                                                   ),
                                                 ),
                                                 labelText: S.of(context).email,
-                                                labelStyle: TbTextStyles.bodyLarge
+                                                labelStyle: TbTextStyles
+                                                    .bodyLarge
                                                     .copyWith(
                                                   color: Colors.black
                                                       .withOpacity(.54),
@@ -360,15 +384,18 @@ class _LoginPageState extends TbPageState<LoginPage>
                                                   ],
                                                   name: 'password',
                                                   obscureText: !showPassword,
-                                                  validator: FormBuilderValidators
-                                                      .compose([
-                                                    FormBuilderValidators
-                                                        .required(
-                                                      errorText: S
-                                                          .of(context)
-                                                          .passwordRequireText,
-                                                    ),
-                                                  ]),
+                                                  validator:
+                                                      FormBuilderValidators
+                                                          .compose(
+                                                    [
+                                                      FormBuilderValidators
+                                                          .required(
+                                                        errorText: S
+                                                            .of(context)
+                                                            .passwordRequireText,
+                                                      ),
+                                                    ],
+                                                  ),
                                                   decoration: InputDecoration(
                                                     suffixIcon: IconButton(
                                                       icon: Icon(
@@ -597,13 +624,14 @@ class _LoginPageState extends TbPageState<LoginPage>
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
                   try {
-                    final barcode = await tbContext.navigateTo(
+                    final barcode =
+                        await getIt<ThingsboardAppRouter>().navigateTo(
                       '/qrCodeScan',
                       transition: TransitionType.nativeModal,
                     );
 
                     if (barcode != null && barcode.code != null) {
-                      tbContext.navigateByAppLink(
+                      getIt<ThingsboardAppRouter>().navigateByAppLink(
                         barcode.code,
                       );
                     } else {}
@@ -676,7 +704,7 @@ class _LoginPageState extends TbPageState<LoginPage>
     FocusScope.of(context).unfocus();
     _isLoginNotifier.value = true;
     try {
-      final result = await tbContext.oauth2Client.authenticate(client.url);
+      final result = await getIt<IOAuth2Client>().authenticate(client.url);
       if (result.success) {
         await tbClient.setUserFromJwtToken(
           result.accessToken,
@@ -685,7 +713,7 @@ class _LoginPageState extends TbPageState<LoginPage>
         );
       } else {
         _isLoginNotifier.value = false;
-        showErrorNotification(result.error!);
+        _overlayService.showErrorNotification(result.error!);
       }
     } catch (e) {
       log.error('Auth Error:', e);
@@ -713,10 +741,12 @@ class _LoginPageState extends TbPageState<LoginPage>
   }
 
   void _forgotPassword() async {
-    navigateTo('/login/resetPasswordRequest');
+  getIt<ThingsboardAppRouter>().navigateTo('/login/resetPasswordRequest');
   }
 
   void _signup() async {
-    navigateTo('/signup', replace: true);
+    getIt<ThingsboardAppRouter>().navigateTo('/signup', replace: true);
   }
+
+ 
 }

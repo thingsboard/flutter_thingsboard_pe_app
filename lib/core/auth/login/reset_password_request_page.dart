@@ -5,6 +5,8 @@ import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
+import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
@@ -18,7 +20,7 @@ class ResetPasswordRequestPage extends TbPageWidget {
 class _ResetPasswordRequestPageState
     extends TbPageState<ResetPasswordRequestPage> {
   final _isLoadingNotifier = ValueNotifier<bool>(false);
-
+final IOverlayService overlayService = getIt();
   final _resetPasswordFormKey = GlobalKey<FormBuilderState>();
 
   @override
@@ -127,9 +129,11 @@ class _ResetPasswordRequestPageState
         await Future.delayed(const Duration(milliseconds: 300));
         await tbClient.sendResetPasswordLink(email);
         _isLoadingNotifier.value = false;
-        showSuccessNotification(
-          S.of(context).passwordResetLinkSuccessfullySentNotification,
-        );
+        if (mounted) {
+         overlayService.showSuccessNotification(
+            S.of(context).passwordResetLinkSuccessfullySentNotification,
+          );
+        }
       } catch (e) {
         _isLoadingNotifier.value = false;
       }

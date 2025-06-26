@@ -44,6 +44,7 @@ class _ThingsBoardAppState extends State<ThingsboardApp> {
           themeMode: ThemeMode.light,
           theme: data,
           darkTheme: tbDarkTheme,
+          navigatorKey: getIt<ThingsboardAppRouter>().navigatorKey,
           onGenerateRoute: getIt<ThingsboardAppRouter>().router.generator,
           navigatorObservers: [
             getIt<ThingsboardAppRouter>().tbContext.routeObserver,
