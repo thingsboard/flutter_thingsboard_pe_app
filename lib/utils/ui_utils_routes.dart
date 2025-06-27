@@ -15,7 +15,20 @@ class UiUtilsRoutes extends TbRoutes {
       );
     },
   );
+late final tbRecaptchaHandler = Handler(
+    handlerFunc: (BuildContext? context, params) {
+      final siteKey = params['siteKey']!.first;
+      final version = params['version']!.first;
+      final logActionName = params['logActionName']?.first;
 
+      return TbRecaptcha(
+        tbContext,
+        siteKey: siteKey,
+        version: version,
+        logActionName: logActionName,
+      );
+    },
+  );
   @override
   void doRegisterRoutes(FluroRouter router) {
     router.define('/qrCodeScan', handler: qrCodeScannerHandler);

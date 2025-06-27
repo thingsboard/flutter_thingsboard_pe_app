@@ -16,7 +16,7 @@ class _DevicesPageState extends TbPageState<DevicesPage> {
 
   @override
   Widget build(BuildContext context) {
-    var deviceProfilesList = DeviceProfilesGrid(tbContext, _pageLinkController);
+    final deviceProfilesList = DeviceProfilesGrid(tbContext, _pageLinkController);
     return Scaffold(
       appBar: TbAppBar(tbContext, title: Text(deviceProfilesList.title)),
       body: deviceProfilesList,

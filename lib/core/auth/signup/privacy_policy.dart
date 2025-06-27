@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
-import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart' show MobileInfoQuery;
@@ -12,7 +11,7 @@ import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class PrivacyPolicy extends TbPageWidget {
-  PrivacyPolicy(TbContext tbContext, {super.key}) : super(tbContext);
+  PrivacyPolicy(super.tbContext, {super.key});
 
   @override
   State<StatefulWidget> createState() => _PrivacyPolicyState();

@@ -231,6 +231,7 @@ abstract class BaseEntitiesWidget<T, P> extends TbContextWidget
   BaseEntitiesWidget(
     super.tbContext,
     this.pageKeyController, {
+    super.key,
     this.searchMode = false,
   });
   final bool searchMode;

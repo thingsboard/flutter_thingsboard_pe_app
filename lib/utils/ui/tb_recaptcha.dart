@@ -37,12 +37,8 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
 
   final setting = InAppWebViewSettings(
     mediaPlaybackRequiresUserGesture: false,
-    javaScriptEnabled: true,
-    cacheEnabled: true,
     clearCache: true,
     supportZoom: false,
-    useHybridComposition: true,
-    thirdPartyCookiesEnabled: true,
     allowsInlineMediaPlayback: true,
     isInspectable: kDebugMode,
   );
@@ -133,9 +129,9 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
     );
   }
 
-  void refresh() async {
-    var windowMessage = <String, dynamic>{'type': 'resetRecaptcha'};
-    var controller = await _webViewController.future;
+  Future<void> refresh() async {
+    final windowMessage = <String, dynamic>{'type': 'resetRecaptcha'};
+    final controller = await _webViewController.future;
     await controller.postWebMessage(
       message: WebMessage(data: jsonEncode(windowMessage)),
       targetOrigin: WebUri('*'),

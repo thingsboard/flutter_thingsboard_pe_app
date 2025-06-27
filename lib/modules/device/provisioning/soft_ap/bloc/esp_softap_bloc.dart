@@ -73,11 +73,9 @@ class EspSoftApBloc extends Bloc<EspSoftApEvent, EspSoftApState> {
     switch (event) {
       case EspSoftApConnectToDeviceEvent():
         await _onEspSoftApConnectToDeviceEvent(emit);
-        break;
 
       case EspSoftApStartProvisioningEvent():
        _onEspSoftApStartProvisioningEvent(emit, event);
-        break;
 
       case EspSoftApAutoConnectToDeviceWifi():
         bool? connectionResult;
@@ -94,19 +92,15 @@ class EspSoftApBloc extends Bloc<EspSoftApEvent, EspSoftApState> {
           }
         }
 
-        break;
 
       case EspSoftApManuallyConnectToDeviceWifi():
         emit(const EspManuallyConnectToDeviceNetworkState());
-        break;
 
       case EspSoftApProvisioningDoneEvent():
         emit(const EspSoftApProvisioningDoneState());
-        break;
 
       case EspSoftApRescanWifiEvent():
         emit(EspSoftApWiFiListState(wiFis));
-        break;
     }
   }
 Future<void> _onEspSoftApStartProvisioningEvent(Emitter<EspSoftApState> emit, EspSoftApStartProvisioningEvent event) async {

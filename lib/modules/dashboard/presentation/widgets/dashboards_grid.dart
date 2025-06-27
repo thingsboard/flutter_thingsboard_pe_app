@@ -54,7 +54,7 @@ class DashboardsGridWidget extends StatelessWidget {
                   );
                 } else {
                   getIt<IOverlayService>().showErrorNotification(
-                    'You don\'t have permissions to perform this operation!',
+                    "You don't have permissions to perform this operation!",
                   );
                 }
               },

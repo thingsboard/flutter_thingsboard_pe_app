@@ -64,15 +64,15 @@ abstract class EntitiesListWidget<T, P> extends TbContextWidget
 
 class _EntitiesListWidgetState<T, P>
     extends TbContextState<EntitiesListWidget<T, P>> {
+
+  _EntitiesListWidgetState(EntitiesListWidgetController? controller)
+      : _controller = controller;
   final EntitiesListWidgetController? _controller;
 
   late final PageKeyController<P> _pageKeyController;
 
   final StreamController<PageData<T>?> _entitiesStreamController =
       StreamController.broadcast();
-
-  _EntitiesListWidgetState(EntitiesListWidgetController? controller)
-      : _controller = controller;
 
   @override
   void initState() {
@@ -173,7 +173,7 @@ class _EntitiesListWidgetState<T, P>
                   stream: _entitiesStreamController.stream,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      var data = snapshot.data!;
+                      final data = snapshot.data!;
                       if (data.data.isEmpty) {
                         return _buildNoEntitiesFound(); //return Text('Loaded');
                       } else {

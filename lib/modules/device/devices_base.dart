@@ -42,8 +42,8 @@ mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
         final dashboardId = profile.defaultDashboardId!.id!;
         final state = Utils.createDashboardEntityState(
           device.entityId,
-          entityName: device.field('name')!,
-          entityLabel: device.field('label')!,
+          entityName: device.field('name'),
+          entityLabel: device.field('label'),
         );
         getIt<ThingsboardAppRouter>().navigateToDashboard(
           dashboardId,

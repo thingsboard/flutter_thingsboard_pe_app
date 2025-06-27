@@ -68,7 +68,7 @@ class ThingsboardAppRouter {
     }
  //TODO; Refactor this to avoid merge logic
     if (navigatorKey.currentState is TbMainState) {
-      var mainState = navigatorKey.currentState as TbMainState;
+      final mainState = navigatorKey.currentState! as TbMainState;
       if (mainState.canNavigate(path) && !replace) {
         mainState.navigateToPath(path);
         return null;

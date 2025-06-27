@@ -23,7 +23,7 @@ abstract class DeviceProfileCache {
     ThingsboardClient tbClient,
     PageLink pageLink,
   ) async {
-    var deviceProfileInfos = await tbClient
+    final deviceProfileInfos = await tbClient
         .getDeviceProfileService()
         .getDeviceProfileInfos(pageLink);
     for (final deviceProfile in deviceProfileInfos.data) {

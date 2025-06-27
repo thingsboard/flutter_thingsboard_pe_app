@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
 import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
-import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
@@ -12,11 +11,10 @@ import 'package:thingsboard_app/utils/services/device_info/i_device_info_service
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class EmailVerifiedPage extends TbPageWidget {
-  final String _emailCode;
 
-  EmailVerifiedPage(TbContext tbContext, {super.key, required String emailCode})
-      : _emailCode = emailCode,
-        super(tbContext);
+  EmailVerifiedPage(super.tbContext, {super.key, required String emailCode})
+      : _emailCode = emailCode;
+  final String _emailCode;
 
   @override
   State<StatefulWidget> createState() => _EmailVerifiedPageState();

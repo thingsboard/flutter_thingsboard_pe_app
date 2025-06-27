@@ -24,7 +24,7 @@ class _AssetsPageState extends TbContextState<AssetsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var assetsList = AssetsList(
+    final assetsList = AssetsList(
       tbContext,
       _pageLinkController,
       searchMode: widget.searchMode,

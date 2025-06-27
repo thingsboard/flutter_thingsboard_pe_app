@@ -12,12 +12,12 @@ abstract class TbThemeUtils {
   static final tbAccent = _mergeColors(Colors.deepOrange, {});
 
   static ThemeData createTheme(PaletteSettings? paletteSettings) {
-    var primarySwatch =
+    final primarySwatch =
         _materialColorFromPalette(paletteSettings?.primaryPalette, true);
-    var accentColor =
+    final accentColor =
         _materialColorFromPalette(paletteSettings?.accentPalette, false);
-    var primaryColor = primarySwatch[500]!;
-    ThemeData theme = ThemeData(primarySwatch: primarySwatch);
+    final primaryColor = primarySwatch[500]!;
+    final ThemeData theme = ThemeData(primarySwatch: primarySwatch);
     return ThemeData(
       useMaterial3: false,
       primarySwatch: primarySwatch,
@@ -55,7 +55,7 @@ abstract class TbThemeUtils {
       return primary ? tbPrimary : tbAccent;
     }
     if (palette.type == 'custom') {
-      var extendsColor = _colorFromType(palette.extendsPalette!);
+      final extendsColor = _colorFromType(palette.extendsPalette);
       return _mergeColors(extendsColor, palette.colors);
     } else {
       return _colorFromType(palette.type);
@@ -112,7 +112,7 @@ abstract class TbThemeUtils {
     Map<String, dynamic>? colors,
   ) {
     if (colors != null) {
-      var swatch = <int, Color>{
+      final swatch = <int, Color>{
         50: _parseColor(colors['50'], color[50]!),
         100: _parseColor(colors['100'], color[100]!),
         200: _parseColor(colors['200'], color[200]!),

@@ -111,6 +111,7 @@ class _EspSoftApViewState extends TbContextState<EspSoftApView> {
 
                     case EspSoftApWiFiListState():
                       return WifiList(
+                        tbContext,
                         wifi: state.wifiList
                             .map((e) => e.ssid)
                             .toSet().toList(),);

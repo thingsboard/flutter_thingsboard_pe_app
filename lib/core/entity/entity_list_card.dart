@@ -6,7 +6,7 @@ class EntityListCard<T> extends StatelessWidget {
 
   const EntityListCard(
     T entity, {
-    Key? key,
+    super.key,
     EntityTapFunction<T>? onEntityTap,
     required EntityCardWidgetBuilder<T> entityCardWidgetBuilder,
     bool listWidgetCard = false,

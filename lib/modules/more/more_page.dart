@@ -45,7 +45,6 @@ class _MorePageState extends TbContextState<MorePage> {
             children: [
               Flexible(
                 child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                   children: [ 
                   Row(

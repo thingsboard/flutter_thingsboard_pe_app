@@ -31,7 +31,6 @@ class _DashboardPermissionErrorViewState
         leading: !widget.fullScreen && !widget.home
             ? BackButton(onPressed: () => Navigator.of(context).pop())
             : null,
-        showLoadingIndicator: false,
         elevation: 1,
         shadowColor: Colors.transparent,
         title: const FittedBox(
@@ -62,7 +61,7 @@ class _DashboardPermissionErrorViewState
             const SizedBox(height: 16),
             const Center(
               child: Text(
-                'It looks like your permissions aren\'t '
+                "It looks like your permissions aren't "
                 'sufficient to complete this operation',
                 textAlign: TextAlign.center,
                 style: TextStyle(

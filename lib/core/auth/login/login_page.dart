@@ -131,15 +131,13 @@ class _LoginPageState extends TbPageState<LoginPage>
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        tbContext.wlService.loginLogoImage !=
-                                                null
-                                            ? SizedBox(
+                                        if (tbContext.wlService.loginLogoImage !=
+                                                null) SizedBox(
                                                 height: 29,
                                                 width: 133,
                                                 child: tbContext
-                                                    .wlService.loginLogoImage!,
-                                              )
-                                            : const SizedBox(height: 25),
+                                                    .wlService.loginLogoImage,
+                                              ) else const SizedBox(height: 25),
                                         Visibility(
                                           visible: selectedRegion != null,
                                           child: TextButton(
@@ -447,7 +445,6 @@ class _LoginPageState extends TbPageState<LoginPage>
                                         children: [
                                           const SizedBox(height: 8),
                                           Row(
-                                            mainAxisSize: MainAxisSize.max,
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
@@ -487,7 +484,6 @@ class _LoginPageState extends TbPageState<LoginPage>
                                         children: [
                                           const SizedBox(height: 38),
                                           Row(
-                                            mainAxisSize: MainAxisSize.max,
                                             mainAxisAlignment:
                                                 MainAxisAlignment.end,
                                             children: [

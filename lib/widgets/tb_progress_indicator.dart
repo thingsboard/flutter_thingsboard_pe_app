@@ -6,12 +6,9 @@ import 'package:thingsboard_app/constants/assets_path.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 ///TODO: Refactor this to avoid merge conflicts
 class TbProgressIndicator extends ProgressIndicator {
-  final double size;
-  final TbContext tbContext;
 
   const TbProgressIndicator(
     this.tbContext, {
-    Key? key,
     this.size = 36.0,
     super.valueColor,
     super.semanticsLabel,
@@ -20,6 +17,7 @@ class TbProgressIndicator extends ProgressIndicator {
           value: null,
         );
   final double size;
+  final TbContext tbContext;
 
   @override
   State<StatefulWidget> createState() => _TbProgressIndicatorState();
@@ -31,7 +29,7 @@ class TbProgressIndicator extends ProgressIndicator {
 class _TbProgressIndicatorState extends State<TbProgressIndicator>
     with TickerProviderStateMixin {
   AnimationController? _controller;
-  CurvedAnimation? _rotation;
+ late  CurvedAnimation? _rotation;
 
   @override
   void initState() {
@@ -40,7 +38,6 @@ class _TbProgressIndicatorState extends State<TbProgressIndicator>
       _controller = AnimationController(
         duration: const Duration(milliseconds: 1500),
         vsync: this,
-        upperBound: 1,
         animationBehavior: AnimationBehavior.preserve,
       );
       _rotation =
@@ -62,7 +59,6 @@ class _TbProgressIndicatorState extends State<TbProgressIndicator>
         _controller = AnimationController(
           duration: const Duration(milliseconds: 1500),
           vsync: this,
-          upperBound: 1,
           animationBehavior: AnimationBehavior.preserve,
         );
         _rotation =

@@ -13,7 +13,7 @@ import 'package:thingsboard_app/core/auth/login/bloc/bloc.dart';
 import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
 import 'package:thingsboard_app/core/auth/oauth2/app_secret_provider.dart';
 import 'package:thingsboard_app/core/auth/signup/signup_field_widget.dart';
-import 'package:thingsboard_app/core/context/tb_context.dart';
+
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
@@ -22,7 +22,7 @@ import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class SignUpPage extends TbPageWidget {
-  SignUpPage(TbContext tbContext, {super.key}) : super(tbContext);
+  SignUpPage(super.tbContext, {super.key});
 
   @override
   State<StatefulWidget> createState() => _SignUpPageState();
@@ -100,7 +100,6 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                         state.selfRegistrationParams!.title!
                                             .isNotEmpty)
                                       Row(
-                                        mainAxisSize: MainAxisSize.max,
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
@@ -183,7 +182,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                 String? recaptchaResponse,
                                                 child,
                                               ) {
-                                                bool hasRecaptchaResponse =
+                                                final bool hasRecaptchaResponse =
                                                     recaptchaResponse != null &&
                                                         recaptchaResponse
                                                             .isNotEmpty;
@@ -209,16 +208,17 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                         child: Checkbox(
                                                             value:
                                                                 hasRecaptchaResponse,
-                                                            onChanged: (_) {
-                                                              hasRecaptchaResponse
-                                                                  ? null
-                                                                  : _openRecaptcha(
+                                                            onChanged:  (_) {
+                                                             if(!hasRecaptchaResponse) {
+                                                               _openRecaptcha(
                                                                       state
                                                                           .selfRegistrationParams!,
                                                                       state
                                                                           .recaptchaClient,
                                                                     );
-                                                            },),),
+                                                             }
+                                                            }
+                                                            ,),),
                                                       const SizedBox(width: 24),
                                                       Text(
                                                         S.of(context).imNotARobot,
@@ -263,7 +263,6 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                     ),
                                                   ],
                                                 ),
-                                                contentPadding: EdgeInsets.zero,
                                                 name: 'acceptPrivacyPolicy',
                                                 initialValue: false,
                                                 decoration:
@@ -302,7 +301,6 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                     ),
                                                   ],
                                                 ),
-                                                contentPadding: EdgeInsets.zero,
                                                 name: 'acceptTermsOfUse',
                                                 initialValue: false,
                                                 decoration:
@@ -423,7 +421,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     );
   }
 
-  void _openRecaptcha(
+  Future<void> _openRecaptcha(
     MobileSelfRegistrationParams signUpParams,
     RecaptchaClient? recaptchaClient,
   ) async {
@@ -434,7 +432,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
           timeout: 10000,
         );
       } else {
-        final recaptchaResponse = await getIt<ThingsboardAppRouter>().navigateTo(
+        final String? recaptchaResponse = await getIt<ThingsboardAppRouter>().navigateTo(
           '/tbRecaptcha?siteKey=${signUpParams.recaptcha.siteKey}'
           '&version=${signUpParams.recaptcha.version}'
           '&logActionName=${signUpParams.recaptcha.logActionName}',
@@ -450,8 +448,8 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     }
   }
 
-  void _openPrivacyPolicy() async {
-    bool? acceptPrivacyPolicy = await getIt<ThingsboardAppRouter>().navigateTo(
+  Future<void> _openPrivacyPolicy() async {
+    final bool? acceptPrivacyPolicy = await getIt<ThingsboardAppRouter>().navigateTo(
       '/signup/privacyPolicy',
       transition: TransitionType.nativeModal,
     );
@@ -461,8 +459,8 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     }
   }
 
-  void _openTermsOfUse() async {
-    bool? acceptTermsOfUse = await getIt<ThingsboardAppRouter>().navigateTo(
+  Future<void> _openTermsOfUse() async {
+    final bool? acceptTermsOfUse = await getIt<ThingsboardAppRouter>().navigateTo(
       '/signup/termsOfUse',
       transition: TransitionType.nativeModal,
     );
@@ -472,11 +470,11 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     }
   }
 
-  void _login() async {
+  Future<void> _login() async {
     getIt<ThingsboardAppRouter>().navigateTo('/login', replace: true);
   }
 
-  void _signUp(MobileSelfRegistrationParams signUpParams) async {
+  Future<void> _signUp(MobileSelfRegistrationParams signUpParams) async {
     FocusScope.of(context).unfocus();
     if (_signUpFormKey.currentState?.saveAndValidate() ?? false) {
       final formValue = _signUpFormKey.currentState!.value;
@@ -511,7 +509,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
             _recaptchaResponseNotifier.value = null;
             _isSignUpNotifier.value = false;
             _promptToResendEmailVerification(
-              formValue[SignUpFieldsId.email.toShortString()],
+              formValue[SignUpFieldsId.email.toShortString()].toString(),
             );
           } else {
             log.info('Sign up success!');
@@ -538,7 +536,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
         formValue[SignUpFieldsId.repeat_password.toShortString()]) {
    getIt<IOverlayService>().showErrorNotification(S.of(context).passwordErrorNotification);
       return false;
-    } else if (formValue[SignUpFieldsId.password.toShortString()].length < 6) {
+    } else if (formValue[SignUpFieldsId.password.toShortString()].toString().length < 6) {
       getIt<IOverlayService>().showErrorNotification(S.of(context).invalidPasswordLengthMessage);
       return false;
     }
@@ -562,7 +560,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     return true;
   }
 
-  void _promptToResendEmailVerification(String email) async {
+  Future<void> _promptToResendEmailVerification(String email) async {
     final res = await confirm(
       title: S.of(context).inactiveUserAlreadyExists,
       message: S.of(context).inactiveUserAlreadyExistsMessage,

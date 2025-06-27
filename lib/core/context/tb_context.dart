@@ -472,7 +472,7 @@ class TbContext implements PopEntry {
       ),
     );
   }
-static showFullScreenDialogStatic<T>(
+static Future<T?> showFullScreenDialogStatic<T>(
     BuildContext context,
     Widget dialog,) {
     return Navigator.of(context).push<T>(

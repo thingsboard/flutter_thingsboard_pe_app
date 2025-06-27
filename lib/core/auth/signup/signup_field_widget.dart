@@ -96,7 +96,7 @@ List<String>? getHintsFromId() {
     return '${field.label} ${S.of(context).isRequiredText}';
   }
 
-  dynamic validator(BuildContext context) {
+   FormFieldValidator<String>? validator(BuildContext context) {
     final validators = <FormFieldValidator>[];
     if (field.required) {
       validators.add(

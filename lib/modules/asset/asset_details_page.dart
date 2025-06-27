@@ -4,7 +4,7 @@ import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:thingsboard_app/core/entity/entity_details_page.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 
-class AssetDetailsPage extends EntityDetailsPage<AssetInfo> {
+class AssetDetailsPage extends EntityDetailsPage<Asset> {
   AssetDetailsPage(super.tbContext, String assetId, {super.key})
       : super(
           entityId: assetId,

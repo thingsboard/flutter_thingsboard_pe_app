@@ -89,7 +89,7 @@ class _TwoFactorAuthenticationPageState
     final providersInfo = tbContext.twoFactorAuthProviders;
 
     for (final provider in TwoFaProviderType.values) {
-      var providerConfig =
+      final providerConfig =
           providersInfo!.firstWhereOrNull((config) => config.type == provider);
       if (providerConfig != null) {
         if (providerConfig.isDefault) {
@@ -149,7 +149,7 @@ class _TwoFactorAuthenticationPageState
                           valueListenable: _selectedProvider,
                           builder: (context, providerType, widget) {
                             if (providerType == null) {
-                              var children = <Widget>[
+                              final children = <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 16),
                                   child: Text(
@@ -207,7 +207,7 @@ class _TwoFactorAuthenticationPageState
                                 children: children,
                               );
                             } else {
-                              var providerConfig = tbContext
+                              final providerConfig = tbContext
                                   .twoFactorAuthProviders
                                   ?.firstWhereOrNull(
                                 (config) => config.type == providerType,
@@ -215,7 +215,7 @@ class _TwoFactorAuthenticationPageState
                               if (providerConfig == null) {
                                 return const SizedBox.shrink();
                               }
-                              var providerDescription =
+                              final providerDescription =
                                   twoFactorAuthProvidersLoginData[providerType]!
                                       .descFunction;
                               return FormBuilder(
@@ -426,7 +426,7 @@ class _TwoFactorAuthenticationPageState
       keyboardType = TextInputType.text;
     }
 
-    List<FormFieldValidator<String>> validators = [
+    final List<FormFieldValidator<String>> validators = [
       FormBuilderValidators.required(
         errorText: S.of(context).verificationCodeInvalid,
       ),
@@ -440,7 +440,7 @@ class _TwoFactorAuthenticationPageState
       ),
     ];
 
-    var providerFormData = twoFactorAuthProvidersLoginData[providerType]!;
+    final providerFormData = twoFactorAuthProvidersLoginData[providerType]!;
 
     return FormBuilderTextField(
       name: 'verificationCode',
