@@ -9,8 +9,8 @@ class NoAuthLoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Container(
+    return  SizedBox.expand(
+      child: ColoredBox(
         color: const Color(0x99FFFFFF),
         child: Center(
           child: TbProgressIndicator(tbContext, size: 50.0),

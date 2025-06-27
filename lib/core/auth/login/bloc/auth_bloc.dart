@@ -92,7 +92,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
         }
 
-        break;
     }
   }
 }

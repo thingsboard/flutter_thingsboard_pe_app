@@ -7,7 +7,6 @@ import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
-import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
@@ -19,10 +18,6 @@ typedef ProviderDescFunction = String Function(
 typedef TextFunction = String Function(BuildContext context);
 
 class TwoFactorAuthProviderLoginData {
-  TextFunction nameFunction;
-  ProviderDescFunction descFunction;
-  TextFunction placeholderFunction;
-  String icon;
 
   TwoFactorAuthProviderLoginData({
     required this.nameFunction,
@@ -30,6 +25,10 @@ class TwoFactorAuthProviderLoginData {
     required this.placeholderFunction,
     required this.icon,
   });
+  TextFunction nameFunction;
+  ProviderDescFunction descFunction;
+  TextFunction placeholderFunction;
+  String icon;
 }
 
 final Map<TwoFaProviderType, TwoFactorAuthProviderLoginData>
@@ -63,8 +62,7 @@ final Map<TwoFaProviderType, TwoFactorAuthProviderLoginData>
 };
 
 class TwoFactorAuthenticationPage extends TbPageWidget {
-  TwoFactorAuthenticationPage(TbContext tbContext, {super.key})
-      : super(tbContext);
+  TwoFactorAuthenticationPage(super.tbContext, {super.key});
 
   @override
   State<StatefulWidget> createState() => _TwoFactorAuthenticationPageState();
@@ -76,11 +74,11 @@ class _TwoFactorAuthenticationPageState
   final ValueNotifier<TwoFaProviderType?> _selectedProvider =
       ValueNotifier<TwoFaProviderType?>(null);
   TwoFaProviderType? _prevProvider;
-  int? _minVerificationPeriod;
-  final List<TwoFaProviderType> _allowProviders = [];
-  final ValueNotifier<bool> _disableSendButton = ValueNotifier<bool>(false);
-  final ValueNotifier<bool> _showResendAction = ValueNotifier<bool>(false);
-  final ValueNotifier<bool> _hideResendButton = ValueNotifier<bool>(true);
+ late int? _minVerificationPeriod;
+  final _allowProviders = <TwoFaProviderType>[];
+  final _disableSendButton = ValueNotifier<bool>(false);
+  final _showResendAction = ValueNotifier<bool>(false);
+  final _hideResendButton = ValueNotifier<bool>(true);
   Timer? _timer;
   Timer? _tooManyRequestsTimer;
   final ValueNotifier<int> _countDownTime = ValueNotifier<int>(0);
@@ -88,7 +86,8 @@ class _TwoFactorAuthenticationPageState
   @override
   void initState() {
     super.initState();
-    var providersInfo = tbContext.twoFactorAuthProviders;
+    final providersInfo = tbContext.twoFactorAuthProviders;
+
     for (final provider in TwoFaProviderType.values) {
       var providerConfig =
           providersInfo!.firstWhereOrNull((config) => config.type == provider);
@@ -164,10 +163,10 @@ class _TwoFactorAuthenticationPageState
                                 ),
                               ];
                               for (final type in _allowProviders) {
-                                var providerData =
+                                final providerData =
                                     twoFactorAuthProvidersLoginData[type]!;
                                 Widget? icon;
-                                var iconData = MdiIcons.fromString(
+                                final iconData = MdiIcons.fromString(
                                   providerData.icon,
                                 );
                                 if (iconData != null) {
@@ -273,7 +272,6 @@ class _TwoFactorAuthenticationPageState
                                     SizedBox(
                                       height: 49,
                                       child: Row(
-                                        mainAxisSize: MainAxisSize.max,
                                         children: [
                                           ValueListenableBuilder<bool>(
                                             valueListenable: _showResendAction,
@@ -460,8 +458,8 @@ class _TwoFactorAuthenticationPageState
   Future<void> _sendVerificationCode(BuildContext context) async {
     FocusScope.of(context).unfocus();
     if (_twoFactorAuthFormKey.currentState?.saveAndValidate() ?? false) {
-      var formValue = _twoFactorAuthFormKey.currentState!.value;
-      String verificationCode = formValue['verificationCode'];
+      final formValue = _twoFactorAuthFormKey.currentState!.value;
+      final String verificationCode = formValue['verificationCode'].toString();
       try {
         await tbClient.checkTwoFaVerificationCode(
           _selectedProvider.value!,
@@ -500,8 +498,8 @@ class _TwoFactorAuthenticationPageState
     _selectedProvider.value = type;
     _showResendAction.value = false;
     if (type != null) {
-      var providersInfo = tbContext.twoFactorAuthProviders;
-      var providerConfig =
+      final providersInfo = tbContext.twoFactorAuthProviders;
+      final providerConfig =
           providersInfo!.firstWhereOrNull((config) => config.type == type)!;
       if (type != TwoFaProviderType.TOTP &&
           type != TwoFaProviderType.BACKUP_CODE) {

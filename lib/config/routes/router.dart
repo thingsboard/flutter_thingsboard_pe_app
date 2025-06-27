@@ -29,55 +29,67 @@ import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service
 import 'package:thingsboard_app/utils/ui_utils_routes.dart';
 
 class ThingsboardAppRouter {
+  ThingsboardAppRouter({
+    required this.overlayService,
+    required TbContext tbContext,
+  }) : _tbContext = tbContext {
+    router.notFoundHandler = notFoundHandler;
+    _initRoutes();
+  }
   final router = FluroRouter();
   final IOverlayService overlayService;
   final TbLogger log = getIt<TbLogger>();
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   final TbContext _tbContext;
-  Future<dynamic> navigateTo(
+  Future<T?> navigateTo<T>(
     String path, {
     bool replace = false,
     bool clearStack = false,
-    closeDashboard = true,
+    bool closeDashboard = true,
     TransitionType? transition,
     Duration? transitionDuration,
     bool restoreDashboard = true,
     RouteSettings? routeSettings,
   }) async {
+    TransitionType transitionToUse = TransitionType.none;
     if (transition != TransitionType.nativeModal) {
-      transition = TransitionType.none;
-    } else if (transition == null) {
+      transitionToUse = TransitionType.none;
+    }
+    if (transition == null) {
       if (replace) {
-        transition = TransitionType.fadeIn;
+        transitionToUse = TransitionType.fadeIn;
       } else {
-        transition = TransitionType.native;
+        transitionToUse = TransitionType.native;
       }
     }
     overlayService.hideNotification();
     if (navigatorKey.currentContext == null) {
-      return;
+      return null;
     }
-    //TODO; Refactor this to avoid merge logic
+ //TODO; Refactor this to avoid merge logic
     if (navigatorKey.currentState is TbMainState) {
       var mainState = navigatorKey.currentState as TbMainState;
       if (mainState.canNavigate(path) && !replace) {
         mainState.navigateToPath(path);
-        return;
+        return null;
       }
     }
-    return router.navigateTo(
+    final result = await router.navigateTo(
       navigatorKey.currentContext!,
       path,
-      transition: transition,
+      transition: transitionToUse,
       transitionDuration: transitionDuration,
       replace: replace,
       clearStack: clearStack,
       routeSettings: routeSettings,
     );
+    return result as T?;
   }
 
-  void pop<T>([T? result, BuildContext? context]) async {
-    var targetContext = context ?? _navigatorKey.currentContext;
+ 
+
+  Future<void> pop<T>([T? result, BuildContext? context]) async {
+    final targetContext = context ?? _navigatorKey.currentContext;
     if (targetContext != null) {
       router.pop<T>(targetContext, result);
     }
@@ -121,12 +133,6 @@ class ThingsboardAppRouter {
     }
   }
 
-  ThingsboardAppRouter(
-      {required this.overlayService, required TbContext tbContext,})
-      : _tbContext = tbContext {
-    router.notFoundHandler = notFoundHandler;
-    _initRoutes();
-  }
   final notFoundHandler = Handler(
     handlerFunc: (context, params) {
       final settings = context!.settings;

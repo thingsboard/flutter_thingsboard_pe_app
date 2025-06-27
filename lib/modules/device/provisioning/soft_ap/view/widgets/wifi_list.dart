@@ -23,8 +23,7 @@ class WifiList extends StatelessWidget {
             wifi,
             icon: Icons.wifi_outlined,
             onTap: (network) async {
-              
-              final networkPass = await TbContext.showFullScreenDialogStatic( context,
+              final String? networkPass = await tbContext.showFullScreenDialog(
                 PasswordDialog(
                   helpMessage: S.of(context).wifiPasswordMessage(network),
                   textFieldLabel: S.of(context).wifiPassword,

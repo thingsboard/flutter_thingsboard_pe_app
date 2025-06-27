@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/entity/entity_details_page.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 
-class DeviceDetailsPage extends EntityDetailsPage<Device> {
-  DeviceDetailsPage(TbContext tbContext, String deviceId, {super.key})
-      : super(tbContext, entityId: deviceId, defaultTitle: 'Device');
+class DeviceDetailsPage extends EntityDetailsPage<DeviceInfo> {
+  DeviceDetailsPage(super.tbContext, String deviceId, {super.key})
+      : super(entityId: deviceId, defaultTitle: 'Device');
 
   @override
   Future<Device?> fetchEntity(String id) {

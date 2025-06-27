@@ -94,11 +94,11 @@ class _EspSoftApViewState extends TbContextState<EspSoftApView> {
                 child: () {
                   switch (state) {
                     case EspSoftAppLoadingState():
-                      return SizedBox.expand(
-                        child: Container(
-                          color: const Color(0x99FFFFFF),
+                      return  SizedBox.expand(
+                        child: ColoredBox(
+                          color:const Color(0x99FFFFFF),
                           child: Center(
-                            child: TbProgressIndicator(tbContext, size: 50),
+                            child: TbProgressIndicator(tbContext,size: 50),
                           ),
                         ),
                       );
@@ -145,7 +145,7 @@ class _EspSoftApViewState extends TbContextState<EspSoftApView> {
                         onTryAgain: () {},
                         assetPath: ThingsboardImage.mobileConnectionError,
                         message: 'Unable connect to Wi-Fi because networks '
-                            'wasn\'t found by device ${widget.name}',
+                            "wasn't found by device ${widget.name}",
                       );
 
                     case EspSoftApProvisioningDoneState():

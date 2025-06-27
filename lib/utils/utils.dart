@@ -23,33 +23,32 @@ abstract class Utils {
     String? entityLabel,
     String? stateId,
   }) {
-    var stateObj = [
-      <String, dynamic>{'params': <String, dynamic>{}},
-    ];
+    final List<Map<String, dynamic>> stateObj = [{}];
+    final params = <String, dynamic>{};
     if (entityId != null) {
-      stateObj[0]['params']['entityId'] = entityId.toJson();
+      params['entityId'] = entityId.toJson();
     }
     if (entityName != null) {
-      stateObj[0]['params']['entityName'] = entityName;
+      params['entityName'] = entityName;
     }
     if (entityLabel != null) {
-      stateObj[0]['params']['entityLabel'] = entityLabel;
+      params['entityLabel'] = entityLabel;
     }
     if (stateId != null) {
       stateObj[0]['id'] = stateId;
     }
-    var stateJson = json.encode(stateObj);
+    stateObj[0]['params'] = params;
+    final stateJson = json.encode(stateObj);
     var encodedUri = Uri.encodeComponent(stateJson);
-    encodedUri =
-        encodedUri.replaceAllMapped(RegExp(r'%([0-9A-F]{2})'), (match) {
-      var p1 = match.group(1)!;
+    encodedUri = encodedUri.replaceAllMapped(RegExp('%([0-9A-F]{2})'), (match) {
+      final p1 = match.group(1)!;
       return String.fromCharCode(int.parse(p1, radix: 16));
     });
     return Uri.encodeComponent(base64.encode(utf8.encode(encodedUri)));
   }
 
   static String? contactToShortAddress(ContactBased contact) {
-    var addressParts = <String>[];
+    final addressParts = <String>[];
     if (contact.country != null) {
       addressParts.add(contact.country!);
     }
@@ -87,18 +86,18 @@ abstract class Utils {
         onError: onError,
       );
     } else {
-      imageUrl = _removeTbImagePrefix(imageUrl);
+       final newImageUrl = _removeTbImagePrefix(imageUrl);
       if (_isImageResourceUrl(imageUrl)) {
-        var parts = imageUrl.split('/');
-        var key = Uri.encodeComponent(parts[parts.length - 1]);
+        final parts = newImageUrl.split('/');
+        final key = Uri.encodeComponent(parts[parts.length - 1]);
         String imageLink;
         Map<String, String>? headers;
         if (loginLogo != null && loginLogo) {
-          var type = parts[parts.length - 2];
+          final type = parts[parts.length - 2];
           imageLink =
               '${getIt<IEndpointService>().getCachedEndpoint()}/api/noauth/whiteLabel/loginLogo/$type/$key';
         } else {
-          var jwtToken = tbClient.getJwtToken();
+          final jwtToken = tbClient.getJwtToken();
           if (jwtToken == null) {
             return _onErrorImage(
               context,
@@ -110,7 +109,7 @@ abstract class Utils {
             );
           }
           parts[parts.length - 1] = key;
-          var encodedUrl = parts.join('/');
+          final encodedUrl = parts.join('/');
           imageLink =
               getIt<IEndpointService>().getCachedEndpoint() + encodedUrl;
           headers = {_authHeaderName: _authScheme + jwtToken};
@@ -196,7 +195,7 @@ abstract class Utils {
     String? semanticLabel,
     Widget Function(BuildContext)? onError,
   }) {
-    var uriData = UriData.parse(base64);
+    final uriData = UriData.parse(base64);
     if (uriData.mimeType == 'image/svg+xml') {
       return _svgImageFromUrl(
         context,
@@ -251,7 +250,7 @@ abstract class Utils {
       ),
     );
     if (color != null) {
-      var colorFilter = ColorFilter.mode(color, BlendMode.srcIn);
+      final colorFilter = ColorFilter.mode(color, BlendMode.srcIn);
       image = ColorFiltered(
         colorFilter: colorFilter,
         child: image,

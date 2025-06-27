@@ -1,4 +1,4 @@
-import 'package:flutter_inappwebview/src/in_app_webview/in_app_webview_controller.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/mobile_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/mobile_action_result.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/widget_mobile_action_result.dart';
@@ -17,9 +17,9 @@ class TakeScreenshotAction  extends MobileAction {
     InAppWebViewController controller,
   ) async {
     try {
-      List<int>? imageBytes = await controller.takeScreenshot();
+      final List<int>? imageBytes = await controller.takeScreenshot();
       if (imageBytes != null) {
-        String imageUrl =
+        final String imageUrl =
             UriData.fromBytes(imageBytes, mimeType: 'image/png').toString();
         return WidgetMobileActionResult.successResult(
           MobileActionResult.image(imageUrl),

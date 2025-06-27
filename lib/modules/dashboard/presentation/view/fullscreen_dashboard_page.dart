@@ -10,8 +10,6 @@ import 'package:thingsboard_app/utils/services/permission/i_permission_service.d
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
 class FullscreenDashboardPage extends TbPageWidget {
-  final String fullscreenDashboardId;
-  final String? _dashboardTitle;
 
   FullscreenDashboardPage(
     super.tbContext,
@@ -19,6 +17,8 @@ class FullscreenDashboardPage extends TbPageWidget {
     super.key,
     String? dashboardTitle,
   }) : _dashboardTitle = dashboardTitle;
+  final String fullscreenDashboardId;
+  final String? _dashboardTitle;
 
   @override
   State<StatefulWidget> createState() => _FullscreenDashboardPageState();
@@ -59,7 +59,6 @@ class _FullscreenDashboardPageState
                   }
                 },
               ),
-              showLoadingIndicator: false,
               elevation: 1,
               shadowColor: Colors.transparent,
               title: ValueListenableBuilder<String>(
@@ -121,7 +120,7 @@ class _FullscreenDashboardPageState
     super.dispose();
   }
 
-  _onCanGoBack(bool canGoBack) {
+ void _onCanGoBack(bool canGoBack) {
     showBackValue.value = canGoBack;
   }
 }

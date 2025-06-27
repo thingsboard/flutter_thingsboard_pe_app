@@ -58,7 +58,7 @@ class DashboardsGridWidget extends StatelessWidget {
                   );
                 }
               },
-              settings: EntityCardSettings(dropShadow: true),
+              settings: EntityCardSettings(),
             ),
             firstPageProgressIndicatorBuilder: (_) =>
                 const FirstPageProgressBuilder(),
