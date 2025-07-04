@@ -23,6 +23,7 @@ class DashboardWidget extends TbContextWidget {
     super.tbContext, {
     required this.controllerCallback,
     this.pageController,
+    this.onUrlChanged,
     this.home,
     this.titleCallback,
     super.key,
@@ -31,6 +32,7 @@ class DashboardWidget extends TbContextWidget {
   final DashboardControllerCallback controllerCallback;
   final DashboardPageController? pageController;
   final bool? home;
+  final VoidCallback? onUrlChanged;
   final DashboardTitleCallback? titleCallback;
 
   @override
@@ -70,7 +72,7 @@ class _DashboardState extends TbContextState<DashboardWidget> {
             final uri = navigationAction.request.url!;
             final uriString = uri.toString();
             final endpoint = await getIt<IEndpointService>().getEndpoint();
-
+            widget.onUrlChanged?.call();
             log.debug('shouldOverrideUrlLoading $uriString');
             if (Platform.isAndroid ||
                 Platform.isIOS &&
@@ -109,6 +111,7 @@ class _DashboardState extends TbContextState<DashboardWidget> {
           onUpdateVisitedHistory: (controller, url, androidIsReload) async {
             log.debug('onUpdateVisitedHistory: $url');
             dashboardController.onHistoryUpdated(controller.canGoBack());
+            widget.onUrlChanged?.call();
           },
           onConsoleMessage: (controller, consoleMessage) {
             log.debug(

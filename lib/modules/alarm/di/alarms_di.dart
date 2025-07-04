@@ -75,7 +75,7 @@ class AlarmsDi {
   }
 
   static void dispose(
-     String scopeName, {
+    String scopeName, {
     required String typesScopeName,
     required String assigneeScopeName,
   }) {
