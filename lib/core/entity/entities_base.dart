@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
@@ -56,7 +56,6 @@ typedef EntityCardWidgetBuilder<T> = Widget Function(
 );
 
 class EntityCardSettings {
-
   EntityCardSettings({this.dropShadow = true});
   bool dropShadow;
 }
@@ -178,7 +177,6 @@ abstract class PageKeyController<P> extends ValueNotifier<PageKeyValue<P>> {
 }
 
 class PageKeyValue<P> {
-
   PageKeyValue(this.pageKey);
   final P pageKey;
 }
@@ -197,7 +195,7 @@ class PageLinkController extends PageKeyController<PageLink> {
   @override
   PageLink nextPageKey(PageLink pageKey) => pageKey.nextPageLink();
 
- void  onSearchText(String searchText) {
+  void onSearchText(String searchText) {
     value.pageKey.page = 0;
     value.pageKey.textSearch = searchText;
     notifyListeners();
@@ -218,7 +216,7 @@ class TimePageLinkController extends PageKeyController<TimePageLink> {
   @override
   TimePageLink nextPageKey(TimePageLink pageKey) => pageKey.nextPageLink();
 
- void  onSearchText(String searchText) {
+  void onSearchText(String searchText) {
     value.pageKey.page = 0;
     value.pageKey.textSearch = searchText;
     notifyListeners();
@@ -227,7 +225,6 @@ class TimePageLinkController extends PageKeyController<TimePageLink> {
 
 abstract class BaseEntitiesWidget<T, P> extends TbContextWidget
     with EntitiesBase<T, P> {
-
   BaseEntitiesWidget(
     super.tbContext,
     this.pageKeyController, {
@@ -258,7 +255,7 @@ abstract class BaseEntitiesState<T, P>
   bool _dataLoading = false;
   bool _scheduleRefresh = false;
   bool _reloadData = false;
- final IOverlayService overlayService = getIt();
+  final IOverlayService overlayService = getIt();
 
   @override
   void initState() {
@@ -315,7 +312,7 @@ abstract class BaseEntitiesState<T, P>
     if (mounted) {
       _dataLoading = true;
       try {
-       overlayService.hideNotification();
+        overlayService.hideNotification();
         final pageData = await widget.fetchEntities(pageKey);
         final isLastPage = !pageData.hasNext;
         if (refresh) {

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
@@ -18,7 +18,6 @@ typedef ProviderDescFunction = String Function(
 typedef TextFunction = String Function(BuildContext context);
 
 class TwoFactorAuthProviderLoginData {
-
   TwoFactorAuthProviderLoginData({
     required this.nameFunction,
     required this.descFunction,
@@ -74,7 +73,7 @@ class _TwoFactorAuthenticationPageState
   final ValueNotifier<TwoFaProviderType?> _selectedProvider =
       ValueNotifier<TwoFaProviderType?>(null);
   TwoFaProviderType? _prevProvider;
- late int? _minVerificationPeriod;
+  late int? _minVerificationPeriod;
   final _allowProviders = <TwoFaProviderType>[];
   final _disableSendButton = ValueNotifier<bool>(false);
   final _showResendAction = ValueNotifier<bool>(false);
@@ -484,7 +483,8 @@ class _TwoFactorAuthenticationPageState
               _disableSendButton.value = false;
             });
           } else {
-            overlayService.showErrorNotification(e.message ?? 'Code verification failed!');
+            overlayService.showErrorNotification(
+                e.message ?? 'Code verification failed!');
           }
         } else {
           overlayService.showErrorNotification('Code verification failed!');
