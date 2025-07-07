@@ -179,6 +179,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "An email with verification details was sent to the specified email address ",
     ),
     "emailVerified": MessageLookupByLibrary.simpleMessage("Email verified"),
+    "emailVersificationSuccessfullySentNotification":
+        MessageLookupByLibrary.simpleMessage(
+          "Email verification link was successfully sent!",
+        ),
     "entityType": MessageLookupByLibrary.simpleMessage("Entity Type"),
     "europe": MessageLookupByLibrary.simpleMessage("Europe"),
     "europeRegionShort": MessageLookupByLibrary.simpleMessage("Frankfurt"),
@@ -207,6 +211,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidPasswordLengthMessage": MessageLookupByLibrary.simpleMessage(
       "Your password must be at least 6 characters long",
     ),
+    "isRequiredText": MessageLookupByLibrary.simpleMessage("is required."),
     "label": MessageLookupByLibrary.simpleMessage("Label"),
     "lastName": MessageLookupByLibrary.simpleMessage("Last name"),
     "lastNameRequireText": MessageLookupByLibrary.simpleMessage(

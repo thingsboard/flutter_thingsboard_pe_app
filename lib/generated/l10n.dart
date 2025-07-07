@@ -220,6 +220,16 @@ class S {
     );
   }
 
+  /// `Email verification link was successfully sent!`
+  String get emailVersificationSuccessfullySentNotification {
+    return Intl.message(
+      'Email verification link was successfully sent!',
+      name: 'emailVersificationSuccessfullySentNotification',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `OR`
   String get or {
     return Intl.message('OR', name: 'or', desc: '', args: []);
@@ -1308,6 +1318,16 @@ class S {
   /// `Dashboards`
   String get dashboards {
     return Intl.message('Dashboards', name: 'dashboards', desc: '', args: []);
+  }
+
+  /// `is required.`
+  String get isRequiredText {
+    return Intl.message(
+      'is required.',
+      name: 'isRequiredText',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Update required`
