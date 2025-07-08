@@ -178,10 +178,10 @@ class _NotificationPageState extends TbContextState<NotificationPage> {
         }
       });
     }
-    listener = NotificationsLocalService.notificationsNumberStream.stream
-        .listen((e) {
-        //  _refresh();
-        });
+    listener =
+        NotificationsLocalService.notificationsNumberStream.stream.listen((e) {
+      //  _refresh();
+    });
     super.initState();
   }
 
