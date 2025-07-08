@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
@@ -31,6 +33,7 @@ class _NotificationPageState extends TbContextState<NotificationPage> {
   final notificationQueryCtrl = NotificationQueryCtrl();
   late final NotificationRepository notificationRepository;
   final overlayService = getIt<IOverlayService>();
+  late final StreamSubscription<int> listener;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,84 +73,74 @@ class _NotificationPageState extends TbContextState<NotificationPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () async => _refresh(),
-        child: StreamBuilder(
-          stream: NotificationsLocalService.notificationsNumberStream.stream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              _refresh();
-            }
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 5,
+              vertical: 10,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 20),
+                  child: FilterSegmentedButton(
+                    selected: notificationsFilter,
+                    onSelectionChanged: (newSelection) {
+                      if (notificationsFilter == newSelection) {
+                        return;
+                      }
 
-            return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10, bottom: 20),
-                      child: FilterSegmentedButton(
-                        selected: notificationsFilter,
-                        onSelectionChanged: (newSelection) {
-                          if (notificationsFilter == newSelection) {
-                            return;
-                          }
+                      setState(() {
+                        notificationsFilter = newSelection;
 
-                          setState(() {
-                            notificationsFilter = newSelection;
-
-                            notificationRepository.filterByReadStatus(
-                              notificationsFilter == NotificationsFilter.unread,
-                            );
-                          });
-                        },
-                        segments: const [
-                          FilterSegments(
-                            label: 'Unread',
-                            value: NotificationsFilter.unread,
-                          ),
-                          FilterSegments(
-                            label: 'All',
-                            value: NotificationsFilter.all,
-                          ),
-                        ],
+                        notificationRepository.filterByReadStatus(
+                          notificationsFilter == NotificationsFilter.unread,
+                        );
+                      });
+                    },
+                    segments: const [
+                      FilterSegments(
+                        label: 'Unread',
+                        value: NotificationsFilter.unread,
                       ),
-                    ),
-                    Expanded(
-                      child: NotificationsList(
-                        pagingController: paginationRepository.pagingController,
-                        thingsboardClient: tbClient,
-                        tbContext: tbContext,
-                        onClearNotification: (id, read) async {
-                          await notificationRepository.deleteNotification(id);
-                          if (!read) {
-                            await notificationRepository
-                                .decreaseNotificationBadgeCount();
-                          }
-
-                          if (mounted) {
-                            notificationQueryCtrl.refresh();
-                          }
-                        },
-                        onReadNotification: (id) async {
-                          await notificationRepository
-                              .markNotificationAsRead(id);
-                          await notificationRepository
-                              .decreaseNotificationBadgeCount();
-
-                          if (mounted) {
-                            notificationQueryCtrl.refresh();
-                          }
-                        },
+                      FilterSegments(
+                        label: 'All',
+                        value: NotificationsFilter.all,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+                Expanded(
+                  child: NotificationsList(
+                    pagingController: paginationRepository.pagingController,
+                    thingsboardClient: tbClient,
+                    tbContext: tbContext,
+                    onClearNotification: (id, read) async {
+                      await notificationRepository.deleteNotification(id);
+                      if (!read) {
+                        await notificationRepository
+                            .decreaseNotificationBadgeCount();
+                      }
+
+                      if (mounted) {
+                        notificationQueryCtrl.refresh();
+                      }
+                    },
+                    onReadNotification: (id) async {
+                      await notificationRepository.markNotificationAsRead(id);
+                      await notificationRepository
+                          .decreaseNotificationBadgeCount();
+
+                      if (mounted) {
+                        notificationQueryCtrl.refresh();
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -167,6 +160,7 @@ class _NotificationPageState extends TbContextState<NotificationPage> {
 
     final authority = widget.tbClient.getAuthUser()!.authority;
     final pushNotificationsDisabled = getIt<IFirebaseService>().apps.isEmpty;
+
     if (pushNotificationsDisabled) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (authority == Authority.TENANT_ADMIN ||
@@ -184,7 +178,10 @@ class _NotificationPageState extends TbContextState<NotificationPage> {
         }
       });
     }
-
+    listener = NotificationsLocalService.notificationsNumberStream.stream
+        .listen((e) {
+        //  _refresh();
+        });
     super.initState();
   }
 
@@ -193,6 +190,7 @@ class _NotificationPageState extends TbContextState<NotificationPage> {
     paginationRepository.dispose();
     notificationQueryCtrl.dispose();
     NotifcationsDi.dispose();
+    listener.cancel();
     super.dispose();
   }
 
