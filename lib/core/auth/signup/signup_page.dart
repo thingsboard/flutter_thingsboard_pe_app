@@ -512,12 +512,16 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
               formValue[SignUpFieldsId.email.toShortString()].toString(),
             );
           } else {
+        
+final enocded = Uri.encodeQueryComponent( 
+        formValue[SignUpFieldsId.email.toShortString()].toString(),
+        );
+
             log.info('Sign up success!');
             _isSignUpNotifier.value = false;
             _recaptchaResponseNotifier.value = null;
-            getIt<ThingsboardAppRouter>().navigateTo(
-              '/signup/emailVerification?'
-              'email=${formValue[SignUpFieldsId.email.toShortString()]}',
+            getIt<ThingsboardAppRouter>().navigateTo( '/signup/emailVerification?'
+              'email=$enocded'
             );
           }
         } catch (_) {
@@ -575,7 +579,12 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
             platform: getIt<IDeviceInfoService>().getPlatformType(),
           );
       log.info('Resend email activation!');
-       getIt<ThingsboardAppRouter>().navigateTo('/signup/emailVerification?email=$email');
+      final enocded = Uri.encodeQueryComponent( 
+        email,
+        );
+
+       getIt<ThingsboardAppRouter>().navigateTo('/signup/emailVerification?'
+              'email=$enocded');
     }
   }
 }
