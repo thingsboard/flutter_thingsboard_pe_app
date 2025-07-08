@@ -22,6 +22,8 @@ abstract final class LoginDi {
   }
 
   static void dispose() {
-    getIt.dropScope(scopeName);
+    if(getIt.hasScope(scopeName)) {
+      getIt.dropScope(scopeName);
+    }
   }
 }
