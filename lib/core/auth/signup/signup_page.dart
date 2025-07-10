@@ -34,10 +34,10 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
 
   final _signUpFormKey = GlobalKey<FormBuilderState>();
   bool _showPassword = false;
-
+  bool _showRepeatPassword = false;
   @override
   Future<bool> willPop() async {
-   getIt<ThingsboardAppRouter>().navigateTo('/login', replace: true);
+    getIt<ThingsboardAppRouter>().navigateTo('/login', replace: true);
     return false;
   }
 
@@ -135,12 +135,14 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                 final field = state
                                                     .selfRegistrationParams!
                                                     .fields[index];
-                                                final passwordFiled = field.id ==
-                                                        SignUpFieldsId.password ||
+                                                final passwordFiled = field
+                                                            .id ==
+                                                        SignUpFieldsId
+                                                            .password ||
                                                     field.id ==
                                                         SignUpFieldsId
                                                             .repeat_password;
-                                      
+
                                                 return SingUpFieldWidget(
                                                   field: state
                                                       .selfRegistrationParams!
@@ -148,22 +150,36 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                   suffixIcon: passwordFiled
                                                       ? IconButton(
                                                           icon: Icon(
-                                                            _showPassword
-                                                                ? Icons.visibility
+                                                            (field.id ==
+                                                        SignUpFieldsId
+                                                            .repeat_password ? _showRepeatPassword:
+                                                            _showPassword)
+                                                                ? Icons
+                                                                    .visibility
                                                                 : Icons
                                                                     .visibility_off,
                                                           ),
                                                           onPressed: () {
                                                             setState(() {
-                                                              _showPassword =
-                                                                  !_showPassword;
+                                                              if (field.id ==
+                                                                  SignUpFieldsId
+                                                                      .password) {
+                                                                _showPassword =
+                                                                    !_showPassword;
+                                                              }
+                                                              if (field.id ==
+                                                                  SignUpFieldsId
+                                                                      .repeat_password) {
+                                                                _showRepeatPassword =
+                                                                    !_showRepeatPassword;
+                                                              }
                                                             });
                                                           },
                                                         )
                                                       : null,
-                                                  obscureText: passwordFiled
-                                                      ? !_showPassword
-                                                      : false,
+                                                  obscureText: passwordFiled && field.id ==
+                                                                  SignUpFieldsId.password ? !_showPassword : 
+                                                      !_showRepeatPassword,
                                                 );
                                               },
                                               separatorBuilder: (_, __) =>
@@ -182,7 +198,8 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                 String? recaptchaResponse,
                                                 child,
                                               ) {
-                                                final bool hasRecaptchaResponse =
+                                                final bool
+                                                    hasRecaptchaResponse =
                                                     recaptchaResponse != null &&
                                                         recaptchaResponse
                                                             .isNotEmpty;
@@ -206,22 +223,25 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                         width: 24,
                                                         height: 24,
                                                         child: Checkbox(
-                                                            value:
-                                                                hasRecaptchaResponse,
-                                                            onChanged:  (_) {
-                                                             if(!hasRecaptchaResponse) {
-                                                               _openRecaptcha(
-                                                                      state
-                                                                          .selfRegistrationParams!,
-                                                                      state
-                                                                          .recaptchaClient,
-                                                                    );
-                                                             }
+                                                          value:
+                                                              hasRecaptchaResponse,
+                                                          onChanged: (_) {
+                                                            if (!hasRecaptchaResponse) {
+                                                              _openRecaptcha(
+                                                                state
+                                                                    .selfRegistrationParams!,
+                                                                state
+                                                                    .recaptchaClient,
+                                                              );
                                                             }
-                                                            ,),),
+                                                          },
+                                                        ),
+                                                      ),
                                                       const SizedBox(width: 24),
                                                       Text(
-                                                        S.of(context).imNotARobot,
+                                                        S
+                                                            .of(context)
+                                                            .imNotARobot,
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyMedium,
@@ -252,9 +272,10 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                             .of(context)
                                                             .privacyPolicy,
                                                         style: TextStyle(
-                                                          color: Theme.of(context)
-                                                              .colorScheme
-                                                              .primary,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
                                                           letterSpacing: 1,
                                                           fontSize: 14,
                                                           height: 20 / 14,
@@ -267,8 +288,9 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                 initialValue: false,
                                                 decoration:
                                                     InputDecoration.collapsed(
-                                                  hintText:
-                                                      S.of(context).privacyPolicy,
+                                                  hintText: S
+                                                      .of(context)
+                                                      .privacyPolicy,
                                                 ),
                                               ),
                                             if (state.selfRegistrationParams!
@@ -288,11 +310,14 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                         _openTermsOfUse();
                                                       },
                                                       child: Text(
-                                                        S.of(context).termsOfUse,
+                                                        S
+                                                            .of(context)
+                                                            .termsOfUse,
                                                         style: TextStyle(
-                                                          color: Theme.of(context)
-                                                              .colorScheme
-                                                              .primary,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
                                                           letterSpacing: 1,
                                                           fontSize: 14,
                                                           height: 20 / 14,
@@ -432,7 +457,8 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
           timeout: 10000,
         );
       } else {
-        final String? recaptchaResponse = await getIt<ThingsboardAppRouter>().navigateTo(
+        final String? recaptchaResponse =
+            await getIt<ThingsboardAppRouter>().navigateTo(
           '/tbRecaptcha?siteKey=${signUpParams.recaptcha.siteKey}'
           '&version=${signUpParams.recaptcha.version}'
           '&logActionName=${signUpParams.recaptcha.logActionName}',
@@ -444,12 +470,13 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     } on PlatformException catch (e) {
       getIt<IOverlayService>().showErrorNotification(e.message ?? '');
     } catch (e) {
-       getIt<IOverlayService>().showErrorNotification(e.toString());
+      getIt<IOverlayService>().showErrorNotification(e.toString());
     }
   }
 
   Future<void> _openPrivacyPolicy() async {
-    final bool? acceptPrivacyPolicy = await getIt<ThingsboardAppRouter>().navigateTo(
+    final bool? acceptPrivacyPolicy =
+        await getIt<ThingsboardAppRouter>().navigateTo(
       '/signup/privacyPolicy',
       transition: TransitionType.nativeModal,
     );
@@ -460,7 +487,8 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
   }
 
   Future<void> _openTermsOfUse() async {
-    final bool? acceptTermsOfUse = await getIt<ThingsboardAppRouter>().navigateTo(
+    final bool? acceptTermsOfUse =
+        await getIt<ThingsboardAppRouter>().navigateTo(
       '/signup/termsOfUse',
       transition: TransitionType.nativeModal,
     );
@@ -512,17 +540,16 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
               formValue[SignUpFieldsId.email.toShortString()].toString(),
             );
           } else {
-        
-final enocded = Uri.encodeQueryComponent( 
-        formValue[SignUpFieldsId.email.toShortString()].toString(),
-        );
+            final enocded = Uri.encodeQueryComponent(
+              formValue[SignUpFieldsId.email.toShortString()].toString(),
+            );
 
             log.info('Sign up success!');
             _isSignUpNotifier.value = false;
             _recaptchaResponseNotifier.value = null;
-            getIt<ThingsboardAppRouter>().navigateTo( '/signup/emailVerification?'
-              'email=$enocded'
-            );
+            getIt<ThingsboardAppRouter>()
+                .navigateTo('/signup/emailVerification?'
+                    'email=$enocded');
           }
         } catch (_) {
           _recaptchaResponseNotifier.value = null;
@@ -538,26 +565,34 @@ final enocded = Uri.encodeQueryComponent(
   ) {
     if (formValue[SignUpFieldsId.password.toShortString()] !=
         formValue[SignUpFieldsId.repeat_password.toShortString()]) {
-   getIt<IOverlayService>().showErrorNotification(S.of(context).passwordErrorNotification);
+      getIt<IOverlayService>()
+          .showErrorNotification(S.of(context).passwordErrorNotification);
       return false;
-    } else if (formValue[SignUpFieldsId.password.toShortString()].toString().length < 6) {
-      getIt<IOverlayService>().showErrorNotification(S.of(context).invalidPasswordLengthMessage);
+    } else if (formValue[SignUpFieldsId.password.toShortString()]
+            .toString()
+            .length <
+        6) {
+      getIt<IOverlayService>()
+          .showErrorNotification(S.of(context).invalidPasswordLengthMessage);
       return false;
     }
 
     final recaptchaResponse = _recaptchaResponseNotifier.value;
     if (recaptchaResponse == null || recaptchaResponse.isEmpty) {
-       getIt<IOverlayService>().showErrorNotification(S.of(context).confirmNotRobotMessage);
+      getIt<IOverlayService>()
+          .showErrorNotification(S.of(context).confirmNotRobotMessage);
       return false;
     }
     if (signUpParams.showPrivacyPolicy &&
         formValue['acceptPrivacyPolicy'] != true) {
-       getIt<IOverlayService>().showErrorNotification(S.of(context).acceptPrivacyPolicyMessage);
+      getIt<IOverlayService>()
+          .showErrorNotification(S.of(context).acceptPrivacyPolicyMessage);
       return false;
     }
 
     if (signUpParams.showTermsOfUse && formValue['acceptTermsOfUse'] != true) {
-       getIt<IOverlayService>().showErrorNotification(S.of(context).acceptTermsOfUseMessage);
+      getIt<IOverlayService>()
+          .showErrorNotification(S.of(context).acceptTermsOfUseMessage);
       return false;
     }
 
@@ -579,12 +614,12 @@ final enocded = Uri.encodeQueryComponent(
             platform: getIt<IDeviceInfoService>().getPlatformType(),
           );
       log.info('Resend email activation!');
-      final enocded = Uri.encodeQueryComponent( 
+      final enocded = Uri.encodeQueryComponent(
         email,
-        );
+      );
 
-       getIt<ThingsboardAppRouter>().navigateTo('/signup/emailVerification?'
-              'email=$enocded');
+      getIt<ThingsboardAppRouter>().navigateTo('/signup/emailVerification?'
+          'email=$enocded');
     }
   }
 }
