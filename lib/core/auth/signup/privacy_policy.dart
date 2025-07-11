@@ -6,8 +6,13 @@ import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart' show MobileInfoQuery;
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
+import 'package:thingsboard_app/utils/services/mobile_actions/actions/url_action.dart';
+import 'package:thingsboard_app/utils/services/mobile_actions/results/launch_result.dart';
+import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
+import 'package:thingsboard_app/utils/utils.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class PrivacyPolicy extends TbPageWidget {
@@ -27,7 +32,7 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
         tbContext.tbClient.getSelfRegistrationService().getPrivacyPolicy(
               query: MobileInfoQuery(
                 packageName: getIt<IDeviceInfoService>().getApplicationId(),
-          platformType: getIt<IDeviceInfoService>().getPlatformType(),
+                platformType: getIt<IDeviceInfoService>().getPlatformType(),
               ),
             );
   }
@@ -56,15 +61,9 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
                           return const SizedBox.shrink();
                         }
 
-                        return HtmlWidget(snapshot.data ?? '',
-                           onTapUrl: (link) async {
-                      
-                        launchUrlString(
-                          link,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      return true;
-                    },
+                        return HtmlWidget(
+                          snapshot.data ?? '',
+                          onTapUrl: (link) async => Utils.onWebViewLinkPressed(link)
                         );
                       } else {
                         return Center(
@@ -85,11 +84,13 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                    onPressed: () => getIt<ThingsboardAppRouter>().pop(false, context),
+                    onPressed: () =>
+                        getIt<ThingsboardAppRouter>().pop(false, context),
                     child: Text(S.of(context).cancel),
                   ),
                   ElevatedButton(
-                    onPressed: () => getIt<ThingsboardAppRouter>().pop(true, context),
+                    onPressed: () =>
+                        getIt<ThingsboardAppRouter>().pop(true, context),
                     child: Text(S.of(context).accept),
                   ),
                 ],
@@ -100,4 +101,6 @@ class _PrivacyPolicyState extends TbPageState<PrivacyPolicy> {
       ),
     );
   }
+
+ 
 }

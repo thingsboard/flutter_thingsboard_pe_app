@@ -6,6 +6,7 @@ import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart' show MobileInfoQuery;
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
+import 'package:thingsboard_app/utils/utils.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -57,14 +58,8 @@ class _TermsOfUseState extends TbPageState<TermsOfUse> {
                         }
                         return HtmlWidget(
                          snapshot.data?? '',
-                          onTapUrl: (link) async {
-                        launchUrlString(
-                          link,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      return true;
-                    },
-                        );
+                     onTapUrl: (link) async => Utils.onWebViewLinkPressed(link) 
+                     );
                       } else {
                         return Center(
                           child: TbProgressIndicator(
