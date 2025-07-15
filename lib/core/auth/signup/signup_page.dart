@@ -177,9 +177,9 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                           },
                                                         )
                                                       : null,
-                                                  obscureText: passwordFiled && field.id ==
+                                                  obscureText: passwordFiled &&( field.id ==
                                                                   SignUpFieldsId.password ? !_showPassword : 
-                                                      !_showRepeatPassword,
+                                                      !_showRepeatPassword),
                                                 );
                                               },
                                               separatorBuilder: (_, __) =>
