@@ -92,6 +92,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "alarmTypes": MessageLookupByLibrary.simpleMessage("Alarm types"),
     "alarms": MessageLookupByLibrary.simpleMessage("Alarms"),
     "allDevices": MessageLookupByLibrary.simpleMessage("All devices"),
+    "allowAccess": MessageLookupByLibrary.simpleMessage("Allow access"),
     "alreadyHaveAnAccount": MessageLookupByLibrary.simpleMessage(
       "Already have an account?",
     ),
@@ -260,6 +261,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "notImplemented": MessageLookupByLibrary.simpleMessage("Not implemented!"),
     "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
     "openAppSettingsToGrantPermissionMessage": m5,
+    "openSettingsAndGrantAccessToCameraToContinue":
+        MessageLookupByLibrary.simpleMessage(
+          "Open settings and grant access to camera to continue",
+        ),
     "or": MessageLookupByLibrary.simpleMessage("OR"),
     "originator": MessageLookupByLibrary.simpleMessage("Originator"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
@@ -307,6 +312,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "returnToDashboard": MessageLookupByLibrary.simpleMessage(
       "Return to dashboard",
     ),
+    "scanACode": MessageLookupByLibrary.simpleMessage("Scan a code"),
     "seconds": MessageLookupByLibrary.simpleMessage("seconds"),
     "selectRegion": MessageLookupByLibrary.simpleMessage("Select region"),
     "selectUser": MessageLookupByLibrary.simpleMessage("Select users"),
@@ -335,6 +341,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "termsOfUse": MessageLookupByLibrary.simpleMessage("Terms of Use"),
     "title": MessageLookupByLibrary.simpleMessage("Title"),
+    "toggleCamera": MessageLookupByLibrary.simpleMessage("Toggle camera"),
+    "toggleFlash": MessageLookupByLibrary.simpleMessage("Toggle flash"),
     "toptAuthPlaceholder": MessageLookupByLibrary.simpleMessage("Code"),
     "totpAuthDescription": MessageLookupByLibrary.simpleMessage(
       "Please enter the security code from your authenticator app.",
@@ -348,6 +356,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please try refreshing",
     ),
     "type": MessageLookupByLibrary.simpleMessage("Type"),
+    "unableToUseCamera": MessageLookupByLibrary.simpleMessage(
+      "Unable to use camera",
+    ),
     "unassigned": MessageLookupByLibrary.simpleMessage("Unassigned"),
     "updateRequired": MessageLookupByLibrary.simpleMessage("Update required"),
     "updateTo": m8,

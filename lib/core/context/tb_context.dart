@@ -157,8 +157,8 @@ class TbContext implements PopEntry {
     var message = e is ThingsboardError
         ? (e.message ?? 'Unknown error.')
         : 'Unknown error.';
-    message = 'Fatal application error occured:\n$message.';
-    await alert(title: 'Fatal error', message: message, ok: 'Close');
+    message = 'Fatal application error occurred:\n$message.';
+    await _overlayService.showAlertDialog(title: 'Fatal error', message: message, ok: 'Close');
     logout();
   }
 
@@ -271,7 +271,7 @@ class TbContext implements PopEntry {
       log.error('TbContext.onUserLoaded: $e', e, s);
 
       if (_isConnectionError(e)) {
-        final res = await confirm(
+        final res = await _overlayService.showAlertDialog(
           title: 'Connection error',
           message: 'Failed to connect to server',
           ok: 'Retry',
@@ -504,47 +504,5 @@ static Future<T?> showFullScreenDialogStatic<T>(
     }
   }
 
-  Future<void> alert({
-    required String title,
-    required String message,
-    String ok = 'Ok',
-  }) {
-    return showDialog<bool>(
-      context: currentState!.context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => thingsboardAppRouter.pop(null, context),
-            child: Text(ok),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<bool?> confirm({
-    required String title,
-    required String message,
-    String cancel = 'Cancel',
-    String ok = 'Ok',
-  }) {
-    return showDialog<bool>(
-      context: currentState!.context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => getIt<ThingsboardAppRouter>().pop(false, context),
-            child: Text(cancel),
-          ),
-          TextButton(
-              onPressed: () => getIt<ThingsboardAppRouter>().pop(true, context),
-              child: Text(ok)),
-        ],
-      ),
-    );
-  }
+ 
 }
