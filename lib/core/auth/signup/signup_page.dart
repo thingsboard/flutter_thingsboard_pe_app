@@ -600,7 +600,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
   }
 
   Future<void> _promptToResendEmailVerification(String email) async {
-    final res = await confirm(
+    final res = await getIt<IOverlayService>().showConfirmDialog(
       title: S.of(context).inactiveUserAlreadyExists,
       message: S.of(context).inactiveUserAlreadyExistsMessage,
       cancel: S.of(context).cancel,
