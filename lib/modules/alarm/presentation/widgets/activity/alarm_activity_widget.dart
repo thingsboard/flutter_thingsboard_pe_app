@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/alarm/domain/pagination/activity/alarm_activity_pagination_repository.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/activity/alarm_activity_bloc.dart';
@@ -20,11 +20,7 @@ import 'package:thingsboard_app/utils/ui/pagination_widgets/new_page_progress_bu
 import 'package:thingsboard_app/utils/ui/ui_utils.dart';
 
 class AlarmActivityWidget extends StatefulWidget {
-  const AlarmActivityWidget(
-    this.alarmId, {
-    required this.tbContext,
-    super.key,
-  });
+  const AlarmActivityWidget(this.alarmId, {required this.tbContext, super.key});
 
   final TbContext tbContext;
   final AlarmId alarmId;
@@ -39,21 +35,20 @@ class _AlarmActivityWidgetState extends State<AlarmActivityWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AlarmActivityBloc>(
-      create: (_) => AlarmActivityBloc.create(
-        widget.tbContext,
-        id: widget.alarmId,
-      )..add(const AlarmActivityFetchEvent()),
+      create:
+          (_) =>
+              AlarmActivityBloc.create(widget.tbContext, id: widget.alarmId)
+                ..add(const AlarmActivityFetchEvent()),
       child: AlarmFilterWidget(
         filterTitle: S.of(context).activity,
         action: GestureDetector(
           behavior: HitTestBehavior.opaque,
           child: Icon(
             Icons.refresh_rounded,
-            color: Colors.black.withOpacity(.54),
+            color: Colors.black.withValues(alpha: .54),
           ),
           onTap: () {
-            getIt<AlarmActivityPaginationRepository>()
-                .pagingController
+            getIt<AlarmActivityPaginationRepository>().pagingController
                 .refresh();
           },
         ),
@@ -69,34 +64,36 @@ class _AlarmActivityWidgetState extends State<AlarmActivityWidget> {
                   return Container(
                     height: 192,
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(.03),
+                      color: Colors.black.withValues(alpha: .03),
                       border: Border(
                         top: BorderSide(
-                          color: Colors.black.withOpacity(.12),
+                          color: Colors.black.withValues(alpha: .12),
                         ),
                         bottom: BorderSide(
-                          color: Colors.black.withOpacity(.12),
+                          color: Colors.black.withValues(alpha: .12),
                         ),
                       ),
                     ),
-                    child: PaginationListWidget<AlarmCommentsQuery,
-                        AlarmCommentInfo>(
+                    child: PaginationListWidget<
+                      AlarmCommentsQuery,
+                      AlarmCommentInfo
+                    >(
                       pagingController:
                           getIt<AlarmActivityPaginationRepository>()
                               .pagingController,
                       builderDelegate: PagedChildBuilderDelegate(
-                        itemBuilder: (_, activity, __) {
+                        itemBuilder: (_, activity, _) {
                           return ActivityBuilderWidget(
                             activity,
                             userId: widget.tbContext.userDetails!.id!,
                           );
                         },
-                        firstPageProgressIndicatorBuilder: (_) =>
-                            const FirstPageProgressBuilder(),
-                        newPageProgressIndicatorBuilder: (_) =>
-                            const NewPageProgressBuilder(),
-                        noItemsFoundIndicatorBuilder: (_) =>
-                            const SizedBox.shrink(),
+                        firstPageProgressIndicatorBuilder:
+                            (_) => const FirstPageProgressBuilder(),
+                        newPageProgressIndicatorBuilder:
+                            (_) => const NewPageProgressBuilder(),
+                        noItemsFoundIndicatorBuilder:
+                            (_) => const SizedBox.shrink(),
                       ),
                     ),
                   );

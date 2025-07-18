@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/modules/device/provisioning/widgets/return_to_dashboard_button.dart';
 import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
 
@@ -26,15 +26,13 @@ class DeviceProvisioningDone extends StatelessWidget {
               S.of(context).claimingMessageSuccess,
               textAlign: TextAlign.center,
               style: TbTextStyles.titleSmallSb.copyWith(
-                color: Colors.black.withOpacity(.54),
+                color: Colors.black.withValues(alpha: .54),
               ),
             ),
           ),
         ),
         const Spacer(),
-        ReturnToDashboardButton(
-          onTap: () => Navigator.of(context).pop(true),
-        ),
+        ReturnToDashboardButton(onTap: () => Navigator.of(context).pop(true)),
       ],
     );
   }

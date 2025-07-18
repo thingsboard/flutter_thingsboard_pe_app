@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/device/provisioning/ble/bloc/bloc.dart';
 import 'package:thingsboard_app/modules/device/provisioning/ble/di/esp_ble_di.dart';
@@ -43,14 +43,15 @@ class _EspBleProvisioningViewState
   @override
   Widget build(BuildContext context) {
     return BlocProvider<EspBleProvisioningBloc>(
-      create: (_) => EspBleProvisioningBloc.create(
-          deviceInfoService.getAndroidDeviceInfo()?.version.sdkInt)
-        ..add(
-          EspBleScanNetworksEvent(
-            deviceName: widget.name,
-            pop: widget.poofOfPossession,
+      create:
+          (_) => EspBleProvisioningBloc.create(
+            deviceInfoService.getAndroidDeviceInfo()?.version.sdkInt,
+          )..add(
+            EspBleScanNetworksEvent(
+              deviceName: widget.name,
+              pop: widget.poofOfPossession,
+            ),
           ),
-        ),
       child: BlocBuilder<EspBleProvisioningBloc, EspBleProvisioningState>(
         builder: (context, state) {
           return Scaffold(
@@ -79,14 +80,15 @@ class _EspBleProvisioningViewState
                     }
                   }(),
                   style: TbTextStyles.titleXs.copyWith(
-                    color: Colors.black.withOpacity(.87),
+                    color: Colors.black.withValues(alpha: .87),
                   ),
                 ),
                 leading: BackButton(
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (_) => const ExitConfirmationDialog(),
-                  ),
+                  onPressed:
+                      () => showDialog(
+                        context: context,
+                        builder: (_) => const ExitConfirmationDialog(),
+                      ),
                 ),
               );
             }(),
@@ -123,26 +125,26 @@ class _EspBleProvisioningViewState
                         deviceSecretKey: widget.tbDeviceSecretKey,
                         onProvisioningTryAgain: () {
                           context.read<EspBleProvisioningBloc>().add(
-                                EspBleProvisionDeviceEvent(
-                                  device: state.device,
-                                  pop: state.pop,
-                                  ssid: state.ssid,
-                                  pass: state.pass,
-                                ),
-                              );
+                            EspBleProvisionDeviceEvent(
+                              device: state.device,
+                              pop: state.pop,
+                              ssid: state.ssid,
+                              pass: state.pass,
+                            ),
+                          );
                         },
                       );
 
                     case EspBlePermissionsMissing():
                       return BleDevicesEmptyView(
                         showOpenAppSettings: state.openAppSettings,
-                        onTryAgain: () =>
-                            context.read<EspBleProvisioningBloc>().add(
-                                  EspBleScanNetworksEvent(
-                                    deviceName: widget.name,
-                                    pop: widget.poofOfPossession,
-                                  ),
-                                ),
+                        onTryAgain:
+                            () => context.read<EspBleProvisioningBloc>().add(
+                              EspBleScanNetworksEvent(
+                                deviceName: widget.name,
+                                pop: widget.poofOfPossession,
+                              ),
+                            ),
                         message: () {
                           if (!state.openAppSettings) {
                             return S
@@ -162,11 +164,11 @@ class _EspBleProvisioningViewState
                       return CannotEstablishSessionView(
                         onTryAgain: () {
                           context.read<EspBleProvisioningBloc>().add(
-                                EspBleScanNetworksEvent(
-                                  deviceName: widget.name,
-                                  pop: widget.poofOfPossession,
-                                ),
-                              );
+                            EspBleScanNetworksEvent(
+                              deviceName: widget.name,
+                              pop: widget.poofOfPossession,
+                            ),
+                          );
                         },
                         deviceName: S
                             .of(context)

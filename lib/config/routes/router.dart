@@ -101,7 +101,7 @@ class ThingsboardAppRouter {
     String? state,
     bool? hideToolbar,
     bool animate = true,
-  }) async {
+  })  {
     return router.navigateTo(
       _navigatorKey.currentContext!,
       '/dashboard',

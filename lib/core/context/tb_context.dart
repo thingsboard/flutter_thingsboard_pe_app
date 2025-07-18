@@ -5,6 +5,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
@@ -19,6 +20,7 @@ import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
+import 'package:thingsboard_app/utils/utils.dart';
 
 import 'package:thingsboard_app/utils/services/wl_service.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -209,7 +211,7 @@ class TbContext implements PopEntry {
             );
           } catch (e) {
             log.error('TbContext::onUserLoaded error $e');
-            if (!_isConnectionError(e)) {
+            if (!Utils.isConnectionError(e)) {
               logout();
             } else {
               rethrow;
@@ -261,7 +263,7 @@ class TbContext implements PopEntry {
       if (_handleRootState) {
         await updateRouteState();
       }
-
+      FlutterNativeSplash.remove();
       if (isAuthenticated) {
         if (getIt<IFirebaseService>().apps.isNotEmpty) {
           await NotificationService(tbClient, log, this).init();
@@ -270,7 +272,7 @@ class TbContext implements PopEntry {
     } catch (e, s) {
       log.error('TbContext.onUserLoaded: $e', e, s);
 
-      if (_isConnectionError(e)) {
+      if (Utils.isConnectionError(e)) {
         final res = await _overlayService.showAlertDialog(
           title: 'Connection error',
           message: 'Failed to connect to server',
@@ -336,11 +338,6 @@ class TbContext implements PopEntry {
     _appLinkStreamSubscription = null;
   }
 
-  bool _isConnectionError(e) {
-    return e is ThingsboardError &&
-        e.errorCode == ThingsBoardErrorCode.general &&
-        e.message == 'Unable to connect';
-  }
 ///TODO: Mergeconflict here
   bool hasGenericPermission(Resource resource, Operation operation) {
     if (userPermissions != null) {

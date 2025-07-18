@@ -108,7 +108,7 @@ class _DashboardState extends TbContextState<DashboardWidget> {
                 ? NavigationActionPolicy.ALLOW
                 : NavigationActionPolicy.CANCEL;
           },
-          onUpdateVisitedHistory: (controller, url, androidIsReload) async {
+          onUpdateVisitedHistory: (controller, url, androidIsReload)  {
             log.debug('onUpdateVisitedHistory: $url');
             dashboardController.onHistoryUpdated(controller.canGoBack());
             widget.onUrlChanged?.call();
@@ -119,10 +119,10 @@ class _DashboardState extends TbContextState<DashboardWidget> {
               '${consoleMessage.message}',
             );
           },
-          onLoadStart: (controller, url) async {
+          onLoadStart: (controller, url)  {
             log.debug('onLoadStart: $url');
           },
-          onLoadStop: (controller, url) async {
+          onLoadStop: (controller, url)  {
             log.debug('onLoadStop: $url');
             if (webViewLoading) {
               webViewLoading = false;
@@ -267,7 +267,7 @@ class _DashboardState extends TbContextState<DashboardWidget> {
   ) {
     webViewController.addJavaScriptHandler(
       handlerName: 'tbMobileDashboardStateNameHandler',
-      callback: (args) async {
+      callback: (args)  {
         log.debug(
           'Invoked tbMobileDashboardStateNameHandler: $args',
         );
@@ -285,7 +285,7 @@ class _DashboardState extends TbContextState<DashboardWidget> {
   ) {
     webViewController.addJavaScriptHandler(
       handlerName: 'tbMobileDashboardLayoutHandler',
-      callback: (args) async {
+      callback: (args)  {
         if (args.isEmpty) {
           return;
         }
@@ -304,7 +304,7 @@ class _DashboardState extends TbContextState<DashboardWidget> {
   ) {
     webViewController.addJavaScriptHandler(
       handlerName: 'tbMobileDashboardLoadedHandler',
-      callback: (args) async {
+      callback: (args)  {
         if (args.length < 2) {
           return;
         }
@@ -325,7 +325,7 @@ class _DashboardState extends TbContextState<DashboardWidget> {
   void _injectTbMobileReadyHandler(InAppWebViewController webViewController) {
     webViewController.addJavaScriptHandler(
       handlerName: 'tbMobileReadyHandler',
-      callback: (_) async {
+      callback: (_)  {
         log.debug('Invoked tbMobileReadyHandler');
 
         dashboardController.setWebViewController(webViewController);

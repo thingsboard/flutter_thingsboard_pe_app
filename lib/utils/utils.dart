@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:jovial_svg/jovial_svg.dart';
-import 'package:open_settings_plus/open_settings_plus.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
@@ -321,10 +320,16 @@ static  Future<bool> onWebViewLinkPressed(String link) async {
   static bool _isValidUrl(String url) {
     return Uri.tryParse(url) != null;
   }
-static double degreesToRadians(double degrees) {
-  return degrees * (pi / 180);
-}
+  static double degreesToRadians(double degrees) {
+    return degrees * (pi / 180);
+  }
   static bool _isBase64DataImageUrl(String url) {
     return url.startsWith(_imageBase64UrlPrefix);
+  }
+
+  static bool isConnectionError(dynamic e) {
+    return e is ThingsboardError &&
+        e.errorCode == ThingsBoardErrorCode.general &&
+        e.message == 'Unable to connect';
   }
 }
