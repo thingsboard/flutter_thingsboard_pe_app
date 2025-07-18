@@ -31,26 +31,31 @@ class _ThingsboardInitAppState extends TbPageState<ThingsboardInitRegionApp> {
           );
         }
 
-         if ((snapshot.hasError || snapshot.data == null) &&
+        if ((snapshot.hasError || snapshot.data == null) &&
             !ThingsboardAppConstants.ignoreRegionSelection) {
           return SelectRegionScreen(tbContext);
         }
-        if (ThingsboardAppConstants.ignoreRegionSelection && snapshot.data == null) {
+        if (ThingsboardAppConstants.ignoreRegionSelection &&
+            snapshot.data == null) {
           getIt<IEndpointService>().setEndpoint(
             ThingsboardAppConstants.thingsBoardApiEndpoint,
           );
-           getIt<IEndpointService>().setRegion(Region.custom);
+          getIt<IEndpointService>().setRegion(Region.custom);
         }
 
         initTbContext();
 
-        return Scaffold(
-          body: Container(
-            alignment: Alignment.center,
-            color: Colors.white,
-            child: TbProgressIndicator(tbContext, size: 50.0),
-          ),
-        );
+        return FutureBuilder(
+            future: initTbContext(),
+            builder: (context, snapshot) {
+              return Scaffold(
+                body: Container(
+                  alignment: Alignment.center,
+                  color: Colors.white,
+                  child: !snapshot.hasData ? const SizedBox() :  TbProgressIndicator(tbContext, size: 50.0),
+                ),
+              );
+            });
       },
     );
   }

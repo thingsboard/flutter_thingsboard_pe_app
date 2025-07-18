@@ -87,8 +87,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:host="app.pe.thingsboard.org"
-                    android:scheme="tbscheme" />
+                    android:host="${redirectURLHost}"
+                    android:scheme="${redirectURLScheme}" />
             </intent-filter>
             <!-- App Links -->
             <intent-filter android:autoVerify="true">
