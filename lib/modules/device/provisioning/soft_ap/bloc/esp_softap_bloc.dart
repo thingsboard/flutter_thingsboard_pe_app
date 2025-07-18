@@ -8,10 +8,11 @@ import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/device/provisioning/bloc/bloc.dart'
     show DeviceProvisioningStatus;
+import 'package:thingsboard_app/modules/device/provisioning/models/wifi_network.dart';
 import 'package:thingsboard_app/modules/device/provisioning/soft_ap/bloc/bloc.dart';
 import 'package:thingsboard_app/utils/services/communication/events/device_provisioning_status_changed_event.dart';
 import 'package:thingsboard_app/utils/services/communication/i_communication_service.dart';
-import 'package:thingsboard_app/utils/services/provisioning/models/wifi_network.dart';
+
 import 'package:thingsboard_app/utils/services/provisioning/soft_ap/i_soft_ap_service.dart';
 
 class EspSoftApBloc extends Bloc<EspSoftApEvent, EspSoftApState> {
@@ -38,9 +39,9 @@ class EspSoftApBloc extends Bloc<EspSoftApEvent, EspSoftApState> {
 
     // PluginWifiConnect.connect(deviceName);
 
-   // if (Platform.isIOS) {
+    if (Platform.isIOS) {
      add(const EspSoftApAutoConnectToDeviceWifi());
-  //  }
+    }
   }
 
   factory EspSoftApBloc.create({
