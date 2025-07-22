@@ -1,7 +1,7 @@
 {
   "appTitle": "ThingsBoard",
   "home": "الرئيسية",
-"devices": "{count, plural, =1{Device} other{Devices}}",
+  "devices": "{count, plural, =1{Device} other{Devices}}",
   "@devices": {
     "placeholders": {
       "count": {
@@ -316,6 +316,13 @@
     }
   },
   "notificationRule": "Notification rule",
+  "entityGroup": "Entity Group",
+  "converter": "Converter",
+  "integration": "Integration",
+  "schedulerEvent": "Scheduler Event",
+  "blobEntity": "Blob Entity",
+  "role": "Role",
+  "groupPermission": "Group Permission",
   "actionStatusSuccess": "Success",
   "actionStatusFailure": "Failure",
   "actionTypeAdded": "Added",
@@ -354,5 +361,12 @@
   "actionTypeUpdatedComment": "Updated Comment",
   "actionTypeDeletedComment": "Deleted Comment",
   "actionTypeSmsSent": "SMS Sent",
-  "isRequiredText": "is required."
+  "actionTypeAddedToEntityGroup": "Added to Entity Group",
+  "actionTypeRemovedFromEntityGroup": "Removed from Entity Group",
+  "actionTypeRestApiRuleEngineCall": "REST API Rule Engine Call",
+  "actionTypeMadePublic": "Made Public",
+  "actionTypeMadePrivate": "Made Private",
+  "actionTypeChangeOwner": "Owner Changed",
+  "isRequiredText": "is required.",
+  "youDontHavePermissionsToPerformThisOperation": "You don't have permissions to perform this operation!"
 }

@@ -468,9 +468,9 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
         _recaptchaResponseNotifier.value = recaptchaResponse;
       }
     } on PlatformException catch (e) {
-      getIt<IOverlayService>().showErrorNotification(e.message ?? '');
+      getIt<IOverlayService>().showErrorNotification( (_) => e.message ?? '');
     } catch (e) {
-      getIt<IOverlayService>().showErrorNotification(e.toString());
+      getIt<IOverlayService>().showErrorNotification( (_) => e.toString());
     }
   }
 
@@ -566,33 +566,33 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
     if (formValue[SignUpFieldsId.password.toShortString()] !=
         formValue[SignUpFieldsId.repeat_password.toShortString()]) {
       getIt<IOverlayService>()
-          .showErrorNotification(S.of(context).passwordErrorNotification);
+          .showErrorNotification( (_) => S.of(context).passwordErrorNotification);
       return false;
     } else if (formValue[SignUpFieldsId.password.toShortString()]
             .toString()
             .length <
         6) {
       getIt<IOverlayService>()
-          .showErrorNotification(S.of(context).invalidPasswordLengthMessage);
+          .showErrorNotification( (_) => S.of(context).invalidPasswordLengthMessage);
       return false;
     }
 
     final recaptchaResponse = _recaptchaResponseNotifier.value;
     if (recaptchaResponse == null || recaptchaResponse.isEmpty) {
       getIt<IOverlayService>()
-          .showErrorNotification(S.of(context).confirmNotRobotMessage);
+          .showErrorNotification( (_) => S.of(context).confirmNotRobotMessage);
       return false;
     }
     if (signUpParams.showPrivacyPolicy &&
         formValue['acceptPrivacyPolicy'] != true) {
       getIt<IOverlayService>()
-          .showErrorNotification(S.of(context).acceptPrivacyPolicyMessage);
+          .showErrorNotification( (_) => S.of(context).acceptPrivacyPolicyMessage);
       return false;
     }
 
     if (signUpParams.showTermsOfUse && formValue['acceptTermsOfUse'] != true) {
       getIt<IOverlayService>()
-          .showErrorNotification(S.of(context).acceptTermsOfUseMessage);
+          .showErrorNotification( (_) => S.of(context).acceptTermsOfUseMessage);
       return false;
     }
 
@@ -601,10 +601,11 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
 
   Future<void> _promptToResendEmailVerification(String email) async {
     final res = await getIt<IOverlayService>().showConfirmDialog(
-      title: S.of(context).inactiveUserAlreadyExists,
+      content:(_) =>  DialogContent( title: S.of(context).inactiveUserAlreadyExists,
       message: S.of(context).inactiveUserAlreadyExistsMessage,
       cancel: S.of(context).cancel,
-      ok: S.of(context).resend,
+      ok: S.of(context).resend,),
+     
     );
 
     if (res == true) {

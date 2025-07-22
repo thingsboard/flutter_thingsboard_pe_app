@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
 import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
@@ -143,6 +143,7 @@ class _EmailVerificationPageState extends TbPageState<EmailVerificationPage> {
     );
     if(mounted) {
 getIt<IOverlayService>().showSuccessNotification(
+  (_) => 
       S.of(context).emailVersificationSuccessfullySentNotification,
     );
     }

@@ -51,8 +51,8 @@ mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
           state: state,
         );
       } else {
-       getIt<IOverlayService>().showErrorNotification(
-          "You don't have permissions to perform this operation!",
+       getIt<IOverlayService>().showErrorNotification((context) =>
+                    S.of(context).youDontHavePermissionsToPerformThisOperation
         );
       }
     } else {

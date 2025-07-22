@@ -92,6 +92,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "actionTypeAddedComment": MessageLookupByLibrary.simpleMessage(
       "Added Comment",
     ),
+    "actionTypeAddedToEntityGroup": MessageLookupByLibrary.simpleMessage(
+      "Added to Entity Group",
+    ),
     "actionTypeAlarmAck": MessageLookupByLibrary.simpleMessage("Acknowledged"),
     "actionTypeAlarmAssigned": MessageLookupByLibrary.simpleMessage(
       "Alarm Assigned",
@@ -124,6 +127,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "actionTypeAttributesUpdated": MessageLookupByLibrary.simpleMessage(
       "Attributes Updated",
     ),
+    "actionTypeChangeOwner": MessageLookupByLibrary.simpleMessage(
+      "Owner Changed",
+    ),
     "actionTypeCredentialsRead": MessageLookupByLibrary.simpleMessage(
       "Credentials read",
     ),
@@ -137,6 +143,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "actionTypeLockout": MessageLookupByLibrary.simpleMessage("Lockout"),
     "actionTypeLogin": MessageLookupByLibrary.simpleMessage("Login"),
     "actionTypeLogout": MessageLookupByLibrary.simpleMessage("Logout"),
+    "actionTypeMadePrivate": MessageLookupByLibrary.simpleMessage(
+      "Made Private",
+    ),
+    "actionTypeMadePublic": MessageLookupByLibrary.simpleMessage("Made Public"),
     "actionTypeProvisionFailure": MessageLookupByLibrary.simpleMessage(
       "Device provisioning was failed",
     ),
@@ -151,6 +161,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "actionTypeRelationsDeleted": MessageLookupByLibrary.simpleMessage(
       "All relation deleted",
+    ),
+    "actionTypeRemovedFromEntityGroup": MessageLookupByLibrary.simpleMessage(
+      "Removed from Entity Group",
+    ),
+    "actionTypeRestApiRuleEngineCall": MessageLookupByLibrary.simpleMessage(
+      "REST API Rule Engine Call",
     ),
     "actionTypeRpcCall": MessageLookupByLibrary.simpleMessage("RPC Call"),
     "actionTypeSmsSent": MessageLookupByLibrary.simpleMessage("SMS Sent"),
@@ -216,6 +232,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bleHelpMessage": MessageLookupByLibrary.simpleMessage(
       "要配置您的新設備，請確保您手機的藍牙已開啟且在新設備的訊號範圍內",
     ),
+    "blobEntity": MessageLookupByLibrary.simpleMessage("Blob Entity"),
     "cancel": MessageLookupByLibrary.simpleMessage("取消"),
     "cannotEstablishSession": m2,
     "cantLaunchUrlLink": m3,
@@ -251,6 +268,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "connectionError": MessageLookupByLibrary.simpleMessage("Connection error"),
     "connectionToTheWifiNetworkFailednpleaseEnsureThatYour": m5,
     "continueText": MessageLookupByLibrary.simpleMessage("繼續"),
+    "converter": MessageLookupByLibrary.simpleMessage("Converter"),
     "country": MessageLookupByLibrary.simpleMessage("國家"),
     "createAccount": MessageLookupByLibrary.simpleMessage("建立帳戶"),
     "createPassword": MessageLookupByLibrary.simpleMessage("建立密碼"),
@@ -295,6 +313,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "驗證電子郵件已發送到指定的電子郵件地址 ",
     ),
     "emailVerified": MessageLookupByLibrary.simpleMessage("電子郵件驗證成功"),
+    "entityGroup": MessageLookupByLibrary.simpleMessage("Entity Group"),
     "entityType": MessageLookupByLibrary.simpleMessage("實體類型"),
     "entityView": MessageLookupByLibrary.simpleMessage("實體視圖"),
     "europe": MessageLookupByLibrary.simpleMessage("歐洲"),
@@ -322,6 +341,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "firstName": MessageLookupByLibrary.simpleMessage("名"),
     "firstNameRequireText": MessageLookupByLibrary.simpleMessage("名為必填項目"),
     "firstNameUpper": MessageLookupByLibrary.simpleMessage("名"),
+    "groupPermission": MessageLookupByLibrary.simpleMessage("Group Permission"),
     "home": MessageLookupByLibrary.simpleMessage("首頁"),
     "hours": MessageLookupByLibrary.simpleMessage("小時"),
     "imNotARobot": MessageLookupByLibrary.simpleMessage("我不是機器人"),
@@ -333,6 +353,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "已註冊但電子郵件未驗證的使用者。\n如果您希望重新發送驗證電子郵件，請點選「重新發送」按鈕。",
     ),
     "indeterminate": MessageLookupByLibrary.simpleMessage("不確定"),
+    "integration": MessageLookupByLibrary.simpleMessage("Integration"),
     "invalidPasswordLengthMessage": MessageLookupByLibrary.simpleMessage(
       "密碼長度至少需要6個字元",
     ),
@@ -458,12 +479,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "returnToTheAppAndTapReadyButton": MessageLookupByLibrary.simpleMessage(
       "Return to the app and tap Ready button",
     ),
+    "role": MessageLookupByLibrary.simpleMessage("Role"),
     "routeNotDefined": m14,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("規則鏈"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("規則節點"),
     "scanACode": MessageLookupByLibrary.simpleMessage("掃描代碼"),
     "scanQrCode": MessageLookupByLibrary.simpleMessage("掃描QR碼"),
+    "schedulerEvent": MessageLookupByLibrary.simpleMessage("Scheduler Event"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "searchResults": MessageLookupByLibrary.simpleMessage("搜尋結果"),
     "searchUsers": m15,
@@ -538,5 +561,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Wi-Fi 密碼"),
     "wifiPasswordMessage": m20,
     "yes": MessageLookupByLibrary.simpleMessage("是"),
+    "youDontHavePermissionsToPerformThisOperation":
+        MessageLookupByLibrary.simpleMessage(
+          "You don\'t have permissions to perform this operation!",
+        ),
   };
 }

@@ -1318,16 +1318,6 @@ class S {
     );
   }
 
-  /// `is required.`
-  String get isRequiredText {
-    return Intl.message(
-      'is required.',
-      name: 'isRequiredText',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Update required`
   String get updateRequired {
     return Intl.message(
@@ -2306,6 +2296,56 @@ class S {
     );
   }
 
+  /// `Entity Group`
+  String get entityGroup {
+    return Intl.message(
+      'Entity Group',
+      name: 'entityGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Converter`
+  String get converter {
+    return Intl.message('Converter', name: 'converter', desc: '', args: []);
+  }
+
+  /// `Integration`
+  String get integration {
+    return Intl.message('Integration', name: 'integration', desc: '', args: []);
+  }
+
+  /// `Scheduler Event`
+  String get schedulerEvent {
+    return Intl.message(
+      'Scheduler Event',
+      name: 'schedulerEvent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blob Entity`
+  String get blobEntity {
+    return Intl.message('Blob Entity', name: 'blobEntity', desc: '', args: []);
+  }
+
+  /// `Role`
+  String get role {
+    return Intl.message('Role', name: 'role', desc: '', args: []);
+  }
+
+  /// `Group Permission`
+  String get groupPermission {
+    return Intl.message(
+      'Group Permission',
+      name: 'groupPermission',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Success`
   String get actionStatusSuccess {
     return Intl.message(
@@ -2671,11 +2711,81 @@ class S {
     );
   }
 
+  /// `Added to Entity Group`
+  String get actionTypeAddedToEntityGroup {
+    return Intl.message(
+      'Added to Entity Group',
+      name: 'actionTypeAddedToEntityGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Removed from Entity Group`
+  String get actionTypeRemovedFromEntityGroup {
+    return Intl.message(
+      'Removed from Entity Group',
+      name: 'actionTypeRemovedFromEntityGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `REST API Rule Engine Call`
+  String get actionTypeRestApiRuleEngineCall {
+    return Intl.message(
+      'REST API Rule Engine Call',
+      name: 'actionTypeRestApiRuleEngineCall',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Made Public`
+  String get actionTypeMadePublic {
+    return Intl.message(
+      'Made Public',
+      name: 'actionTypeMadePublic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Made Private`
+  String get actionTypeMadePrivate {
+    return Intl.message(
+      'Made Private',
+      name: 'actionTypeMadePrivate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Owner Changed`
+  String get actionTypeChangeOwner {
+    return Intl.message(
+      'Owner Changed',
+      name: 'actionTypeChangeOwner',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `is required.`
   String get isRequiredText {
     return Intl.message(
       'is required.',
       name: 'isRequiredText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You don't have permissions to perform this operation!`
+  String get youDontHavePermissionsToPerformThisOperation {
+    return Intl.message(
+      'You don\'t have permissions to perform this operation!',
+      name: 'youDontHavePermissionsToPerformThisOperation',
       desc: '',
       args: [],
     );

@@ -101,6 +101,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "actionTypeAddedComment": MessageLookupByLibrary.simpleMessage(
       "Added Comment",
     ),
+    "actionTypeAddedToEntityGroup": MessageLookupByLibrary.simpleMessage(
+      "Added to Entity Group",
+    ),
     "actionTypeAlarmAck": MessageLookupByLibrary.simpleMessage("Acknowledged"),
     "actionTypeAlarmAssigned": MessageLookupByLibrary.simpleMessage(
       "Alarm Assigned",
@@ -133,6 +136,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "actionTypeAttributesUpdated": MessageLookupByLibrary.simpleMessage(
       "Attributes Updated",
     ),
+    "actionTypeChangeOwner": MessageLookupByLibrary.simpleMessage(
+      "Owner Changed",
+    ),
     "actionTypeCredentialsRead": MessageLookupByLibrary.simpleMessage(
       "Credentials read",
     ),
@@ -146,6 +152,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "actionTypeLockout": MessageLookupByLibrary.simpleMessage("Lockout"),
     "actionTypeLogin": MessageLookupByLibrary.simpleMessage("Login"),
     "actionTypeLogout": MessageLookupByLibrary.simpleMessage("Logout"),
+    "actionTypeMadePrivate": MessageLookupByLibrary.simpleMessage(
+      "Made Private",
+    ),
+    "actionTypeMadePublic": MessageLookupByLibrary.simpleMessage("Made Public"),
     "actionTypeProvisionFailure": MessageLookupByLibrary.simpleMessage(
       "Device provisioning was failed",
     ),
@@ -160,6 +170,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "actionTypeRelationsDeleted": MessageLookupByLibrary.simpleMessage(
       "All relation deleted",
+    ),
+    "actionTypeRemovedFromEntityGroup": MessageLookupByLibrary.simpleMessage(
+      "Removed from Entity Group",
+    ),
+    "actionTypeRestApiRuleEngineCall": MessageLookupByLibrary.simpleMessage(
+      "REST API Rule Engine Call",
     ),
     "actionTypeRpcCall": MessageLookupByLibrary.simpleMessage("RPC Call"),
     "actionTypeSmsSent": MessageLookupByLibrary.simpleMessage("SMS Sent"),
@@ -247,6 +263,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bleHelpMessage": MessageLookupByLibrary.simpleMessage(
       "To provision your new device, please make sure that your phone’s Bluetooth is turned on and within range of your new device",
     ),
+    "blobEntity": MessageLookupByLibrary.simpleMessage("Blob Entity"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "cannotEstablishSession": m2,
     "cantLaunchUrlLink": m3,
@@ -286,6 +303,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "connectionError": MessageLookupByLibrary.simpleMessage("Connection error"),
     "connectionToTheWifiNetworkFailednpleaseEnsureThatYour": m5,
     "continueText": MessageLookupByLibrary.simpleMessage("Continue"),
+    "converter": MessageLookupByLibrary.simpleMessage("Converter"),
     "country": MessageLookupByLibrary.simpleMessage("Country"),
     "createAccount": MessageLookupByLibrary.simpleMessage("Create Account"),
     "createPassword": MessageLookupByLibrary.simpleMessage("Create a password"),
@@ -340,6 +358,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Email verification link was successfully sent!",
         ),
+    "entityGroup": MessageLookupByLibrary.simpleMessage("Entity Group"),
     "entityType": MessageLookupByLibrary.simpleMessage("Entity Type"),
     "entityView": MessageLookupByLibrary.simpleMessage("Entity view"),
     "europe": MessageLookupByLibrary.simpleMessage("Europe"),
@@ -371,6 +390,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "First name is required.",
     ),
     "firstNameUpper": MessageLookupByLibrary.simpleMessage("First Name"),
+    "groupPermission": MessageLookupByLibrary.simpleMessage("Group Permission"),
     "home": MessageLookupByLibrary.simpleMessage("Home"),
     "hours": MessageLookupByLibrary.simpleMessage("hours"),
     "imNotARobot": MessageLookupByLibrary.simpleMessage("I\'m not a robot"),
@@ -382,6 +402,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "There is already registered user with unverified email address.\nClick \'Resend\' button if you wish to resend verification email.",
     ),
     "indeterminate": MessageLookupByLibrary.simpleMessage("Indeterminate"),
+    "integration": MessageLookupByLibrary.simpleMessage("Integration"),
     "invalidPasswordLengthMessage": MessageLookupByLibrary.simpleMessage(
       "Your password must be at least 6 characters long",
     ),
@@ -549,12 +570,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "returnToTheAppAndTapReadyButton": MessageLookupByLibrary.simpleMessage(
       "Return to the app and tap Ready button",
     ),
+    "role": MessageLookupByLibrary.simpleMessage("Role"),
     "routeNotDefined": m14,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("Rule chain"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("Rule node"),
     "scanACode": MessageLookupByLibrary.simpleMessage("Scan a code"),
     "scanQrCode": MessageLookupByLibrary.simpleMessage("Scan QR code"),
+    "schedulerEvent": MessageLookupByLibrary.simpleMessage("Scheduler Event"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Search results"),
     "searchUsers": m15,
@@ -649,5 +672,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Wi-Fi password"),
     "wifiPasswordMessage": m20,
     "yes": MessageLookupByLibrary.simpleMessage("Yes"),
+    "youDontHavePermissionsToPerformThisOperation":
+        MessageLookupByLibrary.simpleMessage(
+          "You don\'t have permissions to perform this operation!",
+        ),
   };
 }

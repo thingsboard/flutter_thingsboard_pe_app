@@ -57,6 +57,13 @@ String getTranslatedEntityType( BuildContext context) {
     EntityType.NOTIFICATION => S.of(context).notifications(1),
     
     EntityType.NOTIFICATION_RULE => S.of(context).notificationRule,
+    EntityType.ENTITY_GROUP => S.of(context).entityGroup,
+    EntityType.CONVERTER => S.of(context).converter,
+    EntityType.INTEGRATION => S.of(context).integration,
+    EntityType.SCHEDULER_EVENT => S.of(context).schedulerEvent,
+    EntityType.BLOB_ENTITY => S.of(context).blobEntity,
+    EntityType.ROLE => S.of(context).role,
+    EntityType.GROUP_PERMISSION => S.of(context).groupPermission,
   };
 }
 }
@@ -132,6 +139,12 @@ extension ActionTypeTranslationUtils on ActionType {
       ActionType.UPDATED_COMMENT => S.of(context).actionTypeUpdatedComment,
       ActionType.DELETED_COMMENT => S.of(context).actionTypeDeletedComment,
       ActionType.SMS_SENT => S.of(context).actionTypeSmsSent,
+      ActionType.ADDED_TO_ENTITY_GROUP => S.of(context).actionTypeAddedToEntityGroup,
+      ActionType.REMOVED_FROM_ENTITY_GROUP => S.of(context).actionTypeRemovedFromEntityGroup,
+      ActionType.REST_API_RULE_ENGINE_CALL => S.of(context).actionTypeRestApiRuleEngineCall,
+      ActionType.MADE_PUBLIC => S.of(context).actionTypeMadePublic,
+      ActionType.MADE_PRIVATE => S.of(context).actionTypeMadePrivate,
+      ActionType.CHANGE_OWNER => S.of(context).actionTypeChangeOwner,
     };
   }
 }
