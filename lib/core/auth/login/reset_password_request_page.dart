@@ -126,7 +126,7 @@ class _ResetPasswordRequestPageState
         await tbClient.sendResetPasswordLink(email);
         _isLoadingNotifier.value = false;
         if (mounted) {
-          overlayService.showSuccessNotification(
+          overlayService.showSuccessNotification( (_) => 
             S.of(context).passwordResetLinkSuccessfullySentNotification,
           );
         }

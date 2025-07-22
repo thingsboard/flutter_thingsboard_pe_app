@@ -205,6 +205,7 @@ class _AllDevicesCardState extends TbContextState<AllDevicesCard> {
                         ),
                         onTap: () {
                           getIt<ThingsboardAppRouter>()
+                              // translate-me-ignore-next-line
                               .navigateTo('/deviceList?active=true');
                         },
                       ),
@@ -256,6 +257,7 @@ class _AllDevicesCardState extends TbContextState<AllDevicesCard> {
                         ),
                         onTap: () {
                           getIt<ThingsboardAppRouter>()
+                              // translate-me-ignore-next-line
                               .navigateTo('/deviceList?active=false');
                         },
                       ),
@@ -390,6 +392,7 @@ class _DeviceProfileCardState extends TbContextState<DeviceProfileCard> {
             ),
             onTap: () {
               getIt<ThingsboardAppRouter>().navigateTo(
+                // translate-me-ignore-next-line
                 '/deviceList?active=true&deviceType=${Uri.encodeComponent(entity.name)}',
               );
             },
@@ -427,6 +430,7 @@ class _DeviceProfileCardState extends TbContextState<DeviceProfileCard> {
             ),
             onTap: () {
               getIt<ThingsboardAppRouter>().navigateTo(
+                // translate-me-ignore-next-line
                 '/deviceList?active=false&deviceType=${Uri.encodeComponent(entity.name)}',
               );
             },
