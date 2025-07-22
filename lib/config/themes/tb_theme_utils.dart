@@ -8,6 +8,7 @@ abstract class TbThemeUtils {
   static const Color _tbTextColor = Color(0xFF282828);
 
   static final tbPrimary =
+      // ignore: deprecated_member_use
       _mergeColors(Colors.teal, {'500': Colors.teal[800]!.value});
   static final tbAccent = _mergeColors(Colors.deepOrange, {});
 
@@ -34,7 +35,7 @@ abstract class TbThemeUtils {
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedItemColor: primaryColor,
-        unselectedItemColor: Colors.black.withOpacity(.38),
+        unselectedItemColor: Colors.black.withValues(alpha:  .38),
         showSelectedLabels: true,
         showUnselectedLabels: true,
       ),
@@ -124,6 +125,7 @@ abstract class TbThemeUtils {
         800: _parseColor(colors['800'], color[800]!),
         900: _parseColor(colors['900'], color[900]!),
       };
+      // ignore: deprecated_member_use
       return MaterialColor(swatch[500]!.value, swatch);
     } else {
       return color;
@@ -134,10 +136,11 @@ abstract class TbThemeUtils {
     int? intColor;
     if (rawColor != null) {
       if (rawColor is String && rawColor.isNotEmpty) {
+        String stringColor= rawColor;
         if (rawColor.startsWith('#')) {
-          rawColor = rawColor.replaceFirst('#', '0xFF');
+          stringColor = rawColor.replaceFirst('#', '0xFF');
         }
-        intColor = int.parse(rawColor);
+        intColor = int.parse(stringColor);
       } else if (rawColor is int) {
         intColor = rawColor;
       }

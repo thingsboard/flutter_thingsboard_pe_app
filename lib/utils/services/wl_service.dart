@@ -1,3 +1,5 @@
+// ignore_for_file: parameter_assignments
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thingsboard_app/config/themes/tb_theme_utils.dart';
@@ -45,8 +47,8 @@ class WlService {
         appTitle: 'ThingsBoard PE',
         favicon: Favicon(url: 'thingsboard.ico'),
         paletteSettings: PaletteSettings(
-          primaryPalette: Palette(type: 'tb-primary'),
-          accentPalette: Palette(type: 'tb-accent'),
+          primaryPalette: Palette(type: 'tb-primary'),// translate-me-ignore
+          accentPalette: Palette(type: 'tb-accent'), // translate-me-ignore
         ),
         helpLinkBaseUrl: 'https://thingsboard.io',
         enableHelpLinks: true,

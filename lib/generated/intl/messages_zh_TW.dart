@@ -313,6 +313,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "驗證電子郵件已發送到指定的電子郵件地址 ",
     ),
     "emailVerified": MessageLookupByLibrary.simpleMessage("電子郵件驗證成功"),
+    "emailVersificationSuccessfullySentNotification":
+        MessageLookupByLibrary.simpleMessage(
+          "Email verification link was successfully sent!",
+        ),
     "entityGroup": MessageLookupByLibrary.simpleMessage("Entity Group"),
     "entityType": MessageLookupByLibrary.simpleMessage("實體類型"),
     "entityView": MessageLookupByLibrary.simpleMessage("實體視圖"),
@@ -358,6 +362,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "密碼長度至少需要6個字元",
     ),
     "isRequiredText": MessageLookupByLibrary.simpleMessage("is required."),
+    "itLooksLikeYourPermissionsArentSufficientToCompleteThis":
+        MessageLookupByLibrary.simpleMessage(
+          "It looks like your permissions aren\'t sufficient to complete this operation",
+        ),
     "label": MessageLookupByLibrary.simpleMessage("標籤"),
     "lastName": MessageLookupByLibrary.simpleMessage("姓"),
     "lastNameRequireText": MessageLookupByLibrary.simpleMessage("姓為必填項目"),

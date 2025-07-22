@@ -28,6 +28,7 @@
   "email": "邮箱",
   "emailRequireText": "邮箱是必填项",
   "emailInvalidText": "邮箱格式无效",
+  "emailVersificationSuccessfullySentNotification": "Email verification link was successfully sent!",
   "username": "用户名",
   "password": "密码",
   "passwordRequireText": "密码是必填项",
@@ -368,5 +369,6 @@
   "actionTypeMadePrivate": "Made Private",
   "actionTypeChangeOwner": "Owner Changed",
   "isRequiredText": "is required.",
-  "youDontHavePermissionsToPerformThisOperation": "You don't have permissions to perform this operation!"
+  "youDontHavePermissionsToPerformThisOperation": "You don't have permissions to perform this operation!",
+  "itLooksLikeYourPermissionsArentSufficientToCompleteThis": "It looks like your permissions aren't sufficient to complete this operation"
 }

@@ -28,6 +28,7 @@
   "passwordResetText": "أدخل البريد الإلكتروني المرتبط بحسابك وسنرسل بريدًا إلكترونيًا يحتوي على رابط لإعادة تعيين كلمة المرور",
   "requestPasswordReset": "طلب إعادة تعيين كلمة المرور",
   "passwordResetLinkSuccessfullySentNotification": "تم إرسال رابط إعادة تعيين كلمة المرور بنجاح!",
+  "emailVersificationSuccessfullySentNotification": "Email verification link was successfully sent!",
   "or": "أو",
   "no": "لا",
   "yes": "نعم",
@@ -368,5 +369,6 @@
   "actionTypeMadePrivate": "Made Private",
   "actionTypeChangeOwner": "Owner Changed",
   "isRequiredText": "is required.",
-  "youDontHavePermissionsToPerformThisOperation": "You don't have permissions to perform this operation!"
+  "youDontHavePermissionsToPerformThisOperation": "You don't have permissions to perform this operation!",
+  "itLooksLikeYourPermissionsArentSufficientToCompleteThis": "It looks like your permissions aren't sufficient to complete this operation"
 }

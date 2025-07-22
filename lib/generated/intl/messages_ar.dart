@@ -356,6 +356,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "emailVerified": MessageLookupByLibrary.simpleMessage(
       "تم تأكيد البريد الإلكتروني",
     ),
+    "emailVersificationSuccessfullySentNotification":
+        MessageLookupByLibrary.simpleMessage(
+          "Email verification link was successfully sent!",
+        ),
     "entityGroup": MessageLookupByLibrary.simpleMessage("Entity Group"),
     "entityType": MessageLookupByLibrary.simpleMessage("نوع الكيان"),
     "entityView": MessageLookupByLibrary.simpleMessage("Entity view"),
@@ -405,6 +409,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
     ),
     "isRequiredText": MessageLookupByLibrary.simpleMessage("is required."),
+    "itLooksLikeYourPermissionsArentSufficientToCompleteThis":
+        MessageLookupByLibrary.simpleMessage(
+          "It looks like your permissions aren\'t sufficient to complete this operation",
+        ),
     "label": MessageLookupByLibrary.simpleMessage("التسمية"),
     "lastName": MessageLookupByLibrary.simpleMessage("الاسم الأخير"),
     "lastNameRequireText": MessageLookupByLibrary.simpleMessage(

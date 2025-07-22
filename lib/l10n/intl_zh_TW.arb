@@ -28,6 +28,7 @@
   "email": "電子郵件",
   "emailRequireText": "電子郵件為必填項目",
   "emailInvalidText": "電子郵件格式無效",
+  "emailVersificationSuccessfullySentNotification": "Email verification link was successfully sent!",
   "username": "使用者名稱",
   "password": "密碼",
   "passwordRequireText": "密碼為必填項目",
@@ -368,5 +369,6 @@
   "actionTypeMadePrivate": "Made Private",
   "actionTypeChangeOwner": "Owner Changed",
   "isRequiredText": "is required.",
-  "youDontHavePermissionsToPerformThisOperation": "You don't have permissions to perform this operation!"
+  "youDontHavePermissionsToPerformThisOperation": "You don't have permissions to perform this operation!",
+  "itLooksLikeYourPermissionsArentSufficientToCompleteThis": "It looks like your permissions aren't sufficient to complete this operation"
 }

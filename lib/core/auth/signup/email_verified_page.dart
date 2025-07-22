@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
 import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
@@ -130,7 +130,7 @@ class _EmailVerifiedPageState extends TbPageState<EmailVerifiedPage> {
     );
   }
 
-  _activateAndGetCredentials(BuildContext context) async {
+    Future<void> _activateAndGetCredentials(BuildContext context) async {
     try {
       _loginResponse =
           await tbClient.getSignupService().activateUserByEmailCode(
@@ -153,7 +153,7 @@ class _EmailVerifiedPageState extends TbPageState<EmailVerifiedPage> {
     }
   }
 
-  _login() {
+   void _login() {
     tbClient.setUserFromJwtToken(
       _loginResponse!.token,
       _loginResponse!.refreshToken,

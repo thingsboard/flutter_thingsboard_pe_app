@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/config/themes/tb_theme.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/config/themes/wl_theme_widget.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
 import 'package:toastification/toastification.dart';
@@ -40,7 +40,7 @@ class _ThingsBoardAppState extends State<ThingsboardApp> {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: S.delegate.supportedLocales,
-          title: wlParams.appTitle!,
+          title: wlParams.appTitle,
           themeMode: ThemeMode.light,
           theme: data,
           darkTheme: tbDarkTheme,

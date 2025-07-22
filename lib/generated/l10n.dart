@@ -2790,6 +2790,16 @@ class S {
       args: [],
     );
   }
+
+  /// `It looks like your permissions aren't sufficient to complete this operation`
+  String get itLooksLikeYourPermissionsArentSufficientToCompleteThis {
+    return Intl.message(
+      'It looks like your permissions aren\'t sufficient to complete this operation',
+      name: 'itLooksLikeYourPermissionsArentSufficientToCompleteThis',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

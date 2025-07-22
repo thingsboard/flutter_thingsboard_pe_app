@@ -369,5 +369,6 @@
   "actionTypeMadePrivate": "Made Private",
   "actionTypeChangeOwner": "Owner Changed",
   "isRequiredText": "is required.",
-  "youDontHavePermissionsToPerformThisOperation": "You don't have permissions to perform this operation!"
+  "youDontHavePermissionsToPerformThisOperation": "You don't have permissions to perform this operation!",
+  "itLooksLikeYourPermissionsArentSufficientToCompleteThis": "It looks like your permissions aren't sufficient to complete this operation"
 }

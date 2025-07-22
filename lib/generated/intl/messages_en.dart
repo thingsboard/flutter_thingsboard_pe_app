@@ -407,6 +407,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Your password must be at least 6 characters long",
     ),
     "isRequiredText": MessageLookupByLibrary.simpleMessage("is required."),
+    "itLooksLikeYourPermissionsArentSufficientToCompleteThis":
+        MessageLookupByLibrary.simpleMessage(
+          "It looks like your permissions aren\'t sufficient to complete this operation",
+        ),
     "label": MessageLookupByLibrary.simpleMessage("Label"),
     "lastName": MessageLookupByLibrary.simpleMessage("Last name"),
     "lastNameRequireText": MessageLookupByLibrary.simpleMessage(

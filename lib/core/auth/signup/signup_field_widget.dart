@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/thingsboard_client.dart'
     show SignUpField, SignUpFieldsId, SignUpFieldsIdToString;
 

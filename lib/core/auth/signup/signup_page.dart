@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:recaptcha_enterprise_flutter/recaptcha_action.dart';
 import 'package:recaptcha_enterprise_flutter/recaptcha_client.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
@@ -13,8 +12,8 @@ import 'package:thingsboard_app/core/auth/login/bloc/bloc.dart';
 import 'package:thingsboard_app/core/auth/login/login_page_background.dart';
 import 'package:thingsboard_app/core/auth/oauth2/app_secret_provider.dart';
 import 'package:thingsboard_app/core/auth/signup/signup_field_widget.dart';
-
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
+import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
@@ -56,7 +55,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
           switch (state) {
             case AuthLoadingState():
               return SizedBox.expand(
-                child: Container(
+                child: ColoredBox(
                   color: const Color(0x99FFFFFF),
                   child: Center(
                     child: TbProgressIndicator(tbContext, size: 50.0),
@@ -182,7 +181,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                                       !_showRepeatPassword),
                                                 );
                                               },
-                                              separatorBuilder: (_, __) =>
+                                              separatorBuilder: (_, _) =>
                                                   const SizedBox(height: 12),
                                               itemCount: state
                                                   .selfRegistrationParams!
@@ -416,7 +415,7 @@ class _SignUpPageState extends TbPageState<SignUpPage> {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color:
-                                        Colors.grey.shade200.withOpacity(0.2),
+                                        Colors.grey.shade200.withValues(alpha:.2),
                                   ),
                                   child: Container(
                                     padding: EdgeInsets.only(

@@ -85,13 +85,13 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
           onWebViewCreated: (webViewController) {
             webViewController.addJavaScriptHandler(
               handlerName: 'tbMobileRecaptchaLoadedHandler',
-              callback: (args) async {
+              callback: (args)  {
                 recaptchaLoading.value = false;
               },
             );
             webViewController.addJavaScriptHandler(
               handlerName: 'tbMobileRecaptchaHandler',
-              callback: (args) async {
+              callback: (args)  {
                 final recaptchaResponse = args[0];
                 getIt<ThingsboardAppRouter>().pop(recaptchaResponse);
               },
@@ -99,11 +99,13 @@ class _TbRecaptchaState extends TbPageState<TbRecaptcha> {
           },
           onConsoleMessage: (controller, consoleMessage) {
             log.debug(
+              // translate-me-ignore-next-line
               '[JavaScript console] ${consoleMessage.messageLevel}: '
               '${consoleMessage.message}',
             );
           },
-          onLoadStop: (controller, url) async {
+          onLoadStop: (controller, url)  {
+            // translate-me-ignore-next-line
             log.debug('onLoadStop: $url');
             if (webViewLoading) {
               webViewLoading = false;

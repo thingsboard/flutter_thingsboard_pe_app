@@ -21,9 +21,8 @@ import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
-import 'package:thingsboard_app/utils/utils.dart';
-
 import 'package:thingsboard_app/utils/services/wl_service.dart';
+import 'package:thingsboard_app/utils/utils.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 part 'has_tb_context.dart';
