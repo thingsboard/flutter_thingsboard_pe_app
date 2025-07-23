@@ -41,7 +41,7 @@ def redirectURLHost = getDartDefineValue('redirectURLHost') ?: 'app.pe.thingsboa
 def redirectURLScheme = getDartDefineValue('redirectURLScheme') ?: 'tbscheme'
 
 android {
-namespace "org.thingsboard.app"
+namespace "org.thingsboard.pe.app"
     compileSdkVersion 35
 
     sourceSets {
