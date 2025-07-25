@@ -151,9 +151,6 @@ PODS:
   - plugin_wifi_connect (0.0.1):
     - Flutter
   - PromisesObjC (2.4.0)
-  - qr_code_scanner (0.2.0):
-    - Flutter
-    - MTBBarcodeScanner
   - recaptcha_enterprise_flutter (18.7.1):
     - Flutter
     - RecaptchaEnterprise (<= 18.7.1, >= 18.7.0)
@@ -207,7 +204,6 @@ DEPENDENCIES:
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - plugin_wifi_connect (from `.symlinks/plugins/plugin_wifi_connect/ios`)
-  - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - recaptcha_enterprise_flutter (from `.symlinks/plugins/recaptcha_enterprise_flutter/ios`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -285,8 +281,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   plugin_wifi_connect:
     :path: ".symlinks/plugins/plugin_wifi_connect/ios"
-  qr_code_scanner:
-    :path: ".symlinks/plugins/qr_code_scanner/ios"
   recaptcha_enterprise_flutter:
     :path: ".symlinks/plugins/recaptcha_enterprise_flutter/ios"
   sqflite_darwin:
@@ -339,7 +333,6 @@ SPEC CHECKSUMS:
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   plugin_wifi_connect: c3ec7b1449a225b34cd0e7e0e9b1939d3234514d
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  qr_code_scanner: d77f94ecc9abf96d9b9b8fc04ef13f611e5a147a
   recaptcha_enterprise_flutter: 00b38414c923503e20fecd7170e6b2c4094265b6
   RecaptchaEnterprise: a5914ad9db6ff79eaca7258d82ecef6f10009936
   RecaptchaEnterpriseSDK: 5e72d7f19d2f679b68c25071c33b40f817e21149

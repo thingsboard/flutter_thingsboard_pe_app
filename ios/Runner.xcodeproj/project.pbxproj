@@ -428,7 +428,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "Runner/Info-Release.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "$(IOSAPPNAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(IOSAPPLICATIONNAME)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -562,7 +562,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "Runner/Info-$(CONFIGURATION).plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "$(IOSAPPNAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(IOSAPPLICATIONNAME)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -590,7 +590,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "Runner/Info-$(CONFIGURATION).plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "$(IOSAPPNAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(IOSAPPLICATIONNAME)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

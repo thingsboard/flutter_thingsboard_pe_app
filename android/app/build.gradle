@@ -33,12 +33,12 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 def customScheme = getDartDefineValue('thingsboardOAuth2CallbackUrlScheme') ?: 'org.thingsboard.app.auth'
-def customLabel = getDartDefineValue('androidAppName') ?: 'Thingsboard app'
+def customLabel = getDartDefineValue('androidApplicationName') ?: 'Thingsboard app'
 def appLinksUrlHost = getDartDefineValue('appLinksUrlHost') ?: 'thingsboard.cloud'
 def webPathPrefix = getDartDefineValue('webPathPrefix') ?: '/api/noauth/qr'
 def appLinksUrlScheme = getDartDefineValue('appLinksUrlScheme') ?: 'https'
-def redirectURLHost = getDartDefineValue('redirectURLHost') ?: 'app.pe.thingsboard.org'
-def redirectURLScheme = getDartDefineValue('redirectURLScheme') ?: 'tbscheme'
+def redirectURLHost = getDartDefineValue('registrationRedirectUrlHost') ?: 'app.pe.thingsboard.org'
+def redirectURLScheme = getDartDefineValue('registrationRedirectUrlScheme') ?: 'tbscheme'
 
 android {
 namespace "org.thingsboard.pe.app"
@@ -49,7 +49,7 @@ namespace "org.thingsboard.pe.app"
     }
    
     defaultConfig {
-        applicationId getDartDefineValue('androidApplicationId')  
+        applicationId getDartDefineValue('androidApplicationId') ?: "org.thingsboard.pe.app"
         minSdkVersion 24
         multiDexEnabled true
         targetSdkVersion 36
