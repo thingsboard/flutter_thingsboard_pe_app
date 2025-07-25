@@ -91,5 +91,7 @@
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<key>UIStatusBarHidden</key>
+		<false/>
 	</dict>
 </plist>
