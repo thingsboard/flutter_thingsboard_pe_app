@@ -31,6 +31,9 @@ class DashboardsGridWidget extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () async {
         getIt<DashboardsPaginationRepository>().refresh();
+       await  dashboardPageCtrl.dashboardController.future.then(
+          (v) async => await v.controller?.reload(),
+        );
       },
       child: SafeArea(
         child: PaginationGridWidget<PageLink, DashboardInfo>(
