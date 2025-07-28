@@ -51,4 +51,4 @@ GoogleService-Info.plist
 /android/app/.cxx
 # FVM Version Cache
 .fvm/
-lib/firebase_options.dart
+tb_firebase_options.dart
