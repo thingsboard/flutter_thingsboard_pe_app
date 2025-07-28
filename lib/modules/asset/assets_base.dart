@@ -12,13 +12,19 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
   String get noItemsFoundText => 'No assets found';
 
   @override
-  Future<PageData<Asset>> fetchEntities(PageLink pageLink) {
+  Future<PageData<Asset>> fetchEntities(
+    PageLink pageLink, {
+    bool refresh = false,
+  }) {
+    if (tbClient.isTenantAdmin()) {
+      return tbClient.getAssetService().getTenantAssets(pageLink);
+    }
     return tbClient.getAssetService().getUserAssets(pageLink);
   }
 
   @override
   void onEntityTap(Asset asset) {
-    if(asset.id?.id != null) {
+    if (asset.id?.id != null) {
       getIt<ThingsboardAppRouter>().navigateTo('/asset/${asset.id!.id}');
     }
   }
