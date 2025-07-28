@@ -36,13 +36,10 @@ class RegionAdapter extends TypeAdapter<Region> {
     switch (obj) {
       case Region.northAmerica:
         writer.writeByte(0);
-        break;
       case Region.europe:
         writer.writeByte(1);
-        break;
       case Region.custom:
         writer.writeByte(2);
-        break;
     }
   }
 
