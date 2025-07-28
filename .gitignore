@@ -42,7 +42,8 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 app_constants.json
-
+google-services.json
+GoogleService-Info.plist
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
@@ -50,3 +51,4 @@ app_constants.json
 /android/app/.cxx
 # FVM Version Cache
 .fvm/
+lib/firebase_options.dart
