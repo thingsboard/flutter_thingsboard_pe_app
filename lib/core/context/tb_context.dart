@@ -123,7 +123,8 @@ class TbContext implements PopEntry {
     if (initialUri != null && initialUri.path.isNotEmpty) {
       initialNavigation = initialUri.path;
       if (initialUri.hasQuery) {
-        initialNavigation = '$initialNavigation?${initialUri.query}';
+        initialNavigation =
+            '$initialNavigation?${initialUri.query}&host=${initialUri.scheme}://${initialUri.host}';
       }
       await getIt<ILocalDatabaseService>().setInitialAppLink(initialNavigation);
       log.debug('Initial navigation: $initialNavigation');
@@ -468,18 +469,6 @@ class TbContext implements PopEntry {
 
   Future<T?> showFullScreenDialog<T>(Widget dialog, {BuildContext? context}) {
     return Navigator.of(context ?? currentState!.context).push<T>(
-      MaterialPageRoute<T>(
-        builder: (BuildContext context) {
-          return dialog;
-        },
-        fullscreenDialog: true,
-      ),
-    );
-  }
-static Future<T?> showFullScreenDialogStatic<T>(
-    BuildContext context,
-    Widget dialog,) {
-    return Navigator.of(context).push<T>(
       MaterialPageRoute<T>(
         builder: (BuildContext context) {
           return dialog;
