@@ -65,7 +65,7 @@ class TbContext implements PopEntry {
   late ThingsboardClient tbClient;
   late final WlService wlService;
 
- final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   Listenable get isAuthenticatedListenable => _isAuthenticated;
 
@@ -138,7 +138,7 @@ class TbContext implements PopEntry {
   }) async {
     log.debug('TbContext:reinit()');
 
-    _handleRootState = false;
+    _handleRootState = true;
 
     tbClient = ThingsboardClient(
       endpoint,
@@ -179,7 +179,7 @@ class TbContext implements PopEntry {
 
   void onError(ThingsboardError tbError) {
     log.error('onError', tbError, tbError.getStackTrace());
-    _overlayService.showErrorNotification((_) =>  tbError.message!);
+    _overlayService.showErrorNotification((_) => tbError.message!);
   }
 
   void onLoadStarted() {
@@ -202,17 +202,19 @@ class TbContext implements PopEntry {
         log.debug('authUser: ${tbClient.getAuthUser()}');
         if (tbClient.getAuthUser()!.userId != null) {
           try {
-            userPermissions = await tbClient
-                .getUserPermissionsService()
-                .getAllowedPermissions();
+            userPermissions =
+                await tbClient
+                    .getUserPermissionsService()
+                    .getAllowedPermissions();
 
-            final mobileInfo =
-                await tbClient.getMobileService().getUserMobileInfo(
-                      MobileInfoQuery(
-                        platformType: _deviceInfoService.getPlatformType(),
-                        packageName: _deviceInfoService.getApplicationId(),
-                      ),
-                    );
+            final mobileInfo = await tbClient
+                .getMobileService()
+                .getUserMobileInfo(
+                  MobileInfoQuery(
+                    platformType: _deviceInfoService.getPlatformType(),
+                    packageName: _deviceInfoService.getApplicationId(),
+                  ),
+                );
 
             userDetails = mobileInfo?.user;
             homeDashboard = mobileInfo?.homeDashboardInfo;
@@ -288,7 +290,13 @@ class TbContext implements PopEntry {
 
       if (Utils.isConnectionError(e)) {
         final res = await _overlayService.showAlertDialog(
-          content: (context) => DialogContent(title: S.of(context).connectionError, message: S.of(context).failedToConnectToServer, ok: S.of(context).retry,),);
+          content:
+              (context) => DialogContent(
+                title: S.of(context).connectionError,
+                message: S.of(context).failedToConnectToServer,
+                ok: S.of(context).retry,
+              ),
+        );
         if (res == true) {
           _overlayService.hideNotification();
           onUserLoaded();
@@ -319,7 +327,10 @@ class TbContext implements PopEntry {
       }
 
       _appLinkStreamSubscription ??= appLinks.uriLinkStream.listen(
-        (link) {
+        (Uri? link) {
+          if (link == null) {
+            return;
+          }
           thingsboardAppRouter.navigateByAppLink(link.toString());
         },
         onError: (err) {
@@ -346,7 +357,7 @@ class TbContext implements PopEntry {
     _appLinkStreamSubscription = null;
   }
 
-///TODO: Mergeconflict here
+  ///TODO: Mergeconflict here
   bool hasGenericPermission(Resource resource, Operation operation) {
     if (userPermissions != null) {
       return userPermissions!.hasGenericPermission(resource, operation);
@@ -354,7 +365,8 @@ class TbContext implements PopEntry {
       return false;
     }
   }
-///TODO: Mergeconflict here
+
+  ///TODO: Mergeconflict here
   Future<bool> handleInitialNavigation() async {
     final initialNavigation =
         await getIt<ILocalDatabaseService>().getInitialAppLink();
@@ -366,7 +378,7 @@ class TbContext implements PopEntry {
       if (tbClient.isAuthenticated()) {
         tbClient.logout();
       } else {
-       getIt<ThingsboardAppRouter>().navigateTo(
+        getIt<ThingsboardAppRouter>().navigateTo(
           initialNavigation,
           replace: true,
           clearStack: true,
@@ -385,49 +397,52 @@ class TbContext implements PopEntry {
     log.debug(
       'TbContext:updateRouteState() ${currentState != null && currentState!.mounted}',
     );
-    if (currentState != null) {
-      if (!await handleInitialNavigation()) {
-        if (tbClient.isAuthenticated() && !tbClient.isPreVerificationToken()) {
-          final defaultDashboardId = _defaultDashboardId();
-          if (defaultDashboardId != null) {
-            final bool fullscreen = _userForceFullscreen();
-            if (!fullscreen) {
-              await thingsboardAppRouter.navigateToDashboard(defaultDashboardId, animate: false);
-           thingsboardAppRouter.navigateTo(
-                '/main',
-                replace: true,
-                closeDashboard: false,
-                clearStack: true,
-                transition: TransitionType.none,
-              );
-            } else {
-               thingsboardAppRouter.navigateTo(
-                '/fullscreenDashboard/$defaultDashboardId',
-                replace: true,
-                clearStack: true,
-                transition: TransitionType.fadeIn,
-              );
-            }
-          } else {
-             thingsboardAppRouter.navigateTo(
-              '/main',
-              replace: true,
-              clearStack: true,
-              transition: TransitionType.fadeIn,
-              transitionDuration: const Duration(milliseconds: 750),
-            );
-          }
-        } else {
-           thingsboardAppRouter.navigateTo(
-            '/login',
-            replace: true,
-            clearStack: true,
-            transition: TransitionType.fadeIn,
-            transitionDuration: const Duration(milliseconds: 750),
-          );
-        }
-      }
+    if (await handleInitialNavigation()) {
+      return;
     }
+    if (!tbClient.isAuthenticated() || tbClient.isPreVerificationToken()) {
+      thingsboardAppRouter.navigateTo(
+        '/login',
+        replace: true,
+        clearStack: true,
+        transition: TransitionType.fadeIn,
+        transitionDuration: const Duration(milliseconds: 750),
+      );
+      return;
+    }
+
+    final defaultDashboardId = _defaultDashboardId();
+    if (defaultDashboardId == null) {
+      thingsboardAppRouter.navigateTo(
+        '/main',
+        replace: true,
+        clearStack: true,
+        transition: TransitionType.fadeIn,
+        transitionDuration: const Duration(milliseconds: 750),
+      );
+      return;
+    }
+    final bool fullscreen = _userForceFullscreen();
+    if (fullscreen) {
+      thingsboardAppRouter.navigateTo(
+        '/fullscreenDashboard/$defaultDashboardId',
+        replace: true,
+        clearStack: true,
+        transition: TransitionType.fadeIn,
+      );
+      return;
+    }
+    await thingsboardAppRouter.navigateToDashboard(
+      defaultDashboardId,
+      animate: false,
+    );
+    thingsboardAppRouter.navigateTo(
+      '/main',
+      replace: true,
+      closeDashboard: false,
+      clearStack: true,
+      transition: TransitionType.none,
+    );
   }
 
   String? _defaultDashboardId() {
@@ -464,8 +479,6 @@ class TbContext implements PopEntry {
     }
     return false;
   }
-
-  
 
   Future<T?> showFullScreenDialog<T>(Widget dialog, {BuildContext? context}) {
     return Navigator.of(context ?? currentState!.context).push<T>(
