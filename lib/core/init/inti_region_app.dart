@@ -44,8 +44,9 @@ class _ThingsboardInitAppState extends TbPageState<ThingsboardInitRegionApp> {
           );
           getIt<IEndpointService>().setRegion(Region.custom);
         }
+ final future = initTbContext();
         return FutureBuilder(
-            future: initTbContext(),
+            future: future,
             builder: (context, snapshot) {
               return Scaffold(
                 body: Container(
