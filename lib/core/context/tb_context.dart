@@ -163,7 +163,7 @@ class TbContext implements PopEntry {
               ? (e.message ?? S.of(context).unknownError)
               : S.of(context).unknownError;
 
-      return '${S.of(context).fatalApplicationErrorOccurred}\n$message.';
+      return '${S.of(context).fatalApplicationErrorOccurred}\n$message';
     }
 
     await _overlayService.showAlertDialog(
