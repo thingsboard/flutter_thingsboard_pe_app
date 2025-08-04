@@ -51,9 +51,9 @@
 		<true/>
 		<key>NSBluetoothAlwaysUsageDescription</key>
 		<string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
+        <key>NSMicrophoneUsageDescription</key>
+        <string>Record video with sound.</string>
 		<key>NSBluetoothPeripheralUsageDescription</key>
-		<key>NSMicrophoneUsageDescription</key>
-		<string>Record video with sound.</string>
 		<string>Our app uses bluetooth to provision devices</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Scan QrCode or take photos using your camera.</string>
