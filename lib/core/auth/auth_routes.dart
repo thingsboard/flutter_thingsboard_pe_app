@@ -52,7 +52,7 @@ class AuthRoutes extends TbRoutes {
 
   late final emailVerifiedHandler = Handler(
     handlerFunc: (BuildContext? context,  params) {
-      final emailCode = params['emailCode']!.first;
+      final emailCode = (context?.settings?.arguments as Map<String, dynamic>?)?['emailCode']?.toString() ?? '';
       return EmailVerifiedPage(tbContext, emailCode: emailCode);
     },
   );
