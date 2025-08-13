@@ -18,7 +18,6 @@ import 'package:thingsboard_app/utils/services/device_info/i_device_info_service
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
-import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/wl_service.dart';
@@ -93,41 +92,10 @@ class TbContext implements PopEntry {
     );
 
     try {
-      try {
-        final initialUri = await appLinks.getInitialLink();
-        _updateInitialNavigation(initialUri);
-      } catch (e) {
-        log.error('Failed to get initial uri: $e', e);
-      }
       await tbClient.init();
-      if (UniversalPlatform.isAndroid || UniversalPlatform.isIOS) {
-        appLinks.uriLinkStream.listen(
-          (Uri? uri) {
-            _updateInitialNavigation(uri);
-            handleInitialNavigation();
-          },
-          onError: (e) {
-            log.error('Failed to get new initial uri: $e', e);
-          },
-        );
-      }
     } catch (e, s) {
       log.error('Failed to init tbContext: $e', e, s);
       await onFatalError(e);
-    }
-  }
-
-  Future<void> _updateInitialNavigation(Uri? initialUri) async {
-    String? initialNavigation;
-
-    if (initialUri != null && initialUri.path.isNotEmpty) {
-      initialNavigation = initialUri.path;
-      if (initialUri.hasQuery) {
-        initialNavigation =
-            '$initialNavigation?${initialUri.query}&host=${initialUri.scheme}://${initialUri.host}';
-      }
-      await getIt<ILocalDatabaseService>().setInitialAppLink(initialNavigation);
-      log.debug('Initial navigation: $initialNavigation');
     }
   }
 
@@ -375,41 +343,10 @@ Future<bool> checkDasboardAccess(String id) async {
       return false;
     }
   }
-
-  ///TODO: Mergeconflict here
-  Future<bool> handleInitialNavigation() async {
-    final initialNavigation =
-        await getIt<ILocalDatabaseService>().getInitialAppLink();
-
-    log.debug('TbContext::handleInitialNavigation() -> $initialNavigation');
-
-    if (initialNavigation != null &&
-        initialNavigation.startsWith('/signup/emailVerified')) {
-      if (tbClient.isAuthenticated()) {
-        tbClient.logout();
-      } else {
-        getIt<ThingsboardAppRouter>().navigateTo(
-          initialNavigation,
-          replace: true,
-          clearStack: true,
-          transition: TransitionType.fadeIn,
-          transitionDuration: const Duration(milliseconds: 750),
-        );
-        getIt<ILocalDatabaseService>().deleteInitialAppLink();
-      }
-      return true;
-    }
-
-    return false;
-  }
-
   Future<void> updateRouteState() async {
     log.debug(
       'TbContext:updateRouteState() ${currentState != null && currentState!.mounted}',
     );
-    if (await handleInitialNavigation()) {
-      return;
-    }
     if (!tbClient.isAuthenticated() || tbClient.isPreVerificationToken()) {
       thingsboardAppRouter.navigateTo(
         '/login',
