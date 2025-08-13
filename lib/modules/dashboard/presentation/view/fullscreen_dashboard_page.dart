@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/modules/dashboard/di/dashboards_di.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashboard_controller.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/view/dashboard_permission_error_view.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard_widget.dart';
@@ -28,7 +29,7 @@ class _FullscreenDashboardPageState
     extends TbPageState<FullscreenDashboardPage> {
   late ValueNotifier<String> dashboardTitleValue;
   final showBackValue = ValueNotifier<bool>(false);
-
+   late final String diKey;
   DashboardController? _dashboardController;
   late final bool havePermission;
 
@@ -109,6 +110,8 @@ class _FullscreenDashboardPageState
   @override
   void initState() {
     super.initState();
+    diKey = UniqueKey().toString();
+     DashboardsDi.init(diKey, tbClient: tbClient);
     havePermission = getIt<IPermissionService>()
         .haveViewDashboardPermission(widget.tbContext);
     dashboardTitleValue = ValueNotifier(widget._dashboardTitle ?? 'Dashboard');
@@ -116,6 +119,7 @@ class _FullscreenDashboardPageState
 
   @override
   void dispose() {
+     DashboardsDi.dispose(diKey);
     dashboardTitleValue.dispose();
     showBackValue.dispose();
     super.dispose();
