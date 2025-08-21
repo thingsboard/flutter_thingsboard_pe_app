@@ -12,6 +12,8 @@
 		<string>6.0</string>
 		<key>CFBundleDisplayName</key>
 		<string>$(IOSAPPLICATIONNAME)</string>
+		<key>FlutterDeepLinkingEnabled</key>
+		<false/>
 		<key>CFBundleName</key>
 		<string>$(IOSAPPLICATIONNAME)</string>
 		<key>CFBundlePackageType</key>
