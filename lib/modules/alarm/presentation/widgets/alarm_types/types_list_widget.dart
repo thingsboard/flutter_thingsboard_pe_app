@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarm_types/bloc.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
+
+import '../../../../../l10n/messages.dart';
 
 class TypesListWidget extends StatelessWidget {
   const TypesListWidget({

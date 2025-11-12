@@ -1,7 +1,7 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
@@ -14,6 +14,7 @@ import 'package:thingsboard_app/utils/services/entity_query_api.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 
 import '../../constants/app_constants.dart';
+import '../../l10n/messages.dart';
 
 mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
   @override

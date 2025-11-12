@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:recaptcha_enterprise_flutter/recaptcha_action.dart';
 import 'package:recaptcha_enterprise_flutter/recaptcha_client.dart';
 import 'package:thingsboard_app/core/auth/login/bloc/bloc.dart';
@@ -16,6 +16,8 @@ import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
+
+import '../../../l10n/messages.dart';
 
 class SignUpPage extends TbPageWidget {
   SignUpPage(TbContext tbContext, {super.key}) : super(tbContext);

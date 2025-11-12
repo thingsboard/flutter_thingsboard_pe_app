@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/locator.dart';
@@ -18,6 +18,8 @@ import 'package:thingsboard_app/utils/ui/pagination_list_widget.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_progress_builder.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/new_page_progress_builder.dart';
 import 'package:thingsboard_app/utils/ui/ui_utils.dart';
+
+import '../../../../../l10n/messages.dart';
 
 class AlarmActivityWidget extends StatefulWidget {
   const AlarmActivityWidget(

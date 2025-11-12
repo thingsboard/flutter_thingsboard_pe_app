@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
@@ -10,6 +10,8 @@ import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_exception_widget.dart';
 import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
 import 'package:thingsboard_app/utils/utils.dart';
+
+import '../../l10n/messages.dart';
 
 const Map<EntityType, String> entityTypeTranslations = {
   EntityType.TENANT: 'Tenant',

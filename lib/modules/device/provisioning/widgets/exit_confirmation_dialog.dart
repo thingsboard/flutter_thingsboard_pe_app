@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:thingsboard_app/utils/ui/tb_alert_dialog.dart';
 import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
+
+import '../../../../l10n/messages.dart';
 
 class ExitConfirmationDialog extends StatelessWidget {
   const ExitConfirmationDialog({super.key});

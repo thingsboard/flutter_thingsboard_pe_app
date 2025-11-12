@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/core/entity/entity_details_page.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+
+import '../../l10n/messages.dart';
 
 class AssetDetailsPage extends EntityDetailsPage<Asset> {
   AssetDetailsPage(TbContext tbContext, String assetId, {super.key})

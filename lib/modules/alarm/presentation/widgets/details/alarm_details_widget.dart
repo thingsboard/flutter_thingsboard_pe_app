@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:intl/intl.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/modules/alarm/alarms_base.dart';
@@ -10,6 +10,8 @@ import 'package:thingsboard_app/modules/alarm/presentation/widgets/details/alarm
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
 import 'package:thingsboard_app/utils/utils.dart';
+
+import '../../../../../l10n/messages.dart';
 
 class AlarmDetailsWidget extends StatefulWidget {
   AlarmDetailsWidget({

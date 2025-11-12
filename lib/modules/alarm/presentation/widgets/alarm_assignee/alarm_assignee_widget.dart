@@ -2,7 +2,7 @@ import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarm_assignee/alarm_assignee_bloc.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarm_assignee/alarm_assignee_event.dart';
@@ -12,6 +12,8 @@ import 'package:thingsboard_app/modules/alarm/presentation/widgets/alarm_filter_
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/assignee/user_info_avatar_widget.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/assignee/user_info_widget.dart';
 import 'package:thingsboard_app/utils/ui/ui_utils.dart';
+
+import '../../../../../l10n/messages.dart';
 
 class AlarmAssigneeWidget extends StatelessWidget {
   const AlarmAssigneeWidget({

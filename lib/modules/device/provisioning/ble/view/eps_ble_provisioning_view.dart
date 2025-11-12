@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/modules/device/provisioning/ble/bloc/bloc.dart';
 import 'package:thingsboard_app/modules/device/provisioning/ble/di/esp_ble_di.dart';
@@ -14,6 +14,8 @@ import 'package:thingsboard_app/modules/device/provisioning/widgets/exit_confirm
 import 'package:thingsboard_app/utils/ui/tb_text_styles.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
+
+import '../../../../../l10n/messages.dart';
 
 class EspBleProvisioningView extends TbContextWidget {
   EspBleProvisioningView(

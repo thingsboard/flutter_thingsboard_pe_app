@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:thingsboard_app/thingsboard_client.dart'
     show SignUpField, SignUpFieldsId, SignUpFieldsIdToString;
+
+import '../../../l10n/messages.dart';
 
 class SingUpFieldWidget extends StatelessWidget {
   const SingUpFieldWidget({

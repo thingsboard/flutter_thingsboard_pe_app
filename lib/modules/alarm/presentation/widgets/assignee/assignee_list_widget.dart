@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/messages.dart';
+// import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:thingsboard_app/core/context/tb_context.dart';
 import 'package:thingsboard_app/locator.dart';
@@ -10,6 +10,8 @@ import 'package:thingsboard_app/modules/alarm/presentation/widgets/assignee/user
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/string_utils.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
+
+import '../../../../../l10n/messages.dart';
 
 class AssigneeListWidget extends StatelessWidget {
   const AssigneeListWidget({
