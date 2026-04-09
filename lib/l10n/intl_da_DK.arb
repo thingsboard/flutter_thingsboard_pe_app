@@ -459,5 +459,13 @@
       }
     }
   },
-  "selectAll": "Vælg alle"
+  "selectAll": "Vælg alle",
+  "failedToPerformOperation": "{count, plural, =1{1 handling mislykkedes} other{{count} handlinger mislykkedes}}",
+  "@failedToPerformOperation": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

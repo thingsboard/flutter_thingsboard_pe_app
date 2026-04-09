@@ -458,5 +458,13 @@
       }
     }
   },
-  "selectAll": "全選"
+  "selectAll": "全選",
+  "failedToPerformOperation": "{count, plural, =1{1 項操作失敗} other{{count} 項操作失敗}}",
+  "@failedToPerformOperation": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -459,5 +459,13 @@
       }
     }
   },
-  "selectAll": "Seleccionar todo"
+  "selectAll": "Seleccionar todo",
+  "failedToPerformOperation": "{count, plural, =1{1 operación falló} other{{count} operaciones fallaron}}",
+  "@failedToPerformOperation": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

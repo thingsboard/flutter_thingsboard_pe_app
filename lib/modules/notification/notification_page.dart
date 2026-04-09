@@ -195,51 +195,57 @@ class _NotificationPageState extends State<NotificationPage> {
 
   Widget _buildSelectionActionBar() {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed:
-                    isProcessing || selectedIds.isEmpty
-                        ? null
-                        : _batchDelete,
-                icon: const Icon(Icons.delete_outline),
-                label: Text(S.of(context).delete),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFD12730),
-                  side: BorderSide(
-                    color:
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isProcessing) const LinearProgressIndicator(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed:
                         isProcessing || selectedIds.isEmpty
-                            ? Colors.grey.shade300
-                            : const Color(0xFFD12730),
+                            ? null
+                            : _batchDelete,
+                    icon: const Icon(Icons.delete_outline),
+                    label: Text(S.of(context).delete),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFD12730),
+                      side: BorderSide(
+                        color:
+                            isProcessing || selectedIds.isEmpty
+                                ? Colors.grey.shade300
+                                : const Color(0xFFD12730),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed:
-                    isProcessing || selectedIds.isEmpty
-                        ? null
-                        : _batchMarkAsRead,
-                icon: const Icon(Icons.check_circle_outline),
-                label: Text(S.of(context).markAsRead),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF198038),
-                  side: BorderSide(
-                    color:
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed:
                         isProcessing || selectedIds.isEmpty
-                            ? Colors.grey.shade300
-                            : const Color(0xFF198038),
+                            ? null
+                            : _batchMarkAsRead,
+                    icon: const Icon(Icons.check_circle_outline),
+                    label: Text(S.of(context).markAsRead),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF198038),
+                      side: BorderSide(
+                        color:
+                            isProcessing || selectedIds.isEmpty
+                                ? Colors.grey.shade300
+                                : const Color(0xFF198038),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -295,13 +301,16 @@ class _NotificationPageState extends State<NotificationPage> {
         items.where((n) => selectedIds.contains(n.id!.id!)).toList();
 
     int unreadCount = 0;
+    int failCount = 0;
     for (final notification in toDelete) {
       try {
         await notificationRepository.deleteNotification(notification.id!.id!);
         if (notification.status != PushNotificationStatus.READ) {
           unreadCount++;
         }
-      } catch (_) {}
+      } catch (_) {
+        failCount++;
+      }
     }
 
     for (int i = 0; i < unreadCount; i++) {
@@ -312,6 +321,12 @@ class _NotificationPageState extends State<NotificationPage> {
       _exitSelectionMode();
       setState(() => isProcessing = false);
       notificationQueryCtrl.refresh();
+
+      if (failCount > 0) {
+        overlayService.showWarnNotification(
+          (_) => S.of(context).failedToPerformOperation(failCount),
+        );
+      }
     }
   }
 
@@ -327,18 +342,27 @@ class _NotificationPageState extends State<NotificationPage> {
         )
         .toList();
 
+    int failCount = 0;
     for (final notification in toMark) {
       try {
         await notificationRepository
             .markNotificationAsRead(notification.id!.id!);
         await notificationRepository.decreaseNotificationBadgeCount();
-      } catch (_) {}
+      } catch (_) {
+        failCount++;
+      }
     }
 
     if (mounted) {
       _exitSelectionMode();
       setState(() => isProcessing = false);
       notificationQueryCtrl.refresh();
+
+      if (failCount > 0) {
+        overlayService.showWarnNotification(
+          (_) => S.of(context).failedToPerformOperation(failCount),
+        );
+      }
     }
   }
 

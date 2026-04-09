@@ -458,5 +458,13 @@
       }
     }
   },
-  "selectAll": "تحديد الكل"
+  "selectAll": "تحديد الكل",
+  "failedToPerformOperation": "{count, plural, =1{فشلت عملية واحدة} other{فشلت {count} عمليات}}",
+  "@failedToPerformOperation": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

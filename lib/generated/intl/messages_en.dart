@@ -58,40 +58,43 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(error) => "Error sending code: ${error}";
 
-  static String m14(count) => "${count} selected";
+  static String m14(count) =>
+      "${Intl.plural(count, one: '1 operation failed', other: '${count} operations failed')}";
 
-  static String m15(count) =>
+  static String m15(count) => "${count} selected";
+
+  static String m16(count) =>
       "${Intl.plural(count, one: 'Notification', other: 'Notifications')}";
 
-  static String m16(permissions) =>
+  static String m17(permissions) =>
       "You don\'t have enough permissions for \"${permissions}\" to proceed. Please open app settings, grant permissions and trap \"Try Again\".";
 
-  static String m17(permissions) =>
+  static String m18(permissions) =>
       "You don\'t have enough permissions for \"${permissions}\" to proceed. Please grant the required permissions and tap \"Try Again\".";
 
-  static String m18(deviceName) =>
+  static String m19(deviceName) =>
       "Enter PIN of ${deviceName} to confirm proof of possession";
 
-  static String m19(time) =>
+  static String m20(time) =>
       "Resend code in ${Intl.plural(time, one: '1 second', other: '${time} seconds')}";
 
-  static String m20(name) => "Route not defined: ${name}";
+  static String m21(name) => "Route not defined: ${name}";
 
-  static String m21(count) =>
+  static String m22(count) =>
       "${Intl.plural(count, one: 'Search user', other: 'Search users')}";
 
-  static String m22(contact) =>
+  static String m23(contact) =>
       "A security code has been sent to your phone at ${contact}.";
 
-  static String m23(name) =>
+  static String m24(name) =>
       "Unable connect to Wi-Fi because networks wasn\'t found by device ${name}";
 
-  static String m24(version) => "Update to ${version}";
+  static String m25(version) => "Update to ${version}";
 
-  static String m25(deviceName) =>
+  static String m26(deviceName) =>
       "To continue setup of your device ${deviceName}, please provide your Network\'s credentials.";
 
-  static String m26(network) => "Enter password for ${network}";
+  static String m27(network) => "Enter password for ${network}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -442,6 +445,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToLoadTheList": MessageLookupByLibrary.simpleMessage(
       "Failed to load the list",
     ),
+    "failedToPerformOperation": m14,
     "failedToSaveImage": MessageLookupByLibrary.simpleMessage(
       "Failed to save image",
     ),
@@ -535,7 +539,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Mobile dashboard should be configured in device profile!",
         ),
     "more": MessageLookupByLibrary.simpleMessage("More"),
-    "nSelected": m14,
+    "nSelected": m15,
     "newPassword": MessageLookupByLibrary.simpleMessage("New password"),
     "newPassword2": MessageLookupByLibrary.simpleMessage(
       "Confirm new password",
@@ -578,12 +582,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationTemplate": MessageLookupByLibrary.simpleMessage(
       "Notification template",
     ),
-    "notifications": m15,
+    "notifications": m16,
     "oauth2Client": MessageLookupByLibrary.simpleMessage("Oauth2 client"),
     "openAppSettings": MessageLookupByLibrary.simpleMessage(
       "Open app settings",
     ),
-    "openAppSettingsToGrantPermissionMessage": m16,
+    "openAppSettingsToGrantPermissionMessage": m17,
     "openSettingsAndGrantAccessToCameraToContinue":
         MessageLookupByLibrary.simpleMessage(
           "Open settings and grant access to camera to continue",
@@ -616,7 +620,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Password successfully changed",
     ),
     "permissions": MessageLookupByLibrary.simpleMessage("Permissions"),
-    "permissionsNotEnoughMessage": m17,
+    "permissionsNotEnoughMessage": m18,
     "phone": MessageLookupByLibrary.simpleMessage("Phone"),
     "phoneIsInvalid": MessageLookupByLibrary.simpleMessage("Phone is invalid"),
     "phoneIsRequired": MessageLookupByLibrary.simpleMessage(
@@ -641,7 +645,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please scan QR code on your device",
     ),
     "plusAlarmType": MessageLookupByLibrary.simpleMessage("+ Alarm type"),
-    "popTitle": m18,
+    "popTitle": m19,
     "postalCode": MessageLookupByLibrary.simpleMessage("Zip / Postal Code"),
     "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy Policy"),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
@@ -670,7 +674,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resend": MessageLookupByLibrary.simpleMessage("Resend"),
     "resendCode": MessageLookupByLibrary.simpleMessage("Resend code"),
-    "resendCodeWait": m19,
+    "resendCodeWait": m20,
     "reset": MessageLookupByLibrary.simpleMessage("Reset"),
     "retry": MessageLookupByLibrary.simpleMessage("Retry"),
     "returnToDashboard": MessageLookupByLibrary.simpleMessage(
@@ -680,7 +684,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Return to the app and tap Ready button",
     ),
     "role": MessageLookupByLibrary.simpleMessage("Role"),
-    "routeNotDefined": m20,
+    "routeNotDefined": m21,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("Rule chain"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("Rule node"),
@@ -689,7 +693,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "schedulerEvent": MessageLookupByLibrary.simpleMessage("Scheduler Event"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Search results"),
-    "searchUsers": m21,
+    "searchUsers": m22,
     "seconds": MessageLookupByLibrary.simpleMessage("seconds"),
     "security": MessageLookupByLibrary.simpleMessage("Security"),
     "selectAll": MessageLookupByLibrary.simpleMessage("Select all"),
@@ -716,7 +720,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "severity": MessageLookupByLibrary.simpleMessage("Severity"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign In"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
-    "smsAuthDescription": m22,
+    "smsAuthDescription": m23,
     "smsAuthPlaceholder": MessageLookupByLibrary.simpleMessage("SMS code"),
     "smsSetupSuccessDescription": MessageLookupByLibrary.simpleMessage(
       "The next time you log in, you will be prompted to enter the security code that will be sent to the phone number",
@@ -778,7 +782,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unableConnectToDevice": MessageLookupByLibrary.simpleMessage(
       "Unable connect to device",
     ),
-    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m23,
+    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m24,
     "unableToUseCamera": MessageLookupByLibrary.simpleMessage(
       "Unable to use camera",
     ),
@@ -790,7 +794,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unsavedChanges": MessageLookupByLibrary.simpleMessage("Unsaved changes"),
     "update": MessageLookupByLibrary.simpleMessage("Update"),
     "updateRequired": MessageLookupByLibrary.simpleMessage("Update required"),
-    "updateTo": m24,
+    "updateTo": m25,
     "url": MessageLookupByLibrary.simpleMessage("Url"),
     "user": MessageLookupByLibrary.simpleMessage("User"),
     "username": MessageLookupByLibrary.simpleMessage("username"),
@@ -815,9 +819,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "warning": MessageLookupByLibrary.simpleMessage("Warning"),
     "widgetType": MessageLookupByLibrary.simpleMessage("Widget type"),
     "widgetsBundle": MessageLookupByLibrary.simpleMessage("Widgets bundle"),
-    "wifiHelpMessage": m25,
+    "wifiHelpMessage": m26,
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Wi-Fi password"),
-    "wifiPasswordMessage": m26,
+    "wifiPasswordMessage": m27,
     "yes": MessageLookupByLibrary.simpleMessage("Yes"),
     "yesDeactivate": MessageLookupByLibrary.simpleMessage("Yes, deactivate"),
     "yesDiscard": MessageLookupByLibrary.simpleMessage("Yes, discard"),

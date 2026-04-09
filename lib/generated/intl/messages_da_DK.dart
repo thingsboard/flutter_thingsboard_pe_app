@@ -59,40 +59,43 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(error) => "Fejl ved afsendelse af kode: ${error}";
 
-  static String m14(count) => "${count} valgt";
+  static String m14(count) =>
+      "${Intl.plural(count, one: '1 handling mislykkedes', other: '${count} handlinger mislykkedes')}";
 
-  static String m15(count) =>
+  static String m15(count) => "${count} valgt";
+
+  static String m16(count) =>
       "${Intl.plural(count, one: 'Notifikation', other: 'Notifikationer')}";
 
-  static String m16(permissions) =>
+  static String m17(permissions) =>
       "Du har ikke tilstrækkelige tilladelser til \"${permissions}\" for at fortsætte. Åbn app-indstillingerne, giv tilladelser og tryk på \"Prøv igen\".";
 
-  static String m17(permissions) =>
+  static String m18(permissions) =>
       "Du har ikke tilstrækkelige tilladelser til \"${permissions}\" for at fortsætte. Giv de nødvendige tilladelser og tryk på \"Prøv igen\".";
 
-  static String m18(deviceName) =>
+  static String m19(deviceName) =>
       "Indtast PIN-kode for ${deviceName} for at bekræfte ejerskab";
 
-  static String m19(time) =>
+  static String m20(time) =>
       "Send kode igen om ${Intl.plural(time, one: '1 sekund', other: '${time} sekunder')}";
 
-  static String m20(name) => "Rute ikke defineret: ${name}";
+  static String m21(name) => "Rute ikke defineret: ${name}";
 
-  static String m21(count) =>
+  static String m22(count) =>
       "${Intl.plural(count, one: 'Søg bruger', other: 'Søg brugere')}";
 
-  static String m22(contact) =>
+  static String m23(contact) =>
       "En sikkerhedskode er blevet sendt til din telefon på ${contact}.";
 
-  static String m23(name) =>
+  static String m24(name) =>
       "Kan ikke oprette forbindelse til Wi-Fi, fordi netværk ikke blev fundet af enheden ${name}";
 
-  static String m24(version) => "Opdater til ${version}";
+  static String m25(version) => "Opdater til ${version}";
 
-  static String m25(deviceName) =>
+  static String m26(deviceName) =>
       "For at fortsætte opsætningen af din enhed ${deviceName}, skal du angive netværkets legitimationsoplysninger.";
 
-  static String m26(network) => "Indtast adgangskode til ${network}";
+  static String m27(network) => "Indtast adgangskode til ${network}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -447,6 +450,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToLoadTheList": MessageLookupByLibrary.simpleMessage(
       "Kunne ikke indlæse listen",
     ),
+    "failedToPerformOperation": m14,
     "failedToSaveImage": MessageLookupByLibrary.simpleMessage(
       "Kunne ikke gemme billede",
     ),
@@ -540,7 +544,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Mobilt dashboard skal konfigureres i enhedsprofilen!",
         ),
     "more": MessageLookupByLibrary.simpleMessage("Mere"),
-    "nSelected": m14,
+    "nSelected": m15,
     "newPassword": MessageLookupByLibrary.simpleMessage("Ny adgangskode"),
     "newPassword2": MessageLookupByLibrary.simpleMessage(
       "Bekræft ny adgangskode",
@@ -589,12 +593,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationTemplate": MessageLookupByLibrary.simpleMessage(
       "Notifikationsskabelon",
     ),
-    "notifications": m15,
+    "notifications": m16,
     "oauth2Client": MessageLookupByLibrary.simpleMessage("OAuth2-klient"),
     "openAppSettings": MessageLookupByLibrary.simpleMessage(
       "Åbn app-indstillinger",
     ),
-    "openAppSettingsToGrantPermissionMessage": m16,
+    "openAppSettingsToGrantPermissionMessage": m17,
     "openSettingsAndGrantAccessToCameraToContinue":
         MessageLookupByLibrary.simpleMessage(
           "Åbn indstillinger og giv adgang til kameraet for at fortsætte",
@@ -629,7 +633,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Adgangskoden blev ændret",
     ),
     "permissions": MessageLookupByLibrary.simpleMessage("Tilladelser"),
-    "permissionsNotEnoughMessage": m17,
+    "permissionsNotEnoughMessage": m18,
     "phone": MessageLookupByLibrary.simpleMessage("Telefon"),
     "phoneIsInvalid": MessageLookupByLibrary.simpleMessage(
       "Telefonnummer er ugyldigt",
@@ -656,7 +660,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Scan venligst QR-koden på din enhed",
     ),
     "plusAlarmType": MessageLookupByLibrary.simpleMessage("+ Alarmtype"),
-    "popTitle": m18,
+    "popTitle": m19,
     "postalCode": MessageLookupByLibrary.simpleMessage("Postnummer"),
     "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privatlivspolitik"),
     "profile": MessageLookupByLibrary.simpleMessage("Profil"),
@@ -685,7 +689,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resend": MessageLookupByLibrary.simpleMessage("Gensend"),
     "resendCode": MessageLookupByLibrary.simpleMessage("Send kode igen"),
-    "resendCodeWait": m19,
+    "resendCodeWait": m20,
     "reset": MessageLookupByLibrary.simpleMessage("Nulstil"),
     "retry": MessageLookupByLibrary.simpleMessage("Prøv igen"),
     "returnToDashboard": MessageLookupByLibrary.simpleMessage(
@@ -695,7 +699,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Vend tilbage til appen og tryk på Klar-knappen",
     ),
     "role": MessageLookupByLibrary.simpleMessage("Rolle"),
-    "routeNotDefined": m20,
+    "routeNotDefined": m21,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("Regelkæde"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("Regelknude"),
@@ -706,7 +710,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("Søg"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Søgeresultater"),
-    "searchUsers": m21,
+    "searchUsers": m22,
     "seconds": MessageLookupByLibrary.simpleMessage("sekunder"),
     "security": MessageLookupByLibrary.simpleMessage("Sikkerhed"),
     "selectAll": MessageLookupByLibrary.simpleMessage("Vælg alle"),
@@ -733,7 +737,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "severity": MessageLookupByLibrary.simpleMessage("Alvorlighed"),
     "signIn": MessageLookupByLibrary.simpleMessage("Log ind"),
     "signUp": MessageLookupByLibrary.simpleMessage("Tilmeld"),
-    "smsAuthDescription": m22,
+    "smsAuthDescription": m23,
     "smsAuthPlaceholder": MessageLookupByLibrary.simpleMessage("SMS-kode"),
     "smsSetupSuccessDescription": MessageLookupByLibrary.simpleMessage(
       "Næste gang du logger ind, vil du blive bedt om at indtaste sikkerhedskoden, der sendes til telefonnummeret",
@@ -797,7 +801,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unableConnectToDevice": MessageLookupByLibrary.simpleMessage(
       "Kan ikke oprette forbindelse til enhed",
     ),
-    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m23,
+    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m24,
     "unableToUseCamera": MessageLookupByLibrary.simpleMessage(
       "Kan ikke bruge kameraet",
     ),
@@ -813,7 +817,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "updateRequired": MessageLookupByLibrary.simpleMessage(
       "Opdatering påkrævet",
     ),
-    "updateTo": m24,
+    "updateTo": m25,
     "url": MessageLookupByLibrary.simpleMessage("Url"),
     "user": MessageLookupByLibrary.simpleMessage("Bruger"),
     "username": MessageLookupByLibrary.simpleMessage("brugernavn"),
@@ -838,9 +842,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "warning": MessageLookupByLibrary.simpleMessage("Advarsel"),
     "widgetType": MessageLookupByLibrary.simpleMessage("Widget-type"),
     "widgetsBundle": MessageLookupByLibrary.simpleMessage("Widget-pakke"),
-    "wifiHelpMessage": m25,
+    "wifiHelpMessage": m26,
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Wi-Fi adgangskode"),
-    "wifiPasswordMessage": m26,
+    "wifiPasswordMessage": m27,
     "yes": MessageLookupByLibrary.simpleMessage("Ja"),
     "yesDeactivate": MessageLookupByLibrary.simpleMessage("Ja, deaktiver"),
     "yesDiscard": MessageLookupByLibrary.simpleMessage("Ja, kassér"),

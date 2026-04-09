@@ -458,5 +458,13 @@
       }
     }
   },
-  "selectAll": "Select all"
+  "selectAll": "Select all",
+  "failedToPerformOperation": "{count, plural, =1{1 operation failed} other{{count} operations failed}}",
+  "@failedToPerformOperation": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

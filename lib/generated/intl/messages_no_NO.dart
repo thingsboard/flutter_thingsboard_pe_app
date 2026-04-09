@@ -58,40 +58,43 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(error) => "Feil ved sending av kode: ${error}";
 
-  static String m14(count) => "${count} valgt";
+  static String m14(count) =>
+      "${Intl.plural(count, one: '1 handling mislyktes', other: '${count} handlinger mislyktes')}";
 
-  static String m15(count) =>
+  static String m15(count) => "${count} valgt";
+
+  static String m16(count) =>
       "${Intl.plural(count, one: 'Varsel', other: 'Varsler')}";
 
-  static String m16(permissions) =>
+  static String m17(permissions) =>
       "Du har ikke tilstrekkelige tillatelser for \"${permissions}\" til å fortsette. Åpne appinnstillingene, gi nødvendige tillatelser og trykk \"Prøv igjen\".";
 
-  static String m17(permissions) =>
+  static String m18(permissions) =>
       "Du har ikke tilstrekkelige tillatelser for \"${permissions}\" til å fortsette. Gi nødvendige tillatelser og trykk \"Prøv igjen\".";
 
-  static String m18(deviceName) =>
+  static String m19(deviceName) =>
       "Skriv inn PIN for ${deviceName} for å bekrefte eierskapsbevis";
 
-  static String m19(time) =>
+  static String m20(time) =>
       "Send koden på nytt om ${Intl.plural(time, one: '1 sekund', other: '${time} sekunder')}";
 
-  static String m20(name) => "Rute ikke definert: ${name}";
+  static String m21(name) => "Rute ikke definert: ${name}";
 
-  static String m21(count) =>
+  static String m22(count) =>
       "${Intl.plural(count, one: 'Søk bruker', other: 'Søk brukere')}";
 
-  static String m22(contact) =>
+  static String m23(contact) =>
       "En sikkerhetskode har blitt sendt til telefonen din på ${contact}.";
 
-  static String m23(name) =>
+  static String m24(name) =>
       "Kan ikke koble til Wi-Fi fordi enheten ${name} ikke fant nettverk";
 
-  static String m24(version) => "Oppdater til ${version}";
+  static String m25(version) => "Oppdater til ${version}";
 
-  static String m25(deviceName) =>
+  static String m26(deviceName) =>
       "For å fortsette oppsettet av enheten din ${deviceName}, vennligst oppgi nettverksinformasjonen din.";
 
-  static String m26(network) => "Skriv inn passordet for ${network}";
+  static String m27(network) => "Skriv inn passordet for ${network}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -446,6 +449,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToLoadTheList": MessageLookupByLibrary.simpleMessage(
       "Kunne ikke laste listen",
     ),
+    "failedToPerformOperation": m14,
     "failedToSaveImage": MessageLookupByLibrary.simpleMessage(
       "Kunne ikke lagre bildet",
     ),
@@ -537,7 +541,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Mobilt dashbord må konfigureres i enhetsprofilen!",
         ),
     "more": MessageLookupByLibrary.simpleMessage("Mer"),
-    "nSelected": m14,
+    "nSelected": m15,
     "newPassword": MessageLookupByLibrary.simpleMessage("Nytt passord"),
     "newPassword2": MessageLookupByLibrary.simpleMessage(
       "Bekreft nytt passord",
@@ -582,12 +586,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationTemplate": MessageLookupByLibrary.simpleMessage(
       "Varslingsmal",
     ),
-    "notifications": m15,
+    "notifications": m16,
     "oauth2Client": MessageLookupByLibrary.simpleMessage("OAuth2-klient"),
     "openAppSettings": MessageLookupByLibrary.simpleMessage(
       "Åpne appinnstillinger",
     ),
-    "openAppSettingsToGrantPermissionMessage": m16,
+    "openAppSettingsToGrantPermissionMessage": m17,
     "openSettingsAndGrantAccessToCameraToContinue":
         MessageLookupByLibrary.simpleMessage(
           "Åpne innstillinger og gi tilgang til kameraet for å fortsette",
@@ -622,7 +626,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Passordet ble endret",
     ),
     "permissions": MessageLookupByLibrary.simpleMessage("Tillatelser"),
-    "permissionsNotEnoughMessage": m17,
+    "permissionsNotEnoughMessage": m18,
     "phone": MessageLookupByLibrary.simpleMessage("Telefon"),
     "phoneIsInvalid": MessageLookupByLibrary.simpleMessage(
       "Telefonnummer er ugyldig",
@@ -649,7 +653,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Skann QR-koden på enheten din",
     ),
     "plusAlarmType": MessageLookupByLibrary.simpleMessage("+ Alarmtype"),
-    "popTitle": m18,
+    "popTitle": m19,
     "postalCode": MessageLookupByLibrary.simpleMessage("Postnummer"),
     "privacyPolicy": MessageLookupByLibrary.simpleMessage(
       "Personvernerklæring",
@@ -680,7 +684,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resend": MessageLookupByLibrary.simpleMessage("Send på nytt"),
     "resendCode": MessageLookupByLibrary.simpleMessage("Send koden på nytt"),
-    "resendCodeWait": m19,
+    "resendCodeWait": m20,
     "reset": MessageLookupByLibrary.simpleMessage("Tilbakestill"),
     "retry": MessageLookupByLibrary.simpleMessage("Prøv igjen"),
     "returnToDashboard": MessageLookupByLibrary.simpleMessage(
@@ -690,7 +694,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Gå tilbake til appen og trykk Klar-knappen",
     ),
     "role": MessageLookupByLibrary.simpleMessage("Rolle"),
-    "routeNotDefined": m20,
+    "routeNotDefined": m21,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("Regelkjede"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("Regelnode"),
@@ -701,7 +705,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("Søk"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Søkeresultater"),
-    "searchUsers": m21,
+    "searchUsers": m22,
     "seconds": MessageLookupByLibrary.simpleMessage("sekunder"),
     "security": MessageLookupByLibrary.simpleMessage("Sikkerhet"),
     "selectAll": MessageLookupByLibrary.simpleMessage("Velg alle"),
@@ -728,7 +732,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "severity": MessageLookupByLibrary.simpleMessage("Alvorlighetsgrad"),
     "signIn": MessageLookupByLibrary.simpleMessage("Logg inn"),
     "signUp": MessageLookupByLibrary.simpleMessage("Registrer deg"),
-    "smsAuthDescription": m22,
+    "smsAuthDescription": m23,
     "smsAuthPlaceholder": MessageLookupByLibrary.simpleMessage("SMS-kode"),
     "smsSetupSuccessDescription": MessageLookupByLibrary.simpleMessage(
       "Neste gang du logger inn, vil du bli bedt om å taste inn sikkerhetskoden som sendes til telefonnummeret",
@@ -786,7 +790,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unableConnectToDevice": MessageLookupByLibrary.simpleMessage(
       "Kan ikke koble til enhet",
     ),
-    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m23,
+    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m24,
     "unableToUseCamera": MessageLookupByLibrary.simpleMessage(
       "Kan ikke bruke kameraet",
     ),
@@ -802,7 +806,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "updateRequired": MessageLookupByLibrary.simpleMessage(
       "Oppdatering kreves",
     ),
-    "updateTo": m24,
+    "updateTo": m25,
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "user": MessageLookupByLibrary.simpleMessage("Bruker"),
     "username": MessageLookupByLibrary.simpleMessage("brukernavn"),
@@ -827,9 +831,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "warning": MessageLookupByLibrary.simpleMessage("Advarsel"),
     "widgetType": MessageLookupByLibrary.simpleMessage("Widgettype"),
     "widgetsBundle": MessageLookupByLibrary.simpleMessage("Widgetpakke"),
-    "wifiHelpMessage": m25,
+    "wifiHelpMessage": m26,
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Wi-Fi-passord"),
-    "wifiPasswordMessage": m26,
+    "wifiPasswordMessage": m27,
     "yes": MessageLookupByLibrary.simpleMessage("Ja"),
     "yesDeactivate": MessageLookupByLibrary.simpleMessage("Ja, deaktiver"),
     "yesDiscard": MessageLookupByLibrary.simpleMessage("Ja, forkast"),

@@ -3377,6 +3377,18 @@ class S {
   String get selectAll {
     return Intl.message('Select all', name: 'selectAll', desc: '', args: []);
   }
+
+  /// `{count, plural, =1{1 operation failed} other{{count} operations failed}}`
+  String failedToPerformOperation(int count) {
+    return Intl.plural(
+      count,
+      one: '1 operation failed',
+      other: '$count operations failed',
+      name: 'failedToPerformOperation',
+      desc: '',
+      args: [count],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
