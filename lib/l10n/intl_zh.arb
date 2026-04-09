@@ -440,5 +440,14 @@
   "areYouSureYouWantToExit": "Are you sure you want to exit?",
   "confirmToCloseTheApp": "Confirm to close the app",
   "imageSavedToGallery": "已保存到“图片库”",
-  "failedToSaveImage": "保存图片失败"
+  "failedToSaveImage": "保存图片失败",
+  "nSelected": "已选择 {count} 项",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "全选"
 }

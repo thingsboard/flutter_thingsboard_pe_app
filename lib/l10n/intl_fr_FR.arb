@@ -450,5 +450,14 @@
   "schedulerEvent": "Événement du planificateur",
   "youDontHavePermissionsToPerformThisOperation": "Vous n'avez pas les autorisations pour effectuer cette opération !",
   "imageSavedToGallery": "Enregistré dans 'Galerie d’images'",
-  "failedToSaveImage": "Échec de l’enregistrement de l’image"
+  "failedToSaveImage": "Échec de l’enregistrement de l’image",
+  "nSelected": "{count} sélectionnés",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "Tout sélectionner"
 }

@@ -57,38 +57,40 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(error) => "Lỗi khi gửi mã: ${error}";
 
-  static String m14(count) =>
+  static String m14(count) => "${count} đã chọn";
+
+  static String m15(count) =>
       "${Intl.plural(count, one: 'Thông báo', other: 'Thông báo')}";
 
-  static String m15(permissions) =>
+  static String m16(permissions) =>
       "Bạn không có đủ quyền cho \"${permissions}\" để tiếp tục. Vui lòng mở cài đặt ứng dụng, cấp quyền và nhấn \"Thử lại\".";
 
-  static String m16(permissions) =>
+  static String m17(permissions) =>
       "Bạn không có đủ quyền cho \"${permissions}\" để tiếp tục. Vui lòng cấp các quyền cần thiết và nhấn \"Thử lại\".";
 
-  static String m17(deviceName) =>
+  static String m18(deviceName) =>
       "Nhập mã PIN của ${deviceName} để xác nhận bằng chứng sở hữu";
 
-  static String m18(time) =>
+  static String m19(time) =>
       "Gửi lại mã sau ${Intl.plural(time, other: '${time} giây')}";
 
-  static String m19(name) => "Lộ trình chưa được xác định: ${name}";
+  static String m20(name) => "Lộ trình chưa được xác định: ${name}";
 
-  static String m20(count) =>
+  static String m21(count) =>
       "${Intl.plural(count, one: 'Tìm kiếm người dùng', other: 'Tìm kiếm người dùng')}";
 
-  static String m21(contact) =>
+  static String m22(contact) =>
       "Mã bảo mật đã được gửi đến điện thoại của bạn tại ${contact}.";
 
-  static String m22(name) =>
+  static String m23(name) =>
       "Không thể kết nối với Wi-Fi vì thiết bị ${name} không tìm thấy mạng";
 
-  static String m23(version) => "Cập nhật lên ${version}";
+  static String m24(version) => "Cập nhật lên ${version}";
 
-  static String m24(deviceName) =>
+  static String m25(deviceName) =>
       "Để tiếp tục thiết lập thiết bị ${deviceName} của bạn, vui lòng cung cấp thông tin đăng nhập Mạng của bạn.";
 
-  static String m25(network) => "Nhập mật khẩu cho ${network}";
+  static String m26(network) => "Nhập mật khẩu cho ${network}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -554,6 +556,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Bảng điều khiển di động phải được cấu hình trong hồ sơ thiết bị!",
         ),
     "more": MessageLookupByLibrary.simpleMessage("Thêm"),
+    "nSelected": m14,
     "newPassword": MessageLookupByLibrary.simpleMessage("Mật khẩu mới"),
     "newPassword2": MessageLookupByLibrary.simpleMessage(
       "Xác nhận mật khẩu mới",
@@ -602,12 +605,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationTemplate": MessageLookupByLibrary.simpleMessage(
       "Mẫu thông báo",
     ),
-    "notifications": m14,
+    "notifications": m15,
     "oauth2Client": MessageLookupByLibrary.simpleMessage("Máy khách Oauth2"),
     "openAppSettings": MessageLookupByLibrary.simpleMessage(
       "Mở cài đặt ứng dụng",
     ),
-    "openAppSettingsToGrantPermissionMessage": m15,
+    "openAppSettingsToGrantPermissionMessage": m16,
     "openSettingsAndGrantAccessToCameraToContinue":
         MessageLookupByLibrary.simpleMessage(
           "Mở cài đặt và cấp quyền truy cập camera để tiếp tục",
@@ -640,7 +643,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Đổi mật khẩu thành công",
     ),
     "permissions": MessageLookupByLibrary.simpleMessage("Quyền"),
-    "permissionsNotEnoughMessage": m16,
+    "permissionsNotEnoughMessage": m17,
     "phone": MessageLookupByLibrary.simpleMessage("Điện thoại"),
     "phoneIsInvalid": MessageLookupByLibrary.simpleMessage(
       "Số điện thoại không hợp lệ",
@@ -667,7 +670,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Vui lòng quét mã QR trên thiết bị của bạn",
     ),
     "plusAlarmType": MessageLookupByLibrary.simpleMessage("+ Loại cảnh báo"),
-    "popTitle": m17,
+    "popTitle": m18,
     "postalCode": MessageLookupByLibrary.simpleMessage("Mã Zip / Mã bưu điện"),
     "privacyPolicy": MessageLookupByLibrary.simpleMessage(
       "Chính sách quyền riêng tư",
@@ -700,7 +703,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resend": MessageLookupByLibrary.simpleMessage("Gửi lại"),
     "resendCode": MessageLookupByLibrary.simpleMessage("Gửi lại mã"),
-    "resendCodeWait": m18,
+    "resendCodeWait": m19,
     "reset": MessageLookupByLibrary.simpleMessage("Đặt lại"),
     "retry": MessageLookupByLibrary.simpleMessage("Thử lại"),
     "returnToDashboard": MessageLookupByLibrary.simpleMessage(
@@ -710,7 +713,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Quay lại ứng dụng và nhấn nút Sẵn sàng",
     ),
     "role": MessageLookupByLibrary.simpleMessage("Vai trò"),
-    "routeNotDefined": m19,
+    "routeNotDefined": m20,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("Chuỗi quy tắc"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("Nút quy tắc"),
@@ -719,9 +722,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "schedulerEvent": MessageLookupByLibrary.simpleMessage("Sự kiện lập lịch"),
     "search": MessageLookupByLibrary.simpleMessage("Tìm kiếm"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Kết quả tìm kiếm"),
-    "searchUsers": m20,
+    "searchUsers": m21,
     "seconds": MessageLookupByLibrary.simpleMessage("giây"),
     "security": MessageLookupByLibrary.simpleMessage("Bảo mật"),
+    "selectAll": MessageLookupByLibrary.simpleMessage("Chọn tất cả"),
     "selectCountry": MessageLookupByLibrary.simpleMessage("Chọn quốc gia"),
     "selectRegion": MessageLookupByLibrary.simpleMessage("Chọn khu vực"),
     "selectUser": MessageLookupByLibrary.simpleMessage("Chọn người dùng"),
@@ -745,7 +749,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "severity": MessageLookupByLibrary.simpleMessage("Mức độ nghiêm trọng"),
     "signIn": MessageLookupByLibrary.simpleMessage("Đăng nhập"),
     "signUp": MessageLookupByLibrary.simpleMessage("Đăng ký"),
-    "smsAuthDescription": m21,
+    "smsAuthDescription": m22,
     "smsAuthPlaceholder": MessageLookupByLibrary.simpleMessage("Mã SMS"),
     "smsSetupSuccessDescription": MessageLookupByLibrary.simpleMessage(
       "Lần tiếp theo bạn đăng nhập, bạn sẽ được yêu cầu nhập mã bảo mật được gửi đến số điện thoại",
@@ -805,7 +809,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unableConnectToDevice": MessageLookupByLibrary.simpleMessage(
       "Không thể kết nối với thiết bị",
     ),
-    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m22,
+    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m23,
     "unableToUseCamera": MessageLookupByLibrary.simpleMessage(
       "Không thể sử dụng camera",
     ),
@@ -819,7 +823,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "update": MessageLookupByLibrary.simpleMessage("Cập nhật"),
     "updateRequired": MessageLookupByLibrary.simpleMessage("Yêu cầu cập nhật"),
-    "updateTo": m23,
+    "updateTo": m24,
     "url": MessageLookupByLibrary.simpleMessage("Url"),
     "user": MessageLookupByLibrary.simpleMessage("Người dùng"),
     "username": MessageLookupByLibrary.simpleMessage("tên người dùng"),
@@ -846,9 +850,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "warning": MessageLookupByLibrary.simpleMessage("Cảnh báo"),
     "widgetType": MessageLookupByLibrary.simpleMessage("Loại widget"),
     "widgetsBundle": MessageLookupByLibrary.simpleMessage("Gói widget"),
-    "wifiHelpMessage": m24,
+    "wifiHelpMessage": m25,
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Mật khẩu Wi-Fi"),
-    "wifiPasswordMessage": m25,
+    "wifiPasswordMessage": m26,
     "yes": MessageLookupByLibrary.simpleMessage("Có"),
     "yesDeactivate": MessageLookupByLibrary.simpleMessage("Có, hủy kích hoạt"),
     "yesDiscard": MessageLookupByLibrary.simpleMessage("Có, hủy"),

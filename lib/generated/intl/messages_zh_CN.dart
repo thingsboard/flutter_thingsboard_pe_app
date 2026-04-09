@@ -50,33 +50,35 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(error) => "发送验证码错误：${error}";
 
-  static String m14(count) => "${Intl.plural(count, one: '通知', other: '通知')}";
+  static String m14(count) => "已选择 ${count} 项";
 
-  static String m15(permissions) =>
-      "您没有足够的\"${permissions}\"权限以继续。请打开应用设置，授予权限并点击\"再试一次\"。";
+  static String m15(count) => "${Intl.plural(count, one: '通知', other: '通知')}";
 
   static String m16(permissions) =>
+      "您没有足够的\"${permissions}\"权限以继续。请打开应用设置，授予权限并点击\"再试一次\"。";
+
+  static String m17(permissions) =>
       "您没有足够的\"${permissions}\"权限以继续。请授予所需权限并点击\"再试一次\"。";
 
-  static String m17(deviceName) => "输入 ${deviceName} 的PIN码以确认拥有权证明";
+  static String m18(deviceName) => "输入 ${deviceName} 的PIN码以确认拥有权证明";
 
-  static String m18(time) =>
+  static String m19(time) =>
       "在 ${Intl.plural(time, one: '1 秒', other: '${time} 秒')}内重新发送验证码";
 
-  static String m19(name) => "路由未定义: ${name}";
+  static String m20(name) => "路由未定义: ${name}";
 
-  static String m20(count) =>
+  static String m21(count) =>
       "${Intl.plural(count, one: '搜索用户', other: '搜索用户')}";
 
-  static String m21(contact) => "安全码已发送到您的手机 ${contact}。";
+  static String m22(contact) => "安全码已发送到您的手机 ${contact}。";
 
-  static String m22(name) => "无法连接 Wi-Fi，因为设备 ${name} 未找到网络";
+  static String m23(name) => "无法连接 Wi-Fi，因为设备 ${name} 未找到网络";
 
-  static String m23(version) => "更新到 ${version}";
+  static String m24(version) => "更新到 ${version}";
 
-  static String m24(deviceName) => "要继续设置您的设备 ${deviceName}，请提供您网络的凭据。";
+  static String m25(deviceName) => "要继续设置您的设备 ${deviceName}，请提供您网络的凭据。";
 
-  static String m25(network) => "输入 ${network} 的密码";
+  static String m26(network) => "输入 ${network} 的密码";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -406,6 +408,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "mobileDashboardShouldBeConfiguredInDeviceProfile":
         MessageLookupByLibrary.simpleMessage("需要在设备配置文件中配置移动仪表板！"),
     "more": MessageLookupByLibrary.simpleMessage("更多"),
+    "nSelected": m14,
     "newPassword": MessageLookupByLibrary.simpleMessage("新密码"),
     "newPassword2": MessageLookupByLibrary.simpleMessage("确认新密码"),
     "newPassword2RequireText": MessageLookupByLibrary.simpleMessage("请再次输入新密码"),
@@ -426,10 +429,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationRule": MessageLookupByLibrary.simpleMessage("通知规则"),
     "notificationTarget": MessageLookupByLibrary.simpleMessage("通知目标"),
     "notificationTemplate": MessageLookupByLibrary.simpleMessage("通知模板"),
-    "notifications": m14,
+    "notifications": m15,
     "oauth2Client": MessageLookupByLibrary.simpleMessage("OAuth2 客户端"),
     "openAppSettings": MessageLookupByLibrary.simpleMessage("打开应用设置"),
-    "openAppSettingsToGrantPermissionMessage": m15,
+    "openAppSettingsToGrantPermissionMessage": m16,
     "openSettingsAndGrantAccessToCameraToContinue":
         MessageLookupByLibrary.simpleMessage("打开设置并授予摄像头访问权限以继续"),
     "openWifiSettings": MessageLookupByLibrary.simpleMessage("打开 Wi-Fi 设置"),
@@ -452,7 +455,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "密码修改成功",
     ),
     "permissions": MessageLookupByLibrary.simpleMessage("权限"),
-    "permissionsNotEnoughMessage": m16,
+    "permissionsNotEnoughMessage": m17,
     "phone": MessageLookupByLibrary.simpleMessage("电话"),
     "phoneIsInvalid": MessageLookupByLibrary.simpleMessage("手机号码无效"),
     "phoneIsRequired": MessageLookupByLibrary.simpleMessage("手机号码是必填项"),
@@ -469,7 +472,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "请扫描您设备上的二维码",
     ),
     "plusAlarmType": MessageLookupByLibrary.simpleMessage("+ 告警类型"),
-    "popTitle": m17,
+    "popTitle": m18,
     "postalCode": MessageLookupByLibrary.simpleMessage("邮编"),
     "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
     "profile": MessageLookupByLibrary.simpleMessage("个人资料"),
@@ -490,7 +493,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resend": MessageLookupByLibrary.simpleMessage("重新发送"),
     "resendCode": MessageLookupByLibrary.simpleMessage("重新发送验证码"),
-    "resendCodeWait": m18,
+    "resendCodeWait": m19,
     "reset": MessageLookupByLibrary.simpleMessage("重置"),
     "retry": MessageLookupByLibrary.simpleMessage("重试"),
     "returnToDashboard": MessageLookupByLibrary.simpleMessage("返回仪表板"),
@@ -498,7 +501,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "返回应用并点击准备好按钮",
     ),
     "role": MessageLookupByLibrary.simpleMessage("角色"),
-    "routeNotDefined": m19,
+    "routeNotDefined": m20,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("规则链"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("规则节点"),
@@ -507,9 +510,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "schedulerEvent": MessageLookupByLibrary.simpleMessage("调度事件"),
     "search": MessageLookupByLibrary.simpleMessage("搜索"),
     "searchResults": MessageLookupByLibrary.simpleMessage("搜索结果"),
-    "searchUsers": m20,
+    "searchUsers": m21,
     "seconds": MessageLookupByLibrary.simpleMessage("秒"),
     "security": MessageLookupByLibrary.simpleMessage("安全"),
+    "selectAll": MessageLookupByLibrary.simpleMessage("全选"),
     "selectCountry": MessageLookupByLibrary.simpleMessage("选择国家"),
     "selectRegion": MessageLookupByLibrary.simpleMessage("选择地区"),
     "selectUser": MessageLookupByLibrary.simpleMessage("选择用户"),
@@ -525,7 +529,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "severity": MessageLookupByLibrary.simpleMessage("严重程度"),
     "signIn": MessageLookupByLibrary.simpleMessage("登录"),
     "signUp": MessageLookupByLibrary.simpleMessage("注册"),
-    "smsAuthDescription": m21,
+    "smsAuthDescription": m22,
     "smsAuthPlaceholder": MessageLookupByLibrary.simpleMessage("短信验证码"),
     "smsSetupSuccessDescription": MessageLookupByLibrary.simpleMessage(
       "下次登录时，您将需要输入发送到手机号码的安全码",
@@ -571,7 +575,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
     "type": MessageLookupByLibrary.simpleMessage("类型"),
     "unableConnectToDevice": MessageLookupByLibrary.simpleMessage("无法连接到设备"),
-    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m22,
+    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m23,
     "unableToUseCamera": MessageLookupByLibrary.simpleMessage("无法使用摄像头"),
     "unacknowledged": MessageLookupByLibrary.simpleMessage("未确认"),
     "unassigned": MessageLookupByLibrary.simpleMessage("未分配"),
@@ -581,7 +585,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unsavedChanges": MessageLookupByLibrary.simpleMessage("未保存的更改"),
     "update": MessageLookupByLibrary.simpleMessage("更新"),
     "updateRequired": MessageLookupByLibrary.simpleMessage("需要更新"),
-    "updateTo": m23,
+    "updateTo": m24,
     "url": MessageLookupByLibrary.simpleMessage("链接"),
     "user": MessageLookupByLibrary.simpleMessage("用户"),
     "username": MessageLookupByLibrary.simpleMessage("用户名"),
@@ -598,9 +602,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "warning": MessageLookupByLibrary.simpleMessage("警告"),
     "widgetType": MessageLookupByLibrary.simpleMessage("组件类型"),
     "widgetsBundle": MessageLookupByLibrary.simpleMessage("组件包"),
-    "wifiHelpMessage": m24,
+    "wifiHelpMessage": m25,
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Wi-Fi 密码"),
-    "wifiPasswordMessage": m25,
+    "wifiPasswordMessage": m26,
     "yes": MessageLookupByLibrary.simpleMessage("是"),
     "yesDeactivate": MessageLookupByLibrary.simpleMessage("是的，停用"),
     "yesDiscard": MessageLookupByLibrary.simpleMessage("是的，放弃"),

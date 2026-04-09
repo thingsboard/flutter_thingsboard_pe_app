@@ -450,5 +450,14 @@
   "schedulerEvent": "Planlægningshændelse",
   "youDontHavePermissionsToPerformThisOperation": "Du har ikke tilladelser til at udføre denne handling!",
   "imageSavedToGallery": "Gemt i 'Billedgalleri'",
-  "failedToSaveImage": "Kunne ikke gemme billede"
+  "failedToSaveImage": "Kunne ikke gemme billede",
+  "nSelected": "{count} valgt",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "Vælg alle"
 }

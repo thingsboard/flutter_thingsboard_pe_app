@@ -57,38 +57,40 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(error) => "خطأ في إرسال الرمز: ${error}";
 
-  static String m14(count) =>
+  static String m14(count) => "${count} محدد";
+
+  static String m15(count) =>
       "${Intl.plural(count, one: 'إشعار', other: 'إشعارات')}";
 
-  static String m15(permissions) =>
+  static String m16(permissions) =>
       "ليس لديك أذونات كافية لـ \"${permissions}\" للمتابعة. يرجى فتح إعدادات التطبيق ومنح الأذونات والضغط على \"حاول مرة أخرى\".";
 
-  static String m16(permissions) =>
+  static String m17(permissions) =>
       "ليس لديك أذونات كافية لـ \"${permissions}\" للمتابعة. يرجى منح الأذونات المطلوبة والضغط على \"حاول مرة أخرى\".";
 
-  static String m17(deviceName) =>
+  static String m18(deviceName) =>
       "أدخل رقم PIN الخاص بـ ${deviceName} لتأكيد إثبات الحيازة";
 
-  static String m18(time) =>
+  static String m19(time) =>
       "إعادة إرسال الرمز في ${Intl.plural(time, one: 'ثانية واحدة', other: '${time} ثواني')}";
 
-  static String m19(name) => "المسار غير محدد: ${name}";
+  static String m20(name) => "المسار غير محدد: ${name}";
 
-  static String m20(count) =>
+  static String m21(count) =>
       "${Intl.plural(count, one: 'البحث عن مستخدم', other: 'البحث عن مستخدمين')}";
 
-  static String m21(contact) =>
+  static String m22(contact) =>
       "تم إرسال رمز أمني إلى هاتفك على الرقم ${contact}.";
 
-  static String m22(name) =>
+  static String m23(name) =>
       "تعذر الاتصال بـ Wi-Fi لأن الجهاز ${name} لم يجد شبكات";
 
-  static String m23(version) => "تحديث إلى ${version}";
+  static String m24(version) => "تحديث إلى ${version}";
 
-  static String m24(deviceName) =>
+  static String m25(deviceName) =>
       "لمتابعة إعداد جهازك ${deviceName}، يرجى تقديم بيانات اعتماد الشبكة الخاصة بك.";
 
-  static String m25(network) => "أدخل كلمة المرور لـ ${network}";
+  static String m26(network) => "أدخل كلمة المرور لـ ${network}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -534,6 +536,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "يجب تكوين لوحة المعلومات المحمولة في ملف تعريف الجهاز!",
         ),
     "more": MessageLookupByLibrary.simpleMessage("المزيد"),
+    "nSelected": m14,
     "newPassword": MessageLookupByLibrary.simpleMessage("كلمة المرور الجديدة"),
     "newPassword2": MessageLookupByLibrary.simpleMessage(
       "تأكيد كلمة المرور الجديدة",
@@ -574,12 +577,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationTemplate": MessageLookupByLibrary.simpleMessage(
       "قالب الإشعار",
     ),
-    "notifications": m14,
+    "notifications": m15,
     "oauth2Client": MessageLookupByLibrary.simpleMessage("عميل OAuth2"),
     "openAppSettings": MessageLookupByLibrary.simpleMessage(
       "فتح إعدادات التطبيق",
     ),
-    "openAppSettingsToGrantPermissionMessage": m15,
+    "openAppSettingsToGrantPermissionMessage": m16,
     "openSettingsAndGrantAccessToCameraToContinue":
         MessageLookupByLibrary.simpleMessage(
           "افتح الإعدادات ومنح الوصول للكاميرا للمتابعة",
@@ -614,7 +617,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "تم تغيير كلمة المرور بنجاح",
     ),
     "permissions": MessageLookupByLibrary.simpleMessage("الأذونات"),
-    "permissionsNotEnoughMessage": m16,
+    "permissionsNotEnoughMessage": m17,
     "phone": MessageLookupByLibrary.simpleMessage("الهاتف"),
     "phoneIsInvalid": MessageLookupByLibrary.simpleMessage(
       "رقم الهاتف غير صالح",
@@ -637,7 +640,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "يرجى مسح رمز QR على جهازك",
     ),
     "plusAlarmType": MessageLookupByLibrary.simpleMessage("+ نوع تنبيه"),
-    "popTitle": m17,
+    "popTitle": m18,
     "postalCode": MessageLookupByLibrary.simpleMessage("الرمز البريدي"),
     "privacyPolicy": MessageLookupByLibrary.simpleMessage("سياسة الخصوصية"),
     "profile": MessageLookupByLibrary.simpleMessage("الملف الشخصي"),
@@ -666,7 +669,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resend": MessageLookupByLibrary.simpleMessage("إعادة إرسال"),
     "resendCode": MessageLookupByLibrary.simpleMessage("إعادة إرسال الرمز"),
-    "resendCodeWait": m18,
+    "resendCodeWait": m19,
     "reset": MessageLookupByLibrary.simpleMessage("إعادة تعيين"),
     "retry": MessageLookupByLibrary.simpleMessage("إعادة المحاولة"),
     "returnToDashboard": MessageLookupByLibrary.simpleMessage(
@@ -676,7 +679,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "عد إلى التطبيق واضغط على زر جاهز",
     ),
     "role": MessageLookupByLibrary.simpleMessage("دور"),
-    "routeNotDefined": m19,
+    "routeNotDefined": m20,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("سلسلة القواعد"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("عقدة القواعد"),
@@ -685,9 +688,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "schedulerEvent": MessageLookupByLibrary.simpleMessage("حدث المجدول"),
     "search": MessageLookupByLibrary.simpleMessage("بحث"),
     "searchResults": MessageLookupByLibrary.simpleMessage("نتائج البحث"),
-    "searchUsers": m20,
+    "searchUsers": m21,
     "seconds": MessageLookupByLibrary.simpleMessage("ثواني"),
     "security": MessageLookupByLibrary.simpleMessage("الأمان"),
+    "selectAll": MessageLookupByLibrary.simpleMessage("تحديد الكل"),
     "selectCountry": MessageLookupByLibrary.simpleMessage("اختيار البلد"),
     "selectRegion": MessageLookupByLibrary.simpleMessage("حدد المنطقة"),
     "selectUser": MessageLookupByLibrary.simpleMessage("اختيار المستخدمين"),
@@ -711,7 +715,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "severity": MessageLookupByLibrary.simpleMessage("الخطورة"),
     "signIn": MessageLookupByLibrary.simpleMessage("تسجيل الدخول"),
     "signUp": MessageLookupByLibrary.simpleMessage("التسجيل"),
-    "smsAuthDescription": m21,
+    "smsAuthDescription": m22,
     "smsAuthPlaceholder": MessageLookupByLibrary.simpleMessage("رمز SMS"),
     "smsSetupSuccessDescription": MessageLookupByLibrary.simpleMessage(
       "في المرة القادمة التي تسجل فيها الدخول، سيُطلب منك إدخال رمز الأمان المرسل إلى رقم الهاتف",
@@ -771,7 +775,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unableConnectToDevice": MessageLookupByLibrary.simpleMessage(
       "تعذر الاتصال بالجهاز",
     ),
-    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m22,
+    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m23,
     "unableToUseCamera": MessageLookupByLibrary.simpleMessage(
       "غير قادر على استخدام الكاميرا",
     ),
@@ -785,7 +789,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "update": MessageLookupByLibrary.simpleMessage("تحديث"),
     "updateRequired": MessageLookupByLibrary.simpleMessage("تحديث مطلوب"),
-    "updateTo": m23,
+    "updateTo": m24,
     "url": MessageLookupByLibrary.simpleMessage("رابط"),
     "user": MessageLookupByLibrary.simpleMessage("المستخدم"),
     "username": MessageLookupByLibrary.simpleMessage("اسم المستخدم"),
@@ -808,9 +812,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "warning": MessageLookupByLibrary.simpleMessage("تحذير"),
     "widgetType": MessageLookupByLibrary.simpleMessage("نوع الأداة"),
     "widgetsBundle": MessageLookupByLibrary.simpleMessage("حزمة الأدوات"),
-    "wifiHelpMessage": m24,
+    "wifiHelpMessage": m25,
     "wifiPassword": MessageLookupByLibrary.simpleMessage("كلمة مرور Wi-Fi"),
-    "wifiPasswordMessage": m25,
+    "wifiPasswordMessage": m26,
     "yes": MessageLookupByLibrary.simpleMessage("نعم"),
     "yesDeactivate": MessageLookupByLibrary.simpleMessage("نعم، تعطيل"),
     "yesDiscard": MessageLookupByLibrary.simpleMessage("نعم، تجاهل"),

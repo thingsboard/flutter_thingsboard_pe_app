@@ -450,5 +450,14 @@
   "schedulerEvent": "Evento dello scheduler",
   "youDontHavePermissionsToPerformThisOperation": "Non hai i permessi per eseguire questa operazione!",
   "imageSavedToGallery": "Salvato nella 'Galleria immagini'",
-  "failedToSaveImage": "Impossibile salvare l'immagine"
+  "failedToSaveImage": "Impossibile salvare l'immagine",
+  "nSelected": "{count} selezionati",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "Seleziona tutto"
 }

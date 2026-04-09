@@ -449,5 +449,14 @@
   "schedulerEvent": "排程事件",
   "youDontHavePermissionsToPerformThisOperation": "您沒有執行此操作的權限！",
   "imageSavedToGallery": "已儲存至「圖片庫」",
-  "failedToSaveImage": "儲存圖片失敗"
+  "failedToSaveImage": "儲存圖片失敗",
+  "nSelected": "已選擇 {count} 項",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "全選"
 }

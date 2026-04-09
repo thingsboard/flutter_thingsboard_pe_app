@@ -449,5 +449,14 @@
   "schedulerEvent": "调度事件",
   "youDontHavePermissionsToPerformThisOperation": "您没有执行此操作的权限！",
   "imageSavedToGallery": "已保存到“图片库”",
-  "failedToSaveImage": "保存图片失败"
+  "failedToSaveImage": "保存图片失败",
+  "nSelected": "已选择 {count} 项",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "全选"
 }

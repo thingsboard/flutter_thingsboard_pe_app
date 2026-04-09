@@ -450,5 +450,14 @@
   "schedulerEvent": "Planlegger-hendelse",
   "youDontHavePermissionsToPerformThisOperation": "Du har ikke tillatelser til å utføre denne operasjonen!",
   "imageSavedToGallery": "Lagret i 'Bildegalleri'",
-  "failedToSaveImage": "Kunne ikke lagre bildet"
+  "failedToSaveImage": "Kunne ikke lagre bildet",
+  "nSelected": "{count} valgt",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "Velg alle"
 }

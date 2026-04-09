@@ -450,5 +450,14 @@
   "schedulerEvent": "Προγραμματισμένο συμβάν",
   "youDontHavePermissionsToPerformThisOperation": "Δεν έχετε δικαιώματα για να εκτελέσετε αυτήν τη λειτουργία!",
   "imageSavedToGallery": "Αποθηκεύτηκε στη 'Συλλογή εικόνων'",
-  "failedToSaveImage": "Αποτυχία αποθήκευσης εικόνας"
+  "failedToSaveImage": "Αποτυχία αποθήκευσης εικόνας",
+  "nSelected": "{count} επιλεγμένα",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "Επιλογή όλων"
 }

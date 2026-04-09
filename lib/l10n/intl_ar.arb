@@ -449,5 +449,14 @@
   "schedulerEvent": "حدث المجدول",
   "youDontHavePermissionsToPerformThisOperation": "ليس لديك صلاحيات لتنفيذ هذه العملية!",
   "imageSavedToGallery": "تم الحفظ في 'معرض الصور'",
-  "failedToSaveImage": "فشل في حفظ الصورة"
+  "failedToSaveImage": "فشل في حفظ الصورة",
+  "nSelected": "{count} محدد",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "تحديد الكل"
 }

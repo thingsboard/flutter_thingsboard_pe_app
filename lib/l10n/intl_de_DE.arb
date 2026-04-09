@@ -450,5 +450,14 @@
   "schedulerEvent": "Planer-Ereignis",
   "youDontHavePermissionsToPerformThisOperation": "Sie haben keine Berechtigungen, um diesen Vorgang auszuführen!",
   "imageSavedToGallery": "In 'Bildergalerie' gespeichert",
-  "failedToSaveImage": "Bild konnte nicht gespeichert werden"
+  "failedToSaveImage": "Bild konnte nicht gespeichert werden",
+  "nSelected": "{count} ausgewählt",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "Alle auswählen"
 }

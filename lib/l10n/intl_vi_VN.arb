@@ -449,5 +449,14 @@
   "schedulerEvent": "Sự kiện lập lịch",
   "youDontHavePermissionsToPerformThisOperation": "Bạn không có quyền để thực hiện thao tác này!",
   "imageSavedToGallery": "Đã lưu vào 'Thư viện ảnh'",
-  "failedToSaveImage": "Không thể lưu ảnh"
+  "failedToSaveImage": "Không thể lưu ảnh",
+  "nSelected": "{count} đã chọn",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "Chọn tất cả"
 }

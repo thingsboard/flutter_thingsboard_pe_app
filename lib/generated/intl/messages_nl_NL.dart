@@ -59,38 +59,40 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(error) => "Fout bij het verzenden van de code: ${error}";
 
-  static String m14(count) =>
+  static String m14(count) => "${count} geselecteerd";
+
+  static String m15(count) =>
       "${Intl.plural(count, one: 'Melding', other: 'Meldingen')}";
 
-  static String m15(permissions) =>
+  static String m16(permissions) =>
       "U heeft onvoldoende rechten voor \"${permissions}\" om door te gaan. Open de app-instellingen, verleen de rechten en tik op \"Opnieuw proberen\".";
 
-  static String m16(permissions) =>
+  static String m17(permissions) =>
       "U heeft onvoldoende rechten voor \"${permissions}\" om door te gaan. Verleen de vereiste rechten en tik op \"Opnieuw proberen\".";
 
-  static String m17(deviceName) =>
+  static String m18(deviceName) =>
       "Voer de pincode van ${deviceName} in om eigendomsbewijs te bevestigen";
 
-  static String m18(time) =>
+  static String m19(time) =>
       "Code opnieuw verzenden in ${Intl.plural(time, one: '1 seconde', other: '${time} seconden')}";
 
-  static String m19(name) => "Route niet gedefinieerd: ${name}";
+  static String m20(name) => "Route niet gedefinieerd: ${name}";
 
-  static String m20(count) =>
+  static String m21(count) =>
       "${Intl.plural(count, one: 'Gebruiker zoeken', other: 'Gebruikers zoeken')}";
 
-  static String m21(contact) =>
+  static String m22(contact) =>
       "Er is een beveiligingscode verzonden naar uw telefoon op ${contact}.";
 
-  static String m22(name) =>
+  static String m23(name) =>
       "Kan niet verbinden met Wi-Fi omdat het apparaat ${name} geen netwerken heeft gevonden";
 
-  static String m23(version) => "Updaten naar ${version}";
+  static String m24(version) => "Updaten naar ${version}";
 
-  static String m24(deviceName) =>
+  static String m25(deviceName) =>
       "Om de installatie van uw apparaat ${deviceName} voort te zetten, geef de netwerkgegevens op.";
 
-  static String m25(network) => "Voer het wachtwoord in voor ${network}";
+  static String m26(network) => "Voer het wachtwoord in voor ${network}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -556,6 +558,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Het mobiele dashboard moet worden geconfigureerd in het apparaatprofiel!",
         ),
     "more": MessageLookupByLibrary.simpleMessage("Meer"),
+    "nSelected": m14,
     "newPassword": MessageLookupByLibrary.simpleMessage("Nieuw wachtwoord"),
     "newPassword2": MessageLookupByLibrary.simpleMessage(
       "Bevestig nieuw wachtwoord",
@@ -600,12 +603,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationTemplate": MessageLookupByLibrary.simpleMessage(
       "Meldingssjabloon",
     ),
-    "notifications": m14,
+    "notifications": m15,
     "oauth2Client": MessageLookupByLibrary.simpleMessage("OAuth2-client"),
     "openAppSettings": MessageLookupByLibrary.simpleMessage(
       "App-instellingen openen",
     ),
-    "openAppSettingsToGrantPermissionMessage": m15,
+    "openAppSettingsToGrantPermissionMessage": m16,
     "openSettingsAndGrantAccessToCameraToContinue":
         MessageLookupByLibrary.simpleMessage(
           "Open instellingen en geef cameratoegang om door te gaan",
@@ -640,7 +643,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Wachtwoord succesvol gewijzigd",
     ),
     "permissions": MessageLookupByLibrary.simpleMessage("Rechten"),
-    "permissionsNotEnoughMessage": m16,
+    "permissionsNotEnoughMessage": m17,
     "phone": MessageLookupByLibrary.simpleMessage("Telefoon"),
     "phoneIsInvalid": MessageLookupByLibrary.simpleMessage(
       "Telefoonnummer is ongeldig",
@@ -667,7 +670,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Scan de QR-code op uw apparaat",
     ),
     "plusAlarmType": MessageLookupByLibrary.simpleMessage("+ Alarmtype"),
-    "popTitle": m17,
+    "popTitle": m18,
     "postalCode": MessageLookupByLibrary.simpleMessage("Postcode"),
     "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacybeleid"),
     "profile": MessageLookupByLibrary.simpleMessage("Profiel"),
@@ -698,7 +701,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "resendCode": MessageLookupByLibrary.simpleMessage(
       "Code opnieuw verzenden",
     ),
-    "resendCodeWait": m18,
+    "resendCodeWait": m19,
     "reset": MessageLookupByLibrary.simpleMessage("Herstellen"),
     "retry": MessageLookupByLibrary.simpleMessage("Opnieuw proberen"),
     "returnToDashboard": MessageLookupByLibrary.simpleMessage(
@@ -708,7 +711,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Ga terug naar de app en tik op de knop Gereed",
     ),
     "role": MessageLookupByLibrary.simpleMessage("Rol"),
-    "routeNotDefined": m19,
+    "routeNotDefined": m20,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("Regelketen"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("Regelknooppunt"),
@@ -717,9 +720,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "schedulerEvent": MessageLookupByLibrary.simpleMessage("Planner-evenement"),
     "search": MessageLookupByLibrary.simpleMessage("Zoeken"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Zoekresultaten"),
-    "searchUsers": m20,
+    "searchUsers": m21,
     "seconds": MessageLookupByLibrary.simpleMessage("seconden"),
     "security": MessageLookupByLibrary.simpleMessage("Beveiliging"),
+    "selectAll": MessageLookupByLibrary.simpleMessage("Alles selecteren"),
     "selectCountry": MessageLookupByLibrary.simpleMessage("Land selecteren"),
     "selectRegion": MessageLookupByLibrary.simpleMessage("Selecteer regio"),
     "selectUser": MessageLookupByLibrary.simpleMessage("Gebruikers selecteren"),
@@ -743,7 +747,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "severity": MessageLookupByLibrary.simpleMessage("Ernst"),
     "signIn": MessageLookupByLibrary.simpleMessage("Inloggen"),
     "signUp": MessageLookupByLibrary.simpleMessage("Registreren"),
-    "smsAuthDescription": m21,
+    "smsAuthDescription": m22,
     "smsAuthPlaceholder": MessageLookupByLibrary.simpleMessage("SMS-code"),
     "smsSetupSuccessDescription": MessageLookupByLibrary.simpleMessage(
       "De volgende keer dat u inlogt, wordt u gevraagd de beveiligingscode in te voeren die naar uw telefoonnummer wordt gestuurd",
@@ -809,7 +813,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unableConnectToDevice": MessageLookupByLibrary.simpleMessage(
       "Kan niet verbinden met apparaat",
     ),
-    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m22,
+    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m23,
     "unableToUseCamera": MessageLookupByLibrary.simpleMessage(
       "Kan camera niet gebruiken",
     ),
@@ -823,7 +827,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "update": MessageLookupByLibrary.simpleMessage("Bijwerken"),
     "updateRequired": MessageLookupByLibrary.simpleMessage("Update vereist"),
-    "updateTo": m23,
+    "updateTo": m24,
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "user": MessageLookupByLibrary.simpleMessage("Gebruiker"),
     "username": MessageLookupByLibrary.simpleMessage("gebruikersnaam"),
@@ -848,9 +852,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "warning": MessageLookupByLibrary.simpleMessage("Waarschuwing"),
     "widgetType": MessageLookupByLibrary.simpleMessage("Widgettype"),
     "widgetsBundle": MessageLookupByLibrary.simpleMessage("Widgetpakket"),
-    "wifiHelpMessage": m24,
+    "wifiHelpMessage": m25,
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Wi-Fi-wachtwoord"),
-    "wifiPasswordMessage": m25,
+    "wifiPasswordMessage": m26,
     "yes": MessageLookupByLibrary.simpleMessage("Ja"),
     "yesDeactivate": MessageLookupByLibrary.simpleMessage("Ja, deactiveren"),
     "yesDiscard": MessageLookupByLibrary.simpleMessage("Ja, verwerpen"),

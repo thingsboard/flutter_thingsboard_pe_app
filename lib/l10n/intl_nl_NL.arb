@@ -450,5 +450,14 @@
   "schedulerEvent": "Planner-evenement",
   "youDontHavePermissionsToPerformThisOperation": "U heeft geen machtigingen om deze bewerking uit te voeren!",
   "imageSavedToGallery": "Opgeslagen in 'Afbeeldingengalerij'",
-  "failedToSaveImage": "Kan afbeelding niet opslaan"
+  "failedToSaveImage": "Kan afbeelding niet opslaan",
+  "nSelected": "{count} geselecteerd",
+  "@nSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "Alles selecteren"
 }
