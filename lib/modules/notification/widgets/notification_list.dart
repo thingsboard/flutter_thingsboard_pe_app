@@ -12,13 +12,20 @@ class NotificationsList extends StatelessWidget {
     required this.thingsboardClient,
     required this.onClearNotification,
     required this.onReadNotification,
-
+    this.isSelectionMode = false,
+    this.selectedIds = const {},
+    this.onToggleSelection,
+    this.onLongPress,
     super.key,
   });
 
   final ThingsboardClient thingsboardClient;
   final Function(String id, bool read) onClearNotification;
   final ValueChanged<String> onReadNotification;
+  final bool isSelectionMode;
+  final Set<String> selectedIds;
+  final ValueChanged<String>? onToggleSelection;
+  final ValueChanged<String>? onLongPress;
 
   final PagingController<PushNotificationQuery, PushNotification>
   pagingController;
@@ -29,17 +36,22 @@ class NotificationsList extends StatelessWidget {
       pagingController: pagingController,
       builderDelegate: PagedChildBuilderDelegate(
         itemBuilder: (context, item, index) {
+          final id = item.id!.id!;
           return NotificationSlidableWidget(
             notification: item,
             onReadNotification: onReadNotification,
             onClearNotification: onClearNotification,
-
+            isSelectionMode: isSelectionMode,
             thingsboardClient: thingsboardClient,
             child: NotificationWidget(
               notification: item,
               thingsboardClient: thingsboardClient,
               onClearNotification: onClearNotification,
               onReadNotification: onReadNotification,
+              isSelectionMode: isSelectionMode,
+              isSelected: selectedIds.contains(id),
+              onToggleSelection: () => onToggleSelection?.call(id),
+              onLongPress: () => onLongPress?.call(id),
             ),
           );
         },

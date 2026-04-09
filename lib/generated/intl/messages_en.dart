@@ -58,6 +58,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(error) => "Error sending code: ${error}";
 
+  static String m26(count) => "${count} selected";
+
   static String m14(count) =>
       "${Intl.plural(count, one: 'Notification', other: 'Notifications')}";
 
@@ -533,6 +535,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Mobile dashboard should be configured in device profile!",
         ),
     "more": MessageLookupByLibrary.simpleMessage("More"),
+    "nSelected": m26,
     "newPassword": MessageLookupByLibrary.simpleMessage("New password"),
     "newPassword2": MessageLookupByLibrary.simpleMessage(
       "Confirm new password",
@@ -689,6 +692,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchUsers": m20,
     "seconds": MessageLookupByLibrary.simpleMessage("seconds"),
     "security": MessageLookupByLibrary.simpleMessage("Security"),
+    "selectAll": MessageLookupByLibrary.simpleMessage("Select all"),
     "selectCountry": MessageLookupByLibrary.simpleMessage("Select country"),
     "selectRegion": MessageLookupByLibrary.simpleMessage("Select region"),
     "selectUser": MessageLookupByLibrary.simpleMessage("Select users"),

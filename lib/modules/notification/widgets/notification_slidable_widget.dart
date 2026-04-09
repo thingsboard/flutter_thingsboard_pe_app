@@ -12,7 +12,7 @@ class NotificationSlidableWidget extends StatefulWidget {
     required this.thingsboardClient,
     required this.onClearNotification,
     required this.onReadNotification,
-
+    this.isSelectionMode = false,
     super.key,
   });
 
@@ -21,6 +21,7 @@ class NotificationSlidableWidget extends StatefulWidget {
   final ThingsboardClient thingsboardClient;
   final Function(String id, bool read) onClearNotification;
   final ValueChanged<String> onReadNotification;
+  final bool isSelectionMode;
 
   @override
   State<StatefulWidget> createState() => _NotificationSlidableWidget();
@@ -37,6 +38,10 @@ class _NotificationSlidableWidget extends State<NotificationSlidableWidget> {
         alignment: Alignment.center,
         child: const RefreshProgressIndicator(),
       );
+    }
+
+    if (widget.isSelectionMode) {
+      return widget.child;
     }
 
     return Slidable(

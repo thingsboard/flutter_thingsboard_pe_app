@@ -3362,6 +3362,21 @@ class S {
       args: [],
     );
   }
+
+  /// `{count} selected`
+  String nSelected(int count) {
+    return Intl.message(
+      '$count selected',
+      name: 'nSelected',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Select all`
+  String get selectAll {
+    return Intl.message('Select all', name: 'selectAll', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

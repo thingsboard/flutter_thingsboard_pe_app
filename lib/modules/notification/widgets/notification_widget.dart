@@ -15,7 +15,10 @@ class NotificationWidget extends StatelessWidget {
     required this.thingsboardClient,
     required this.onClearNotification,
     required this.onReadNotification,
-
+    this.isSelectionMode = false,
+    this.isSelected = false,
+    this.onToggleSelection,
+    this.onLongPress,
     super.key,
   });
 
@@ -23,6 +26,10 @@ class NotificationWidget extends StatelessWidget {
   final ThingsboardClient thingsboardClient;
   final Function(String id, bool readed) onClearNotification;
   final ValueChanged<String> onReadNotification;
+  final bool isSelectionMode;
+  final bool isSelected;
+  final VoidCallback? onToggleSelection;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +40,14 @@ class NotificationWidget extends StatelessWidget {
     final severity = notification.info?.alarmSeverity;
 
     return InkWell(
-      onTap: () {
-        getIt<HandleNotificationTapUsecase>().call(
-          HandleNotificationTapParams(notification: notification),
-        );
-      },
+      onTap: isSelectionMode
+          ? onToggleSelection
+          : () {
+              getIt<HandleNotificationTapUsecase>().call(
+                HandleNotificationTapParams(notification: notification),
+              );
+            },
+      onLongPress: onLongPress,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         decoration: BoxDecoration(
@@ -59,6 +69,14 @@ class NotificationWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (isSelectionMode)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Checkbox(
+                      value: isSelected,
+                      onChanged: (_) => onToggleSelection?.call(),
+                    ),
+                  ),
                 Column(
                   children: [NotificationIcon(notification: notification)],
                 ),
@@ -96,34 +114,36 @@ class NotificationWidget extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    Row(
-                      children: [
-                        Visibility(
-                          visible:
-                              notification.status !=
-                              PushNotificationStatus.READ,
-                          child: SizedBox(
-                            width: 30,
-                            height: 50,
-                            child: IconButton(
-                              onPressed:
-                                  () =>
-                                      onReadNotification(notification.id!.id!),
-                              icon: Icon(
-                                Icons.check_circle_outline,
-                                color: Colors.black.withValues(alpha: 0.38),
+                    if (!isSelectionMode)
+                      Row(
+                        children: [
+                          Visibility(
+                            visible:
+                                notification.status !=
+                                PushNotificationStatus.READ,
+                            child: SizedBox(
+                              width: 30,
+                              height: 50,
+                              child: IconButton(
+                                onPressed:
+                                    () => onReadNotification(
+                                      notification.id!.id!,
+                                    ),
+                                icon: Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.black.withValues(alpha: 0.38),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Visibility(
-                          visible:
-                              notification.status ==
-                              PushNotificationStatus.READ,
-                          child: const SizedBox(width: 30, height: 50),
-                        ),
-                      ],
-                    ),
+                          Visibility(
+                            visible:
+                                notification.status ==
+                                PushNotificationStatus.READ,
+                            child: const SizedBox(width: 30, height: 50),
+                          ),
+                        ],
+                      ),
                     Visibility(
                       visible: severity != null,
                       child: Container(
