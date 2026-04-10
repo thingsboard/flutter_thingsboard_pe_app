@@ -467,5 +467,21 @@
         "type": "int"
       }
     }
+  },
+  "deleteSelectedNotifications": "{count, plural, =1{Διαγραφή 1 ειδοποίησης;} other{Διαγραφή {count} ειδοποιήσεων;}}",
+  "markSelectedNotificationsAsRead": "{count, plural, =1{Σήμανση 1 ειδοποίησης ως αναγνωσμένης;} other{Σήμανση {count} ειδοποιήσεων ως αναγνωσμένων;}}",
+  "@deleteSelectedNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@markSelectedNotificationsAsRead": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

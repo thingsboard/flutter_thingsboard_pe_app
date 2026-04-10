@@ -467,5 +467,21 @@
         "type": "int"
       }
     }
+  },
+  "deleteSelectedNotifications": "{count, plural, =1{Supprimer 1 notification ?} other{Supprimer {count} notifications ?}}",
+  "markSelectedNotificationsAsRead": "{count, plural, =1{Marquer 1 notification comme lue ?} other{Marquer {count} notifications comme lues ?}}",
+  "@deleteSelectedNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@markSelectedNotificationsAsRead": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

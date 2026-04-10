@@ -467,5 +467,21 @@
         "type": "int"
       }
     }
+  },
+  "deleteSelectedNotifications": "{count, plural, =1{¿Eliminar 1 notificación?} other{¿Eliminar {count} notificaciones?}}",
+  "markSelectedNotificationsAsRead": "{count, plural, =1{¿Marcar 1 notificación como leída?} other{¿Marcar {count} notificaciones como leídas?}}",
+  "@deleteSelectedNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@markSelectedNotificationsAsRead": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

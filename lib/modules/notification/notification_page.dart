@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:thingsboard_app/config/themes/app_colors.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/notification/controllers/notification_query_ctrl.dart';
@@ -36,6 +37,8 @@ class _NotificationPageState extends State<NotificationPage> {
   bool isSelectionMode = false;
   Set<String> selectedIds = {};
   bool isProcessing = false;
+  int processedCount = 0;
+  int totalToProcess = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +201,10 @@ class _NotificationPageState extends State<NotificationPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (isProcessing) const LinearProgressIndicator(),
+          if (isProcessing)
+            LinearProgressIndicator(
+              value: totalToProcess > 0 ? processedCount / totalToProcess : null,
+            ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
@@ -212,12 +218,12 @@ class _NotificationPageState extends State<NotificationPage> {
                     icon: const Icon(Icons.delete_outline),
                     label: Text(S.of(context).delete),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFD12730),
+                      foregroundColor: AppColors.notificationError,
                       side: BorderSide(
                         color:
                             isProcessing || selectedIds.isEmpty
                                 ? Colors.grey.shade300
-                                : const Color(0xFFD12730),
+                                : AppColors.notificationError,
                       ),
                     ),
                   ),
@@ -226,18 +232,18 @@ class _NotificationPageState extends State<NotificationPage> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed:
-                        isProcessing || selectedIds.isEmpty
+                        isProcessing || selectedIds.isEmpty || !_hasUnreadSelected
                             ? null
                             : _batchMarkAsRead,
                     icon: const Icon(Icons.check_circle_outline),
                     label: Text(S.of(context).markAsRead),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF198038),
+                      foregroundColor: AppColors.notificationSuccess,
                       side: BorderSide(
                         color:
-                            isProcessing || selectedIds.isEmpty
+                            isProcessing || selectedIds.isEmpty || !_hasUnreadSelected
                                 ? Colors.grey.shade300
-                                : const Color(0xFF198038),
+                                : AppColors.notificationSuccess,
                       ),
                     ),
                   ),
@@ -293,12 +299,37 @@ class _NotificationPageState extends State<NotificationPage> {
     return selectedIds.length == items.length;
   }
 
+  bool get _hasUnreadSelected {
+    final items = paginationRepository.pagingController.itemList;
+    if (items == null || items.isEmpty) return false;
+    return items.any(
+      (n) =>
+          selectedIds.contains(n.id!.id!) &&
+          n.status != PushNotificationStatus.READ,
+    );
+  }
+
   Future<void> _batchDelete() async {
-    setState(() => isProcessing = true);
+    final count = selectedIds.length;
+    final confirmed = await overlayService.showConfirmDialog(
+      content: (_) => DialogContent(
+        title: S.of(context).areYouSure,
+        message: S.of(context).deleteSelectedNotifications(count),
+        ok: S.of(context).delete,
+        cancel: S.of(context).no,
+      ),
+    );
+    if (confirmed != true) return;
 
     final items = paginationRepository.pagingController.itemList ?? [];
     final toDelete =
         items.where((n) => selectedIds.contains(n.id!.id!)).toList();
+
+    setState(() {
+      isProcessing = true;
+      processedCount = 0;
+      totalToProcess = toDelete.length;
+    });
 
     int unreadCount = 0;
     int failCount = 0;
@@ -311,6 +342,7 @@ class _NotificationPageState extends State<NotificationPage> {
       } catch (_) {
         failCount++;
       }
+      if (mounted) setState(() => processedCount++);
     }
 
     for (int i = 0; i < unreadCount; i++) {
@@ -331,8 +363,6 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Future<void> _batchMarkAsRead() async {
-    setState(() => isProcessing = true);
-
     final items = paginationRepository.pagingController.itemList ?? [];
     final toMark = items
         .where(
@@ -341,6 +371,22 @@ class _NotificationPageState extends State<NotificationPage> {
               n.status != PushNotificationStatus.READ,
         )
         .toList();
+
+    final confirmed = await overlayService.showConfirmDialog(
+      content: (_) => DialogContent(
+        title: S.of(context).areYouSure,
+        message: S.of(context).markSelectedNotificationsAsRead(toMark.length),
+        ok: S.of(context).markAsRead,
+        cancel: S.of(context).no,
+      ),
+    );
+    if (confirmed != true) return;
+
+    setState(() {
+      isProcessing = true;
+      processedCount = 0;
+      totalToProcess = toMark.length;
+    });
 
     int failCount = 0;
     for (final notification in toMark) {
@@ -351,6 +397,7 @@ class _NotificationPageState extends State<NotificationPage> {
       } catch (_) {
         failCount++;
       }
+      if (mounted) setState(() => processedCount++);
     }
 
     if (mounted) {

@@ -466,5 +466,21 @@
         "type": "int"
       }
     }
+  },
+  "deleteSelectedNotifications": "{count, plural, =1{Xóa 1 thông báo?} other{Xóa {count} thông báo?}}",
+  "markSelectedNotificationsAsRead": "{count, plural, =1{Đánh dấu 1 thông báo đã đọc?} other{Đánh dấu {count} thông báo đã đọc?}}",
+  "@deleteSelectedNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@markSelectedNotificationsAsRead": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

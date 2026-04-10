@@ -114,36 +114,40 @@ class NotificationWidget extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    if (!isSelectionMode)
-                      Row(
-                        children: [
-                          Visibility(
-                            visible:
-                                notification.status !=
-                                PushNotificationStatus.READ,
-                            child: SizedBox(
-                              width: 30,
-                              height: 50,
-                              child: IconButton(
-                                onPressed:
-                                    () => onReadNotification(
-                                      notification.id!.id!,
+                    Row(
+                      children: [
+                        Visibility(
+                          visible:
+                              notification.status !=
+                              PushNotificationStatus.READ,
+                          child: SizedBox(
+                            width: 30,
+                            height: 50,
+                            child: isSelectionMode
+                                ? Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.black.withValues(alpha: 0.38),
+                                  )
+                                : IconButton(
+                                    onPressed:
+                                        () => onReadNotification(
+                                          notification.id!.id!,
+                                        ),
+                                    icon: Icon(
+                                      Icons.check_circle_outline,
+                                      color: Colors.black.withValues(alpha: 0.38),
                                     ),
-                                icon: Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.black.withValues(alpha: 0.38),
-                                ),
-                              ),
-                            ),
+                                  ),
                           ),
-                          Visibility(
-                            visible:
-                                notification.status ==
-                                PushNotificationStatus.READ,
-                            child: const SizedBox(width: 30, height: 50),
-                          ),
-                        ],
-                      ),
+                        ),
+                        Visibility(
+                          visible:
+                              notification.status ==
+                              PushNotificationStatus.READ,
+                          child: const SizedBox(width: 30, height: 50),
+                        ),
+                      ],
+                    ),
                     Visibility(
                       visible: severity != null,
                       child: Container(

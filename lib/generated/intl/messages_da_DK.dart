@@ -47,55 +47,61 @@ class MessageLookup extends MessageLookupByLibrary {
       "${Intl.plural(count, one: 'Dashboard', other: 'Dashboards')}";
 
   static String m9(count) =>
-      "${Intl.plural(count, one: 'Enhed', other: 'Enheder')}";
+      "${Intl.plural(count, one: 'Slet 1 notifikation?', other: 'Slet ${count} notifikationer?')}";
 
   static String m10(count) =>
+      "${Intl.plural(count, one: 'Enhed', other: 'Enheder')}";
+
+  static String m11(count) =>
       "${count}-${Intl.plural(count, one: 'cifret', other: 'cifre')} kode";
 
-  static String m11(contact) =>
+  static String m12(contact) =>
       "En sikkerhedskode er blevet sendt til din emailadresse på ${contact}.";
 
-  static String m12(e) => "Fejl opstod: ${e}";
+  static String m13(e) => "Fejl opstod: ${e}";
 
-  static String m13(error) => "Fejl ved afsendelse af kode: ${error}";
+  static String m14(error) => "Fejl ved afsendelse af kode: ${error}";
 
-  static String m14(count) =>
+  static String m15(count) =>
       "${Intl.plural(count, one: '1 handling mislykkedes', other: '${count} handlinger mislykkedes')}";
 
-  static String m15(count) => "${count} valgt";
-
   static String m16(count) =>
+      "${Intl.plural(count, one: 'Markér 1 notifikation som læst?', other: 'Markér ${count} notifikationer som læst?')}";
+
+  static String m17(count) => "${count} valgt";
+
+  static String m18(count) =>
       "${Intl.plural(count, one: 'Notifikation', other: 'Notifikationer')}";
 
-  static String m17(permissions) =>
+  static String m19(permissions) =>
       "Du har ikke tilstrækkelige tilladelser til \"${permissions}\" for at fortsætte. Åbn app-indstillingerne, giv tilladelser og tryk på \"Prøv igen\".";
 
-  static String m18(permissions) =>
+  static String m20(permissions) =>
       "Du har ikke tilstrækkelige tilladelser til \"${permissions}\" for at fortsætte. Giv de nødvendige tilladelser og tryk på \"Prøv igen\".";
 
-  static String m19(deviceName) =>
+  static String m21(deviceName) =>
       "Indtast PIN-kode for ${deviceName} for at bekræfte ejerskab";
 
-  static String m20(time) =>
+  static String m22(time) =>
       "Send kode igen om ${Intl.plural(time, one: '1 sekund', other: '${time} sekunder')}";
 
-  static String m21(name) => "Rute ikke defineret: ${name}";
+  static String m23(name) => "Rute ikke defineret: ${name}";
 
-  static String m22(count) =>
+  static String m24(count) =>
       "${Intl.plural(count, one: 'Søg bruger', other: 'Søg brugere')}";
 
-  static String m23(contact) =>
+  static String m25(contact) =>
       "En sikkerhedskode er blevet sendt til din telefon på ${contact}.";
 
-  static String m24(name) =>
+  static String m26(name) =>
       "Kan ikke oprette forbindelse til Wi-Fi, fordi netværk ikke blev fundet af enheden ${name}";
 
-  static String m25(version) => "Opdater til ${version}";
+  static String m27(version) => "Opdater til ${version}";
 
-  static String m26(deviceName) =>
+  static String m28(deviceName) =>
       "For at fortsætte opsætningen af din enhed ${deviceName}, skal du angive netværkets legitimationsoplysninger.";
 
-  static String m27(network) => "Indtast adgangskode til ${network}";
+  static String m29(network) => "Indtast adgangskode til ${network}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -373,6 +379,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "delete": MessageLookupByLibrary.simpleMessage("Slet"),
     "deleteAccount": MessageLookupByLibrary.simpleMessage("Slet konto"),
     "deleteComment": MessageLookupByLibrary.simpleMessage("Slet kommentar"),
+    "deleteSelectedNotifications": m9,
     "details": MessageLookupByLibrary.simpleMessage("Detaljer"),
     "deviceList": MessageLookupByLibrary.simpleMessage("Enhedsliste"),
     "deviceNotAbleToFindWifiNearby": MessageLookupByLibrary.simpleMessage(
@@ -385,8 +392,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "deviceProvisioning": MessageLookupByLibrary.simpleMessage(
       "Enhedsklargøring",
     ),
-    "devices": m9,
-    "digitsCode": m10,
+    "devices": m10,
+    "digitsCode": m11,
     "discardChanges": MessageLookupByLibrary.simpleMessage("Kassér ændringer"),
     "domain": MessageLookupByLibrary.simpleMessage("Domæne"),
     "done": MessageLookupByLibrary.simpleMessage("Færdig"),
@@ -395,7 +402,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "edit": MessageLookupByLibrary.simpleMessage("Rediger"),
     "edited": MessageLookupByLibrary.simpleMessage("Redigeret"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
-    "emailAuthDescription": m11,
+    "emailAuthDescription": m12,
     "emailAuthPlaceholder": MessageLookupByLibrary.simpleMessage("Email-kode"),
     "emailInvalidText": MessageLookupByLibrary.simpleMessage(
       "Ugyldigt emailformat.",
@@ -434,8 +441,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "entityGroup": MessageLookupByLibrary.simpleMessage("Entitetsgruppe"),
     "entityType": MessageLookupByLibrary.simpleMessage("Enhedstype"),
     "entityView": MessageLookupByLibrary.simpleMessage("Entitetsvisning"),
-    "errorOccured": m12,
-    "errorSendingCode": m13,
+    "errorOccured": m13,
+    "errorSendingCode": m14,
     "europe": MessageLookupByLibrary.simpleMessage("Europa"),
     "europeRegionShort": MessageLookupByLibrary.simpleMessage("Frankfurt"),
     "exitDeviceProvisioning": MessageLookupByLibrary.simpleMessage(
@@ -450,7 +457,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToLoadTheList": MessageLookupByLibrary.simpleMessage(
       "Kunne ikke indlæse listen",
     ),
-    "failedToPerformOperation": m14,
+    "failedToPerformOperation": m15,
     "failedToSaveImage": MessageLookupByLibrary.simpleMessage(
       "Kunne ikke gemme billede",
     ),
@@ -528,6 +535,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Markér alle som læst",
     ),
     "markAsRead": MessageLookupByLibrary.simpleMessage("Markér som læst"),
+    "markSelectedNotificationsAsRead": m16,
     "metricUnitSystem": MessageLookupByLibrary.simpleMessage("Metrisk"),
     "mfaProviderBackupCode": MessageLookupByLibrary.simpleMessage("Backupkode"),
     "mfaProviderEmail": MessageLookupByLibrary.simpleMessage("Email"),
@@ -544,7 +552,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Mobilt dashboard skal konfigureres i enhedsprofilen!",
         ),
     "more": MessageLookupByLibrary.simpleMessage("Mere"),
-    "nSelected": m15,
+    "nSelected": m17,
     "newPassword": MessageLookupByLibrary.simpleMessage("Ny adgangskode"),
     "newPassword2": MessageLookupByLibrary.simpleMessage(
       "Bekræft ny adgangskode",
@@ -593,12 +601,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationTemplate": MessageLookupByLibrary.simpleMessage(
       "Notifikationsskabelon",
     ),
-    "notifications": m16,
+    "notifications": m18,
     "oauth2Client": MessageLookupByLibrary.simpleMessage("OAuth2-klient"),
     "openAppSettings": MessageLookupByLibrary.simpleMessage(
       "Åbn app-indstillinger",
     ),
-    "openAppSettingsToGrantPermissionMessage": m17,
+    "openAppSettingsToGrantPermissionMessage": m19,
     "openSettingsAndGrantAccessToCameraToContinue":
         MessageLookupByLibrary.simpleMessage(
           "Åbn indstillinger og giv adgang til kameraet for at fortsætte",
@@ -633,7 +641,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Adgangskoden blev ændret",
     ),
     "permissions": MessageLookupByLibrary.simpleMessage("Tilladelser"),
-    "permissionsNotEnoughMessage": m18,
+    "permissionsNotEnoughMessage": m20,
     "phone": MessageLookupByLibrary.simpleMessage("Telefon"),
     "phoneIsInvalid": MessageLookupByLibrary.simpleMessage(
       "Telefonnummer er ugyldigt",
@@ -660,7 +668,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Scan venligst QR-koden på din enhed",
     ),
     "plusAlarmType": MessageLookupByLibrary.simpleMessage("+ Alarmtype"),
-    "popTitle": m19,
+    "popTitle": m21,
     "postalCode": MessageLookupByLibrary.simpleMessage("Postnummer"),
     "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privatlivspolitik"),
     "profile": MessageLookupByLibrary.simpleMessage("Profil"),
@@ -689,7 +697,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resend": MessageLookupByLibrary.simpleMessage("Gensend"),
     "resendCode": MessageLookupByLibrary.simpleMessage("Send kode igen"),
-    "resendCodeWait": m20,
+    "resendCodeWait": m22,
     "reset": MessageLookupByLibrary.simpleMessage("Nulstil"),
     "retry": MessageLookupByLibrary.simpleMessage("Prøv igen"),
     "returnToDashboard": MessageLookupByLibrary.simpleMessage(
@@ -699,7 +707,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Vend tilbage til appen og tryk på Klar-knappen",
     ),
     "role": MessageLookupByLibrary.simpleMessage("Rolle"),
-    "routeNotDefined": m21,
+    "routeNotDefined": m23,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("Regelkæde"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("Regelknude"),
@@ -710,7 +718,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("Søg"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Søgeresultater"),
-    "searchUsers": m22,
+    "searchUsers": m24,
     "seconds": MessageLookupByLibrary.simpleMessage("sekunder"),
     "security": MessageLookupByLibrary.simpleMessage("Sikkerhed"),
     "selectAll": MessageLookupByLibrary.simpleMessage("Vælg alle"),
@@ -737,7 +745,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "severity": MessageLookupByLibrary.simpleMessage("Alvorlighed"),
     "signIn": MessageLookupByLibrary.simpleMessage("Log ind"),
     "signUp": MessageLookupByLibrary.simpleMessage("Tilmeld"),
-    "smsAuthDescription": m23,
+    "smsAuthDescription": m25,
     "smsAuthPlaceholder": MessageLookupByLibrary.simpleMessage("SMS-kode"),
     "smsSetupSuccessDescription": MessageLookupByLibrary.simpleMessage(
       "Næste gang du logger ind, vil du blive bedt om at indtaste sikkerhedskoden, der sendes til telefonnummeret",
@@ -801,7 +809,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unableConnectToDevice": MessageLookupByLibrary.simpleMessage(
       "Kan ikke oprette forbindelse til enhed",
     ),
-    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m24,
+    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m26,
     "unableToUseCamera": MessageLookupByLibrary.simpleMessage(
       "Kan ikke bruge kameraet",
     ),
@@ -817,7 +825,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "updateRequired": MessageLookupByLibrary.simpleMessage(
       "Opdatering påkrævet",
     ),
-    "updateTo": m25,
+    "updateTo": m27,
     "url": MessageLookupByLibrary.simpleMessage("Url"),
     "user": MessageLookupByLibrary.simpleMessage("Bruger"),
     "username": MessageLookupByLibrary.simpleMessage("brugernavn"),
@@ -842,9 +850,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "warning": MessageLookupByLibrary.simpleMessage("Advarsel"),
     "widgetType": MessageLookupByLibrary.simpleMessage("Widget-type"),
     "widgetsBundle": MessageLookupByLibrary.simpleMessage("Widget-pakke"),
-    "wifiHelpMessage": m26,
+    "wifiHelpMessage": m28,
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Wi-Fi adgangskode"),
-    "wifiPasswordMessage": m27,
+    "wifiPasswordMessage": m29,
     "yes": MessageLookupByLibrary.simpleMessage("Ja"),
     "yesDeactivate": MessageLookupByLibrary.simpleMessage("Ja, deaktiver"),
     "yesDiscard": MessageLookupByLibrary.simpleMessage("Ja, kassér"),

@@ -466,5 +466,21 @@
         "type": "int"
       }
     }
+  },
+  "deleteSelectedNotifications": "{count, plural, =1{刪除 1 則通知？} other{刪除 {count} 則通知？}}",
+  "markSelectedNotificationsAsRead": "{count, plural, =1{將 1 則通知標記為已讀？} other{將 {count} 則通知標記為已讀？}}",
+  "@deleteSelectedNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@markSelectedNotificationsAsRead": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

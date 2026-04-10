@@ -466,5 +466,21 @@
         "type": "int"
       }
     }
+  },
+  "deleteSelectedNotifications": "{count, plural, =1{حذف إشعار واحد؟} other{حذف {count} إشعارات؟}}",
+  "markSelectedNotificationsAsRead": "{count, plural, =1{وضع علامة مقروء لإشعار واحد؟} other{وضع علامة مقروء لـ {count} إشعارات؟}}",
+  "@deleteSelectedNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@markSelectedNotificationsAsRead": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

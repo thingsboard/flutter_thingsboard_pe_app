@@ -467,5 +467,21 @@
         "type": "int"
       }
     }
+  },
+  "deleteSelectedNotifications": "{count, plural, =1{Slet 1 notifikation?} other{Slet {count} notifikationer?}}",
+  "markSelectedNotificationsAsRead": "{count, plural, =1{Markér 1 notifikation som læst?} other{Markér {count} notifikationer som læst?}}",
+  "@deleteSelectedNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@markSelectedNotificationsAsRead": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

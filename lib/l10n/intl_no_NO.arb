@@ -467,5 +467,21 @@
         "type": "int"
       }
     }
+  },
+  "deleteSelectedNotifications": "{count, plural, =1{Slette 1 varsling?} other{Slette {count} varslinger?}}",
+  "markSelectedNotificationsAsRead": "{count, plural, =1{Markere 1 varsling som lest?} other{Markere {count} varslinger som lest?}}",
+  "@deleteSelectedNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@markSelectedNotificationsAsRead": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

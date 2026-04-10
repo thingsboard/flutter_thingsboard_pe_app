@@ -46,55 +46,61 @@ class MessageLookup extends MessageLookupByLibrary {
       "${Intl.plural(count, one: 'Πίνακας ελέγχου', other: 'Πίνακες ελέγχου')}";
 
   static String m9(count) =>
-      "${Intl.plural(count, one: 'Συσκευή', other: 'Συσκευές')}";
+      "${Intl.plural(count, one: 'Διαγραφή 1 ειδοποίησης;', other: 'Διαγραφή ${count} ειδοποιήσεων;')}";
 
   static String m10(count) =>
+      "${Intl.plural(count, one: 'Συσκευή', other: 'Συσκευές')}";
+
+  static String m11(count) =>
       "${count}-${Intl.plural(count, one: 'ψήφιος', other: 'ψήφιος')} κωδικός";
 
-  static String m11(contact) =>
+  static String m12(contact) =>
       "Ένας κωδικός ασφαλείας έχει σταλεί στο email σας στη διεύθυνση ${contact}.";
 
-  static String m12(e) => "Παρουσιάστηκε σφάλμα: ${e}";
+  static String m13(e) => "Παρουσιάστηκε σφάλμα: ${e}";
 
-  static String m13(error) => "Σφάλμα αποστολής κωδικού: ${error}";
+  static String m14(error) => "Σφάλμα αποστολής κωδικού: ${error}";
 
-  static String m14(count) =>
+  static String m15(count) =>
       "${Intl.plural(count, one: '1 ενέργεια απέτυχε', other: '${count} ενέργειες απέτυχαν')}";
 
-  static String m15(count) => "${count} επιλεγμένα";
-
   static String m16(count) =>
+      "${Intl.plural(count, one: 'Σήμανση 1 ειδοποίησης ως αναγνωσμένης;', other: 'Σήμανση ${count} ειδοποιήσεων ως αναγνωσμένων;')}";
+
+  static String m17(count) => "${count} επιλεγμένα";
+
+  static String m18(count) =>
       "${Intl.plural(count, one: 'Ειδοποίηση', other: 'Ειδοποιήσεις')}";
 
-  static String m17(permissions) =>
+  static String m19(permissions) =>
       "Δεν έχετε επαρκή δικαιώματα για \"${permissions}\" για να συνεχίσετε. Ανοίξτε τις ρυθμίσεις της εφαρμογής, παραχωρήστε τα δικαιώματα και πατήστε \"Δοκιμάστε ξανά\".";
 
-  static String m18(permissions) =>
+  static String m20(permissions) =>
       "Δεν έχετε επαρκή δικαιώματα για \"${permissions}\" για να συνεχίσετε. Παρακαλώ δώστε τα απαραίτητα δικαιώματα και πατήστε \"Δοκιμάστε ξανά\".";
 
-  static String m19(deviceName) =>
+  static String m21(deviceName) =>
       "Εισαγάγετε το PIN της συσκευής ${deviceName} για επιβεβαίωση ιδιοκτησίας";
 
-  static String m20(time) =>
+  static String m22(time) =>
       "Επανάληψη αποστολής σε ${Intl.plural(time, one: '1 δευτερόλεπτο', other: '${time} δευτερόλεπτα')}";
 
-  static String m21(name) => "Η διαδρομή δεν έχει οριστεί: ${name}";
+  static String m23(name) => "Η διαδρομή δεν έχει οριστεί: ${name}";
 
-  static String m22(count) =>
+  static String m24(count) =>
       "${Intl.plural(count, one: 'Αναζήτηση χρήστη', other: 'Αναζήτηση χρηστών')}";
 
-  static String m23(contact) =>
+  static String m25(contact) =>
       "Ένας κωδικός ασφαλείας έχει σταλεί στο τηλέφωνό σας στο ${contact}.";
 
-  static String m24(name) =>
+  static String m26(name) =>
       "Αδυναμία σύνδεσης στο Wi-Fi επειδή η συσκευή ${name} δεν βρήκε δίκτυα";
 
-  static String m25(version) => "Ενημέρωση σε ${version}";
+  static String m27(version) => "Ενημέρωση σε ${version}";
 
-  static String m26(deviceName) =>
+  static String m28(deviceName) =>
       "Για να συνεχίσετε τη ρύθμιση της συσκευής ${deviceName}, παρακαλώ δώστε τα διαπιστευτήρια του δικτύου σας.";
 
-  static String m27(network) =>
+  static String m29(network) =>
       "Εισαγάγετε τον κωδικό για το δίκτυο ${network}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -401,6 +407,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Διαγραφή λογαριασμού",
     ),
     "deleteComment": MessageLookupByLibrary.simpleMessage("Διαγραφή σχολίου"),
+    "deleteSelectedNotifications": m9,
     "details": MessageLookupByLibrary.simpleMessage("Λεπτομέρειες"),
     "deviceList": MessageLookupByLibrary.simpleMessage("Λίστα συσκευών"),
     "deviceNotAbleToFindWifiNearby": MessageLookupByLibrary.simpleMessage(
@@ -413,8 +420,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "deviceProvisioning": MessageLookupByLibrary.simpleMessage(
       "Διαμόρφωση συσκευής",
     ),
-    "devices": m9,
-    "digitsCode": m10,
+    "devices": m10,
+    "digitsCode": m11,
     "discardChanges": MessageLookupByLibrary.simpleMessage("Απόρριψη αλλαγών"),
     "domain": MessageLookupByLibrary.simpleMessage("Τομέας"),
     "done": MessageLookupByLibrary.simpleMessage("Ολοκληρώθηκε"),
@@ -423,7 +430,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "edit": MessageLookupByLibrary.simpleMessage("Επεξεργασία"),
     "edited": MessageLookupByLibrary.simpleMessage("Επεξεργασμένο"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
-    "emailAuthDescription": m11,
+    "emailAuthDescription": m12,
     "emailAuthPlaceholder": MessageLookupByLibrary.simpleMessage(
       "Κωδικός email",
     ),
@@ -466,8 +473,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "entityGroup": MessageLookupByLibrary.simpleMessage("Ομάδα οντοτήτων"),
     "entityType": MessageLookupByLibrary.simpleMessage("Τύπος οντότητας"),
     "entityView": MessageLookupByLibrary.simpleMessage("Προβολή οντότητας"),
-    "errorOccured": m12,
-    "errorSendingCode": m13,
+    "errorOccured": m13,
+    "errorSendingCode": m14,
     "europe": MessageLookupByLibrary.simpleMessage("Ευρώπη"),
     "europeRegionShort": MessageLookupByLibrary.simpleMessage("Φρανκφούρτη"),
     "exitDeviceProvisioning": MessageLookupByLibrary.simpleMessage(
@@ -482,7 +489,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToLoadTheList": MessageLookupByLibrary.simpleMessage(
       "Αποτυχία φόρτωσης της λίστας",
     ),
-    "failedToPerformOperation": m14,
+    "failedToPerformOperation": m15,
     "failedToSaveImage": MessageLookupByLibrary.simpleMessage(
       "Αποτυχία αποθήκευσης εικόνας",
     ),
@@ -566,6 +573,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "markAsRead": MessageLookupByLibrary.simpleMessage(
       "Σήμανση ως αναγνωσμένο",
     ),
+    "markSelectedNotificationsAsRead": m16,
     "metricUnitSystem": MessageLookupByLibrary.simpleMessage("Μετρικό"),
     "mfaProviderBackupCode": MessageLookupByLibrary.simpleMessage(
       "Εφεδρικός κωδικός",
@@ -586,7 +594,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Ο πίνακας ελέγχου κινητού πρέπει να ρυθμιστεί στο προφίλ συσκευής!",
         ),
     "more": MessageLookupByLibrary.simpleMessage("Περισσότερα"),
-    "nSelected": m15,
+    "nSelected": m17,
     "newPassword": MessageLookupByLibrary.simpleMessage(
       "Νέος κωδικός πρόσβασης",
     ),
@@ -637,12 +645,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationTemplate": MessageLookupByLibrary.simpleMessage(
       "Πρότυπο ειδοποίησης",
     ),
-    "notifications": m16,
+    "notifications": m18,
     "oauth2Client": MessageLookupByLibrary.simpleMessage("Πελάτης OAuth2"),
     "openAppSettings": MessageLookupByLibrary.simpleMessage(
       "Άνοιγμα ρυθμίσεων εφαρμογής",
     ),
-    "openAppSettingsToGrantPermissionMessage": m17,
+    "openAppSettingsToGrantPermissionMessage": m19,
     "openSettingsAndGrantAccessToCameraToContinue":
         MessageLookupByLibrary.simpleMessage(
           "Ανοίξτε τις ρυθμίσεις και δώστε πρόσβαση στην κάμερα για να συνεχίσετε",
@@ -675,7 +683,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Ο κωδικός πρόσβασης άλλαξε με επιτυχία",
     ),
     "permissions": MessageLookupByLibrary.simpleMessage("Δικαιώματα"),
-    "permissionsNotEnoughMessage": m18,
+    "permissionsNotEnoughMessage": m20,
     "phone": MessageLookupByLibrary.simpleMessage("Τηλέφωνο"),
     "phoneIsInvalid": MessageLookupByLibrary.simpleMessage(
       "Ο αριθμός τηλεφώνου δεν είναι έγκυρος",
@@ -702,7 +710,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Σαρώστε τον κωδικό QR στη συσκευή σας",
     ),
     "plusAlarmType": MessageLookupByLibrary.simpleMessage("+ Τύπος συναγερμού"),
-    "popTitle": m19,
+    "popTitle": m21,
     "postalCode": MessageLookupByLibrary.simpleMessage("Ταχυδρομικός κώδικας"),
     "privacyPolicy": MessageLookupByLibrary.simpleMessage("Πολιτική απορρήτου"),
     "profile": MessageLookupByLibrary.simpleMessage("Προφίλ"),
@@ -733,7 +741,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "resendCode": MessageLookupByLibrary.simpleMessage(
       "Επανάληψη αποστολής κωδικού",
     ),
-    "resendCodeWait": m20,
+    "resendCodeWait": m22,
     "reset": MessageLookupByLibrary.simpleMessage("Επαναφορά"),
     "retry": MessageLookupByLibrary.simpleMessage("Επανάληψη"),
     "returnToDashboard": MessageLookupByLibrary.simpleMessage(
@@ -743,7 +751,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Επιστρέψτε στην εφαρμογή και πατήστε το κουμπί Έτοιμο",
     ),
     "role": MessageLookupByLibrary.simpleMessage("Ρόλος"),
-    "routeNotDefined": m21,
+    "routeNotDefined": m23,
     "rpc": MessageLookupByLibrary.simpleMessage("RPC"),
     "ruleChain": MessageLookupByLibrary.simpleMessage("Αλυσίδα κανόνων"),
     "ruleNode": MessageLookupByLibrary.simpleMessage("Κόμβος κανόνων"),
@@ -756,7 +764,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchResults": MessageLookupByLibrary.simpleMessage(
       "Αποτελέσματα αναζήτησης",
     ),
-    "searchUsers": m22,
+    "searchUsers": m24,
     "seconds": MessageLookupByLibrary.simpleMessage("δευτερόλεπτα"),
     "security": MessageLookupByLibrary.simpleMessage("Ασφάλεια"),
     "selectAll": MessageLookupByLibrary.simpleMessage("Επιλογή όλων"),
@@ -783,7 +791,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "severity": MessageLookupByLibrary.simpleMessage("Σοβαρότητα"),
     "signIn": MessageLookupByLibrary.simpleMessage("Σύνδεση"),
     "signUp": MessageLookupByLibrary.simpleMessage("Εγγραφή"),
-    "smsAuthDescription": m23,
+    "smsAuthDescription": m25,
     "smsAuthPlaceholder": MessageLookupByLibrary.simpleMessage("Κωδικός SMS"),
     "smsSetupSuccessDescription": MessageLookupByLibrary.simpleMessage(
       "Την επόμενη φορά που θα συνδεθείτε, θα σας ζητηθεί ο κωδικός ασφαλείας που θα σταλεί στο τηλέφωνο",
@@ -849,7 +857,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unableConnectToDevice": MessageLookupByLibrary.simpleMessage(
       "Αδυναμία σύνδεσης στη συσκευή",
     ),
-    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m24,
+    "unableConnectToWifiBecauseNetworksWasntFoundByDevice": m26,
     "unableToUseCamera": MessageLookupByLibrary.simpleMessage(
       "Αδυναμία χρήσης κάμερας",
     ),
@@ -865,7 +873,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "updateRequired": MessageLookupByLibrary.simpleMessage(
       "Απαιτείται ενημέρωση",
     ),
-    "updateTo": m25,
+    "updateTo": m27,
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "user": MessageLookupByLibrary.simpleMessage("Χρήστης"),
     "username": MessageLookupByLibrary.simpleMessage("όνομα χρήστη"),
@@ -892,9 +900,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "warning": MessageLookupByLibrary.simpleMessage("Προειδοποίηση"),
     "widgetType": MessageLookupByLibrary.simpleMessage("Τύπος widget"),
     "widgetsBundle": MessageLookupByLibrary.simpleMessage("Πακέτο widgets"),
-    "wifiHelpMessage": m26,
+    "wifiHelpMessage": m28,
     "wifiPassword": MessageLookupByLibrary.simpleMessage("Κωδικός Wi-Fi"),
-    "wifiPasswordMessage": m27,
+    "wifiPasswordMessage": m29,
     "yes": MessageLookupByLibrary.simpleMessage("Ναι"),
     "yesDeactivate": MessageLookupByLibrary.simpleMessage(
       "Ναι, απενεργοποίηση",

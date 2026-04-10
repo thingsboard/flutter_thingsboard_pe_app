@@ -3389,6 +3389,30 @@ class S {
       args: [count],
     );
   }
+
+  /// `{count, plural, =1{Delete 1 notification?} other{Delete {count} notifications?}}`
+  String deleteSelectedNotifications(int count) {
+    return Intl.plural(
+      count,
+      one: 'Delete 1 notification?',
+      other: 'Delete $count notifications?',
+      name: 'deleteSelectedNotifications',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1{Mark 1 notification as read?} other{Mark {count} notifications as read?}}`
+  String markSelectedNotificationsAsRead(int count) {
+    return Intl.plural(
+      count,
+      one: 'Mark 1 notification as read?',
+      other: 'Mark $count notifications as read?',
+      name: 'markSelectedNotificationsAsRead',
+      desc: '',
+      args: [count],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

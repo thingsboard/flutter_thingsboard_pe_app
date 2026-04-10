@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:thingsboard_app/config/themes/app_colors.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
@@ -58,7 +59,7 @@ class _NotificationSlidableWidget extends State<NotificationSlidableWidget> {
                         (context) => widget.onReadNotification(
                           widget.notification.id!.id!,
                         ),
-                    backgroundColor: const Color(0xFF198038),
+                    backgroundColor: AppColors.notificationSuccess,
                     foregroundColor: Colors.white,
                     icon: Icons.check_circle_outline,
                     label: S.of(context).markAsRead,
@@ -79,7 +80,7 @@ class _NotificationSlidableWidget extends State<NotificationSlidableWidget> {
                 widget.notification.status == PushNotificationStatus.READ,
               );
             },
-            backgroundColor: const Color(0xFFD12730).withValues(alpha: 0.94),
+            backgroundColor: AppColors.notificationError.withValues(alpha: 0.94),
             foregroundColor: Colors.white,
             icon: Icons.delete,
             label: S.of(context).delete,
@@ -113,7 +114,7 @@ class _NotificationSlidableWidget extends State<NotificationSlidableWidget> {
           items.add(
             SlidableAction(
               onPressed: (context) => _ackAlarm(id, context),
-              backgroundColor: const Color(0xFF198038),
+              backgroundColor: AppColors.notificationSuccess,
               foregroundColor: Colors.white,
               icon: Icons.done,
               label: S.of(context).acknowledge,
