@@ -37,6 +37,7 @@ class _NotificationPageState extends State<NotificationPage> {
   bool isSelectionMode = false;
   Set<String> selectedIds = {};
   bool isProcessing = false;
+  bool _cancelRequested = false;
   int processedCount = 0;
   int totalToProcess = 0;
 
@@ -269,6 +270,9 @@ class _NotificationPageState extends State<NotificationPage> {
     setState(() {
       isSelectionMode = false;
       selectedIds = {};
+      if (isProcessing) {
+        _cancelRequested = true;
+      }
     });
   }
 
@@ -334,6 +338,7 @@ class _NotificationPageState extends State<NotificationPage> {
     int unreadCount = 0;
     int failCount = 0;
     for (final notification in toDelete) {
+      if (_cancelRequested) break;
       try {
         await notificationRepository.deleteNotification(notification.id!.id!);
         if (notification.status != PushNotificationStatus.READ) {
@@ -350,8 +355,13 @@ class _NotificationPageState extends State<NotificationPage> {
     }
 
     if (mounted) {
-      _exitSelectionMode();
-      setState(() => isProcessing = false);
+      if (!_cancelRequested) {
+        _exitSelectionMode();
+      }
+      setState(() {
+        isProcessing = false;
+        _cancelRequested = false;
+      });
       notificationQueryCtrl.refresh();
 
       if (failCount > 0) {
@@ -390,6 +400,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
     int failCount = 0;
     for (final notification in toMark) {
+      if (_cancelRequested) break;
       try {
         await notificationRepository
             .markNotificationAsRead(notification.id!.id!);
@@ -401,8 +412,13 @@ class _NotificationPageState extends State<NotificationPage> {
     }
 
     if (mounted) {
-      _exitSelectionMode();
-      setState(() => isProcessing = false);
+      if (!_cancelRequested) {
+        _exitSelectionMode();
+      }
+      setState(() {
+        isProcessing = false;
+        _cancelRequested = false;
+      });
       notificationQueryCtrl.refresh();
 
       if (failCount > 0) {
