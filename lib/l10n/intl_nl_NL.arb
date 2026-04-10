@@ -459,7 +459,7 @@
       }
     }
   },
-  "selectAll": "Alles selecteren",
+  "selectAll": "Alle geladen selecteren",
   "failedToPerformOperation": "{count, plural, =1{1 bewerking mislukt} other{{count} bewerkingen mislukt}}",
   "@failedToPerformOperation": {
     "placeholders": {

@@ -704,7 +704,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchUsers": m24,
     "seconds": MessageLookupByLibrary.simpleMessage("seconds"),
     "security": MessageLookupByLibrary.simpleMessage("Security"),
-    "selectAll": MessageLookupByLibrary.simpleMessage("Select all"),
+    "selectAll": MessageLookupByLibrary.simpleMessage("Select all loaded"),
     "selectCountry": MessageLookupByLibrary.simpleMessage("Select country"),
     "selectRegion": MessageLookupByLibrary.simpleMessage("Select region"),
     "selectUser": MessageLookupByLibrary.simpleMessage("Select users"),

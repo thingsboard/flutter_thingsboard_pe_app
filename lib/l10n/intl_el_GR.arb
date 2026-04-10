@@ -459,7 +459,7 @@
       }
     }
   },
-  "selectAll": "Επιλογή όλων",
+  "selectAll": "Επιλογή όλων των φορτωμένων",
   "failedToPerformOperation": "{count, plural, =1{1 ενέργεια απέτυχε} other{{count} ενέργειες απέτυχαν}}",
   "@failedToPerformOperation": {
     "placeholders": {

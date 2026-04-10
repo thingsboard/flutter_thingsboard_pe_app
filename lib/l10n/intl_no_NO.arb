@@ -459,7 +459,7 @@
       }
     }
   },
-  "selectAll": "Velg alle",
+  "selectAll": "Velg alle lastede",
   "failedToPerformOperation": "{count, plural, =1{1 handling mislyktes} other{{count} handlinger mislyktes}}",
   "@failedToPerformOperation": {
     "placeholders": {

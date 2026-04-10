@@ -459,7 +459,7 @@
       }
     }
   },
-  "selectAll": "Alle auswählen",
+  "selectAll": "Alle geladenen auswählen",
   "failedToPerformOperation": "{count, plural, =1{1 Vorgang fehlgeschlagen} other{{count} Vorgänge fehlgeschlagen}}",
   "@failedToPerformOperation": {
     "placeholders": {

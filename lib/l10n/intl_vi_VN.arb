@@ -458,7 +458,7 @@
       }
     }
   },
-  "selectAll": "Chọn tất cả",
+  "selectAll": "Chọn tất cả đã tải",
   "failedToPerformOperation": "{count, plural, =1{1 thao tác thất bại} other{{count} thao tác thất bại}}",
   "@failedToPerformOperation": {
     "placeholders": {

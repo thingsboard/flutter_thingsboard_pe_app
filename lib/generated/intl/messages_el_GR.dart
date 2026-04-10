@@ -767,7 +767,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchUsers": m24,
     "seconds": MessageLookupByLibrary.simpleMessage("δευτερόλεπτα"),
     "security": MessageLookupByLibrary.simpleMessage("Ασφάλεια"),
-    "selectAll": MessageLookupByLibrary.simpleMessage("Επιλογή όλων"),
+    "selectAll": MessageLookupByLibrary.simpleMessage(
+      "Επιλογή όλων των φορτωμένων",
+    ),
     "selectCountry": MessageLookupByLibrary.simpleMessage("Επιλογή χώρας"),
     "selectRegion": MessageLookupByLibrary.simpleMessage("Επιλογή περιοχής"),
     "selectUser": MessageLookupByLibrary.simpleMessage("Επιλέξτε χρήστες"),

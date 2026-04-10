@@ -737,7 +737,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchUsers": m24,
     "seconds": MessageLookupByLibrary.simpleMessage("giây"),
     "security": MessageLookupByLibrary.simpleMessage("Bảo mật"),
-    "selectAll": MessageLookupByLibrary.simpleMessage("Chọn tất cả"),
+    "selectAll": MessageLookupByLibrary.simpleMessage("Chọn tất cả đã tải"),
     "selectCountry": MessageLookupByLibrary.simpleMessage("Chọn quốc gia"),
     "selectRegion": MessageLookupByLibrary.simpleMessage("Chọn khu vực"),
     "selectUser": MessageLookupByLibrary.simpleMessage("Chọn người dùng"),

@@ -3373,9 +3373,14 @@ class S {
     );
   }
 
-  /// `Select all`
+  /// `Select all loaded`
   String get selectAll {
-    return Intl.message('Select all', name: 'selectAll', desc: '', args: []);
+    return Intl.message(
+      'Select all loaded',
+      name: 'selectAll',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `{count, plural, =1{1 operation failed} other{{count} operations failed}}`
