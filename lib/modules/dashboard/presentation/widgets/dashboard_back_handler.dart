@@ -15,7 +15,7 @@ class DashboardBackHandler extends StatelessWidget {
 
   static Future<bool> tryNavigateBack(DashboardController? controller) async {
     if (controller == null) return false;
-    if (controller.rightLayoutOpened.value == true) {
+    if (controller.rightLayoutOpened.value) {
       await controller.toggleRightLayout();
       return true;
     }

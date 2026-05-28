@@ -33,6 +33,7 @@ class _MainDashboardPageState extends State<MainDashboardPage>
       return;
     }
     await widget.controller.closeDashboard();
+    if (!mounted) return;
     _dashboardLoadingCtrl?.value = true;
   }
 
