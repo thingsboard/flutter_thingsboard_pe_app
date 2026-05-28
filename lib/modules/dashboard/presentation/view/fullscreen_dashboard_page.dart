@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/di/dashboards_di.dart';
@@ -128,6 +129,11 @@ class _FullscreenDashboardPageState extends State<FullscreenDashboardPage> {
   }
 
   Future<void> _handleBack() async {
-    await DashboardBackHandler.tryNavigateBack(_dashboardController);
+    if (await DashboardBackHandler.tryNavigateBack(_dashboardController)) {
+      return;
+    }
+    if (mounted && context.canPop()) {
+      Navigator.of(context).pop();
+    }
   }
 }
