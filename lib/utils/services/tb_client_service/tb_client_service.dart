@@ -109,7 +109,19 @@ class TbClientService implements ITbClientService {
     required ErrorCallback onAuthError,
   }) async {
     log('TbClient:reinit()');
-    await _client.reInit(endpoint);
+    _client = ThingsboardClient(
+      endpoint,
+      storage: getIt(),
+      onUserLoaded: () => onUserLoaded(),
+      onError: (e) {
+        onAuthError(e);
+        onClientError(e);
+      },
+      onLoadStarted: () => onLoadStarted(),
+      onLoadFinished: () => onLoadFinished(),
+      computeFunc: <Q, R>(callback, message) => compute(callback, message),
+    );
+    await _client.init();
     onDone();
   }
 }

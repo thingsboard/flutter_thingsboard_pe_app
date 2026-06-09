@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/constants/app_constants.dart';
@@ -44,10 +45,11 @@ class NoauthProvider extends _$NoauthProvider {
         message: 'Getting data from your host $host',
       );
 
-      final data = await _client.getLoginDataBySecretKey(host: host, key: key);
-
-      final authUserFromJwt = _client.getAuthUserFromJwt(data.token);
-      final currentlyAuthUser = _client.getAuthUser();
+      // Fetch JWT pair using secret key from the target host via QR code API
+      final tempDio = Dio(BaseOptions(baseUrl: host));
+      final secretResponse = await tempDio.get('/api/noauth/qr/${key ?? ''}');
+      final tokenStr = secretResponse.data['token'] as String?;
+      final refreshTokenStr = secretResponse.data['refreshToken'] as String?;
       // if (_client.isAuthenticated()) {
       //   state = NoAuthState(
       //     error: null,
@@ -73,8 +75,8 @@ class NoauthProvider extends _$NoauthProvider {
       }
 
       await getIt<ITbClientService>().client.setUserFromJwtToken(
-        data.token,
-        data.refreshToken,
+        tokenStr,
+        refreshTokenStr,
         false,
       );
       await getIt<IEndpointService>().setEndpoint(host);

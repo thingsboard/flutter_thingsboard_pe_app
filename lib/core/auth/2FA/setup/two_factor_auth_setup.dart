@@ -99,24 +99,29 @@ class TwoFactorAuthSetup extends HookConsumerWidget {
         ),
       );
     }
-      return BaseTwoFactorLayout(
-        title: S.of(context).twofactorAuthentication,
-        isLoading: isLoading.value,
-        child:
-            providers.value != null &&
-                    !(userConfig.isLoading || userConfig.isRefreshing)
-                ? SelectProviderTypeWidget(
-                  defaultProvider:
-                      userConfig.value?.configs.entries
-                          .firstWhereOrNull((e) => e.value.useByDefault)
-                          ?.key,
-                  activeProviders:
-                      userConfig.value?.configs.keys.toList() ?? [],
-                  avalibleTypes: providers.value!,
-                  type: isForce ? TwoFaViewType.force : TwoFaViewType.setup,
-                )
-                : const SizedBox(),
-      );
+    return BaseTwoFactorLayout(
+      title: S.of(context).twofactorAuthentication,
+      isLoading: isLoading.value,
+      child:
+          providers.value != null &&
+                  !(userConfig.isLoading || userConfig.isRefreshing)
+              ? SelectProviderTypeWidget(
+                defaultProvider: _parseProviderType(
+                  userConfig.value?.configs?.entries
+                      .firstWhereOrNull((e) => e.value.useByDefault ?? false)
+                      ?.key,
+                ),
+                activeProviders:
+                    userConfig.value?.configs?.keys
+                        .map(_parseProviderType)
+                        .whereType<TwoFaProviderType>()
+                        .toList() ??
+                    [],
+                avalibleTypes: providers.value!,
+                type: isForce ? TwoFaViewType.force : TwoFaViewType.setup,
+              )
+              : const SizedBox(),
+    );
   }
 
   Widget _buildProviderWidget(
@@ -149,6 +154,7 @@ class TwoFactorAuthSetup extends HookConsumerWidget {
         loading: loading,
         config: config as BackupCodeTwoFaAccountConfig,
       ),
+      _ => const SizedBox.shrink(),
     };
   }
 
@@ -172,7 +178,16 @@ class TwoFactorAuthSetup extends HookConsumerWidget {
   ) {
     ref.invalidate(acountTwoFactorSettingsProvider);
     final route =
-        '${LoginRoutes.login}${LoginRoutes.mfaForceSuccess}${'?force=$isForce'}&selectedProvider=${configuredType.toShortString()}';
+        '${LoginRoutes.login}${LoginRoutes.mfaForceSuccess}${'?force=$isForce'}&selectedProvider=${configuredType.name}';
     context.pushReplacement(route, extra: configuredType);
+  }
+}
+
+TwoFaProviderType? _parseProviderType(String? name) {
+  if (name == null) return null;
+  try {
+    return TwoFaProviderType.valueOf(name);
+  } catch (_) {
+    return null;
   }
 }

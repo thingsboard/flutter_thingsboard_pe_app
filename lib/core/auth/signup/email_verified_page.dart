@@ -19,17 +19,25 @@ class EmailVerifiedPage extends HookConsumerWidget {
   const EmailVerifiedPage({required this.emailCode, super.key});
 
   final String emailCode;
-  Future<void> activateAndGetCredentials(ValueNotifier<bool> isActivating, ValueNotifier<LoginResponse?> loginResponse, BuildContext context) async {
+  Future<void> activateAndGetCredentials(
+    ValueNotifier<bool> isActivating,
+    ValueNotifier<LoginResponse?> loginResponse,
+    BuildContext context,
+  ) async {
     final tbClient = getIt<ITbClientService>().client;
     try {
-      final response = await tbClient
-          .getSignupService()
-          .activateUserByEmailCode(
-            emailCode,
-            pkgName: getIt<IDeviceInfoService>().getApplicationId(),
-            platform: getIt<IDeviceInfoService>().getPlatformType(),
-          );
-      loginResponse.value = response;
+      final r = await tbClient.getSignUpControllerApi().activateUserByEmailCode(
+        emailCode: emailCode,
+        pkgName: getIt<IDeviceInfoService>().getApplicationId(),
+        platform: getIt<IDeviceInfoService>().getPlatformType().name,
+      );
+      loginResponse.value =
+          r.data != null
+              ? LoginResponse(
+                token: r.data!.token ?? '',
+                refreshToken: r.data!.refreshToken,
+              )
+              : null;
       isActivating.value = false;
     } catch (e) {
       // tbContext.log.error(
@@ -37,7 +45,7 @@ class EmailVerifiedPage extends HookConsumerWidget {
       // );
       if (context.mounted) {
         if (context.canPop()) {
-         context.pop();
+          context.pop();
         } else {
           getIt<ThingsboardAppRouter>().navigateTo(
             '/login',
@@ -49,11 +57,13 @@ class EmailVerifiedPage extends HookConsumerWidget {
     }
   }
 
-  void handleLogin(ValueNotifier<LoginResponse?> loginResponse) {
+  void handleLogin(
+    ValueNotifier<LoginResponse?> loginResponse,
+    ITbClientService tbClientService,
+  ) {
     final response = loginResponse.value;
     if (response != null) {
-      getIt<ITbClientService>().client
-      .setUserFromJwtToken(
+      tbClientService.client.setUserFromJwtToken(
         response.token,
         response.refreshToken,
         true,
@@ -66,6 +76,7 @@ class EmailVerifiedPage extends HookConsumerWidget {
     final wlState = ref.watch(wlProvider);
     final isActivating = useState(true);
     final loginResponse = useState<LoginResponse?>(null);
+    final tbClientService = getIt<ITbClientService>();
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback(
@@ -150,7 +161,11 @@ class EmailVerifiedPage extends HookConsumerWidget {
                                       vertical: 16,
                                     ),
                                   ),
-                                  onPressed: () => handleLogin(loginResponse),
+                                  onPressed:
+                                      () => handleLogin(
+                                        loginResponse,
+                                        tbClientService,
+                                      ),
                                   child: Text(S.of(context).login),
                                 ),
                               ],

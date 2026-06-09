@@ -5,6 +5,7 @@ import 'package:thingsboard_app/core/entity/entities_base.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/new_client_page_data.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 
 mixin AssetsBase on EntitiesBase<Asset, PageLink> {
@@ -12,18 +13,29 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
   String title(BuildContext context) => S.of(context).assets;
 
   @override
-  String noItemsFoundText(BuildContext context) =>
-      S.of(context).noAssetsFound;
+  String noItemsFoundText(BuildContext context) => S.of(context).noAssetsFound;
   final tbClient = getIt<ITbClientService>().client;
   @override
   Future<PageData<Asset>> fetchEntities(
     PageLink pageLink, {
     bool refresh = false,
-  }) {
+  }) async {
     if (tbClient.isTenantAdmin()) {
-      return tbClient.getAssetService().getTenantAssets(pageLink);
+      final r = await tbClient.getAssetControllerApi().getTenantAssets(
+        pageSize: pageLink.pageSize,
+        page: pageLink.page,
+        textSearch: pageLink.textSearch,
+      );
+      final p = r.data!;
+      return toPageData(p.data, p.totalPages, p.totalElements, p.hasNext);
     }
-    return tbClient.getAssetService().getUserAssets(pageLink);
+    final r = await tbClient.getAssetControllerApi().getUserAssets(
+      pageSize: pageLink.pageSize.toString(),
+      page: pageLink.page.toString(),
+      textSearch: pageLink.textSearch,
+    );
+    final p = r.data!;
+    return toPageData(p.data, p.totalPages, p.totalElements, p.hasNext);
   }
 
   @override
@@ -45,7 +57,7 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
 
   @override
   Widget buildEntityGridCard(BuildContext context, Asset asset) {
-    return Text(asset.name);
+    return Text(asset.name ?? '');
   }
 
   Widget _buildCard(BuildContext context, Asset asset) {
@@ -68,7 +80,7 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                         children: [
                           Flexible(
                             child: Text(
-                              asset.name,
+                              asset.name ?? '',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -112,7 +124,7 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                         ),
                       const SizedBox(height: 4),
                       Text(
-                        asset.type,
+                        asset.type ?? '',
                         style: const TextStyle(
                           color: Color(0xFFAFAFAF),
                           fontSize: 12,
@@ -176,7 +188,7 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                           ),
                         ),
                       Text(
-                        asset.type,
+                        asset.type ?? '',
                         style: const TextStyle(
                           color: Color(0xFFAFAFAF),
                           fontSize: 12,

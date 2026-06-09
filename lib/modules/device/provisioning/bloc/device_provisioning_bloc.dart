@@ -106,13 +106,11 @@ class DeviceProvisioningBloc
         }
 
         try {
-          final response = await tbClient
-              .getDeviceService()
+          await tbClient
+              .getDeviceControllerApi()
               .claimDevice(
-                deviceName,
-                ClaimRequest(secretKey: deviceSecretKey),
-                // ignore errors is for handling errors by myself
-                requestConfig: RequestConfig(ignoreErrors: true),
+                deviceName: deviceName,
+                claimRequest: ClaimRequest((b) => b..secretKey = deviceSecretKey),
               )
               .timeout(
                 const Duration(seconds: 20),
@@ -120,20 +118,11 @@ class DeviceProvisioningBloc
                     () => throw Exception('Device claiming timeout reached'),
               );
 
-          if (response.response == ClaimResponse.CLAIMED ||
-              response.response == ClaimResponse.SUCCESS) {
-            communicationService.fire(
-              const DeviceProvisioningStatusChangedEvent(
-                DeviceProvisioningStatus.done,
-              ),
-            );
-          } else {
-            emit(
-              const DeviceProvisioningClaimingErrorState(
-                'Something went wrong. Please try again.',
-              ),
-            );
-          }
+          communicationService.fire(
+            const DeviceProvisioningStatusChangedEvent(
+              DeviceProvisioningStatus.done,
+            ),
+          );
         } catch (e) {
           logger.error('Device claiming error: $e');
 

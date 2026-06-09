@@ -36,12 +36,21 @@ class TwoFactorConfirm extends _$TwoFactorConfirm {
   Future<void> verifyCode(String code) async {
     state = state.copyWith(loading: true);
     try {
-      final res = await _tbClient.checkTwoFaVerificationCode(
-        type,
-        code,
-        requestConfig: RequestConfig(ignoreErrors: true),
-      );
-      await ref.read(loginProvider.notifier).twoFaConfirmed(res);
+      final res = await _tbClient
+          .getTwoFactorAuthControllerApi()
+          .checkTwoFaVerificationCode(
+            providerType: type,
+            verificationCode: code,
+          );
+      final jwtPair = res.data!;
+      await ref
+          .read(loginProvider.notifier)
+          .twoFaConfirmed(
+            LoginResponse(
+              token: jwtPair.token ?? '',
+              refreshToken: jwtPair.refreshToken,
+            ),
+          );
       state = state.copyWith(loading: false, codeState: CodeState.valid);
     } catch (e) {
       state = state.copyWith(loading: false);
@@ -62,10 +71,9 @@ class TwoFactorConfirm extends _$TwoFactorConfirm {
   Future<void> sendCode() async {
     state = state.copyWith(codeSent: false, loading: true);
     try {
-      await _tbClient.getTwoFactorAuthService().requestTwoFaVerificationCode(
-        type,
-        requestConfig: RequestConfig(ignoreErrors: true),
-      );
+      await _tbClient
+          .getTwoFactorAuthControllerApi()
+          .requestTwoFaVerificationCode(providerType: type);
       _resendTimer?.cancel();
       _resendTimer = Timer(
         Duration(seconds: _resendTimerDurationSeconds),

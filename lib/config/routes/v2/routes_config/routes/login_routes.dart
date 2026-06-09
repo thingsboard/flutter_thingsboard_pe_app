@@ -43,7 +43,7 @@ final loginRoutes = [
           final providerQuery = state.uri.queryParameters['selectedProvider'];
           final providerType =
               providerQuery != null
-                  ? twoFaProviderTypeFromString(providerQuery)
+                  ? _parseTwoFaProviderType(providerQuery)
                   : null;
 
           return TwoFactorAuthenticationPage(
@@ -60,9 +60,9 @@ final loginRoutes = [
         path: LoginRoutes.mfaForceSuccess,
         builder: (context, state) {
           final providerQuery = state.uri.queryParameters['selectedProvider'];
-          final providerType = twoFaProviderTypeFromString(
-            providerQuery.toString(),
-          );
+          final providerType =
+              _parseTwoFaProviderType(providerQuery) ??
+              TwoFaProviderType.unknownDefaultOpenApi;
 
           final force =
               bool.tryParse(state.uri.queryParameters['force'].toString()) ??
@@ -79,7 +79,7 @@ final loginRoutes = [
           final providerQuery = state.uri.queryParameters['selectedProvider'];
           final providerType =
               providerQuery != null
-                  ? twoFaProviderTypeFromString(providerQuery)
+                  ? _parseTwoFaProviderType(providerQuery)
                   : null;
 
           return TwoFactorAuthSetup(
@@ -95,3 +95,12 @@ final loginRoutes = [
     },
   ),
 ];
+
+TwoFaProviderType? _parseTwoFaProviderType(String? name) {
+  if (name == null) return null;
+  try {
+    return TwoFaProviderType.valueOf(name);
+  } catch (_) {
+    return null;
+  }
+}

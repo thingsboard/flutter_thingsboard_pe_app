@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
@@ -202,10 +203,16 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         _isLoadingNotifier.value = true;
         try {
           await Future.delayed(const Duration(milliseconds: 300));
-          await getIt<ITbClientService>().client.changePassword(
-            currentPassword,
-            newPassword,
-          );
+          await getIt<ITbClientService>().client
+              .getAuthControllerApi()
+              .changePassword(
+                changePasswordRequest: ChangePasswordRequest(
+                  (b) =>
+                      b
+                        ..currentPassword = currentPassword
+                        ..newPassword = newPassword,
+                ),
+              );
           if (mounted) {
             context.pop(true);
           }

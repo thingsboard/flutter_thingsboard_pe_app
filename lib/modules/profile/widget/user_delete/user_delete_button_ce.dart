@@ -9,6 +9,7 @@ import 'package:thingsboard_app/modules/more/profle_widget.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
+
 /// Example of user deletion feature for CE, it's not needed since there is no self registration
 /// on CE app
 Widget getDeleteButton(BuildContext context, WidgetRef ref, User user) {
@@ -62,11 +63,15 @@ Future<void> deleteAccount(
     try {
       /// More strict way. Deletes overall tenant account.
       if (user.authority == Authority.TENANT_ADMIN) {
-        client.getTenantService().deleteTenant(user.tenantId!.id!);
+        await client.getTenantControllerApi().deleteTenant(
+          tenantId: user.tenantId?.id ?? '',
+        );
       }
-// You can use this for tenant user's deletion as well, if you want to keep your tenant
+      // You can use this for tenant user's deletion as well, if you want to keep your tenant
       if (user.authority == Authority.CUSTOMER_USER) {
-        client.getUserService().deleteUser(user.id!.id!);
+        await client.getUserControllerApi().deleteUser(
+          userId: user.id?.id ?? '',
+        );
       }
       await ref.read(loginProvider.notifier).logout();
     } catch (e) {

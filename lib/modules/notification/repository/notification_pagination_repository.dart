@@ -5,7 +5,7 @@ import 'package:thingsboard_app/modules/notification/controllers/notification_qu
 import 'package:thingsboard_app/thingsboard_client.dart';
 
 class NotificationPaginationRepository {
-  NotificationPaginationRepository( {
+  NotificationPaginationRepository({
     required this.notificationQueryPageCtrl,
     required this.tbClient,
   });
@@ -37,11 +37,23 @@ class NotificationPaginationRepository {
     bool refresh = false,
   }) async {
     try {
-      final pageData = await tbClient.getNotificationService().getNotifications(
-        pageKey,
-      );
+      final response = await tbClient
+          .getNotificationControllerApi()
+          .getNotifications(
+            pageSize: pageKey.pageLink.pageSize,
+            page: pageKey.pageLink.page,
+            textSearch: pageKey.pageLink.textSearch,
+            unreadOnly: pageKey.unreadOnly,
+            deliveryMethod: pageKey.deliveryMethod,
+          );
 
-      final isLastPage = !pageData.hasNext;
+      final page = response.data!;
+      final items = (page.data?.toList() ?? <Notification>[])
+          .map((n) => _toPushNotification(n))
+          .whereType<PushNotification>()
+          .toList();
+
+      final isLastPage = !(page.hasNext ?? false);
       if (refresh) {
         final state = pagingController.value;
         if (state.itemList != null) {
@@ -49,13 +61,33 @@ class NotificationPaginationRepository {
         }
       }
       if (isLastPage) {
-        pagingController.appendLastPage(pageData.data);
+        pagingController.appendLastPage(items);
       } else {
         final nextPageKey = notificationQueryPageCtrl.nextPageKey(pageKey);
-        pagingController.appendPage(pageData.data, nextPageKey);
+        pagingController.appendPage(items, nextPageKey);
       }
     } catch (error) {
       pagingController.error = error;
+    }
+  }
+
+  PushNotification? _toPushNotification(Notification n) {
+    try {
+      final json = <String, dynamic>{
+        'id': {'id': n.id?.id, 'entityType': 'NOTIFICATION'},
+        'createdTime': n.createdTime,
+        'requestId': {'id': n.requestId?.id ?? '', 'entityType': 'NOTIFICATION_REQUEST'},
+        'recipientId': {'id': n.recipientId?.id ?? '', 'entityType': 'USER'},
+        'subject': n.subject ?? '',
+        'text': n.text ?? '',
+        'type': n.type?.name ?? 'GENERAL',
+        'status': n.status?.name ?? 'UNREAD',
+        if (n.additionalConfig != null && n.additionalConfig!.isMap)
+          'additionalConfig': n.additionalConfig!.asMap,
+      };
+      return PushNotification.fromJson(json);
+    } catch (_) {
+      return null;
     }
   }
 

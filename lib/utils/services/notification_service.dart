@@ -53,14 +53,15 @@ class NotificationService {
       _onTokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh
           .listen((token) {
             if (_fcmToken != null) {
-              _tbClient.getUserService().removeMobileSession(_fcmToken!).then((
-                _,
-              ) {
-                _fcmToken = token;
-                if (_fcmToken != null) {
-                  _saveToken(_fcmToken!);
-                }
-              });
+              _tbClient
+                  .getUserControllerApi()
+                  .removeMobileSession(xMobileToken: _fcmToken!)
+                  .then((_) {
+                    _fcmToken = token;
+                    if (_fcmToken != null) {
+                      _saveToken(_fcmToken!);
+                    }
+                  });
             }
           });
 
@@ -97,7 +98,9 @@ class NotificationService {
       getIt<TbLogger>().debug(
         'NotificationService::logout() removeMobileSession',
       );
-      _tbClient.getUserService().removeMobileSession(_fcmToken!, requestConfig: RequestConfig(ignoreErrors: true));
+      _tbClient.getUserControllerApi().removeMobileSession(
+        xMobileToken: _fcmToken!,
+      );
     }
 
     await _foregroundMessageSubscription?.cancel();
@@ -170,7 +173,7 @@ class NotificationService {
 
   Future<String?> _resetToken(String? token) async {
     if (token != null) {
-      _tbClient.getUserService().removeMobileSession(token);
+      _tbClient.getUserControllerApi().removeMobileSession(xMobileToken: token);
     }
 
     await _messaging.deleteToken();
@@ -182,13 +185,14 @@ class NotificationService {
     _log.debug('FCM token: $fcmToken');
 
     if (fcmToken != null) {
-      final MobileSessionInfo? mobileInfo = await _tbClient
-          .getUserService()
-          .getMobileSession(fcmToken);
+      final mobileInfo =
+          (await _tbClient.getUserControllerApi().getMobileSession(
+            xMobileToken: fcmToken,
+          )).data;
       if (mobileInfo != null) {
         final int timeAfterCreatedToken =
             DateTime.now().millisecondsSinceEpoch -
-            mobileInfo.fcmTokenTimestamp;
+            (mobileInfo.fcmTokenTimestamp ?? 0);
         if (timeAfterCreatedToken > const Duration(days: 30).inMilliseconds) {
           fcmToken = await _resetToken(fcmToken);
           if (fcmToken != null) {
@@ -202,9 +206,11 @@ class NotificationService {
   }
 
   Future<void> _saveToken(String token) async {
-    await _tbClient.getUserService().saveMobileSession(
-      token,
-      MobileSessionInfo(DateTime.now().millisecondsSinceEpoch),
+    await _tbClient.getUserControllerApi().saveMobileSession(
+      xMobileToken: token,
+      mobileSessionInfo: MobileSessionInfo(
+        (b) => b..fcmTokenTimestamp = DateTime.now().millisecondsSinceEpoch,
+      ),
     );
   }
 
@@ -257,13 +263,17 @@ class NotificationService {
                   null &&
               (data['stateEntityType'] ?? data['onClick.stateEntityType']) !=
                   null) {
-            entityId = EntityId.fromTypeAndUuid(
-              entityTypeFromString(
-                (data['stateEntityType'] ?? data['onClick.stateEntityType'])
-                    .toString(),
-              ),
-              (data['stateEntityId'] ?? data['onClick.stateEntityId'])
-                  .toString()
+            entityId = $EntityId(
+              (b) =>
+                  b
+                    ..entityType = EntityType.valueOf(
+                      (data['stateEntityType'] ??
+                              data['onClick.stateEntityType'])
+                          .toString(),
+                    )
+                    ..id =
+                        (data['stateEntityId'] ?? data['onClick.stateEntityId'])
+                            .toString(),
             );
           }
 
@@ -306,10 +316,10 @@ class NotificationService {
 
   Future<int> _getNotificationsCountRemote() async {
     try {
-      return _tbClient.getNotificationService().getUnreadNotificationsCount(
-        'MOBILE_APP',
-        requestConfig: RequestConfig(ignoreErrors: true),
-      );
+      final resp = await _tbClient
+          .getNotificationControllerApi()
+          .getUnreadNotificationsCount(deliveryMethod: 'MOBILE_APP');
+      return resp.data ?? 0;
     } catch (_) {
       return 0;
     }
