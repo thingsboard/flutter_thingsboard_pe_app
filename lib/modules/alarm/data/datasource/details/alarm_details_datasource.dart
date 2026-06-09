@@ -71,6 +71,9 @@ class AlarmDetailsDatasource implements IAlarmDetailsDatasource {
     final body = AlarmComment(
       (b) =>
           b
+            // The server upserts based on the presence of `id`: setting it
+            // updates the existing comment, omitting it creates a new one.
+            ..id = AlarmCommentId((idb) => idb..id = id).toBuilder()
             ..type = AlarmCommentType.OTHER
             ..comment = JsonObject(<String, dynamic>{
               'text': comment,
