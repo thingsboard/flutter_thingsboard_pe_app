@@ -203,16 +203,25 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         _isLoadingNotifier.value = true;
         try {
           await Future.delayed(const Duration(milliseconds: 300));
-          await getIt<ITbClientService>().client
-              .getAuthControllerApi()
-              .changePassword(
-                changePasswordRequest: ChangePasswordRequest(
-                  (b) =>
-                      b
-                        ..currentPassword = currentPassword
-                        ..newPassword = newPassword,
-                ),
-              );
+          final client = getIt<ITbClientService>().client;
+          final response = await client.getAuthControllerApi().changePassword(
+            changePasswordRequest: ChangePasswordRequest(
+              (b) =>
+                  b
+                    ..currentPassword = currentPassword
+                    ..newPassword = newPassword,
+            ),
+          );
+          // The server rotates the JWT pair on a password change; apply it so
+          // the stored refresh token stays valid and the session isn't dropped.
+          final jwtPair = response.data;
+          if (jwtPair?.token != null) {
+            await client.setUserFromJwtToken(
+              jwtPair!.token,
+              jwtPair.refreshToken,
+              false,
+            );
+          }
           if (mounted) {
             context.pop(true);
           }
