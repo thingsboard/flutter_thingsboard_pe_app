@@ -86,7 +86,10 @@ class ProfileWidget extends StatelessWidget {
 String getAuthorityName(BuildContext context, User? user) {
   var name = '';
   if (user != null) {
-    final authority = user.authority;
+    // `user.authority` is the generated built_value enum, while the `Authority`
+    // constants below come from the hand-written enum the barrel re-exports.
+    // Bridge by name so the switch actually matches (see login_provider).
+    final authority = authorityFromString(user.authority.name);
     switch (authority) {
       case Authority.SYS_ADMIN:
         name = S.of(context).systemAdministrator;
