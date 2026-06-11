@@ -32,9 +32,9 @@ class EmailVerifiedPage extends HookConsumerWidget {
         platform: getIt<IDeviceInfoService>().getPlatformType().name,
       );
       loginResponse.value =
-          r.data != null
+          r.data?.token != null
               ? LoginResponse(
-                token: r.data!.token ?? '',
+                token: r.data!.token!,
                 refreshToken: r.data!.refreshToken,
               )
               : null;
