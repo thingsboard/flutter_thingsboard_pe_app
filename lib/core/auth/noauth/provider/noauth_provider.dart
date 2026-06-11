@@ -45,11 +45,27 @@ class NoauthProvider extends _$NoauthProvider {
         message: 'Getting data from your host $host',
       );
 
-      // Fetch JWT pair using secret key from the target host via QR code API
-      final tempDio = Dio(BaseOptions(baseUrl: host));
+      // Fetch JWT pair using secret key from the TARGET host via the QR code
+      // API. A raw Dio is used (instead of the typed
+      // `getQrCodeSettingsControllerApi().getUserTokenByMobileSecret`) because
+      // the request must hit `host`, not the current client's endpoint.
+      final tempDio = Dio(
+        BaseOptions(
+          baseUrl: host,
+          connectTimeout: const Duration(seconds: 20),
+          receiveTimeout: const Duration(seconds: 20),
+        ),
+      );
       final secretResponse = await tempDio.get('/api/noauth/qr/${key ?? ''}');
-      final tokenStr = secretResponse.data['token'] as String?;
-      final refreshTokenStr = secretResponse.data['refreshToken'] as String?;
+      final data = secretResponse.data;
+      final tokenStr = data is Map ? data['token'] as String? : null;
+      final refreshTokenStr =
+          data is Map ? data['refreshToken'] as String? : null;
+      if (tokenStr == null) {
+        throw ThingsboardError(
+          message: 'Failed to obtain a login token from $host',
+        );
+      }
       // if (_client.isAuthenticated()) {
       //   state = NoAuthState(
       //     error: null,

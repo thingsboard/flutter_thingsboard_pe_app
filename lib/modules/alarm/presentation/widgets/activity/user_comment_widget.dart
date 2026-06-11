@@ -167,7 +167,7 @@ class _UserCommentState extends State<UserCommentWidget> {
                 ),
                 const SizedBox(width: 4),
                 Visibility(
-                  visible: commentNode.edited,
+                  visible: commentNode?.edited ?? false,
                   child: Text(
                     ' ${S.of(context).edited}',
                     style: TbTextStyles.bodyMedium.copyWith(
@@ -178,7 +178,7 @@ class _UserCommentState extends State<UserCommentWidget> {
               ],
             ),
             Text(
-              commentNode.text,
+              commentNode?.text ?? '',
               style: TbTextStyles.bodyLarge.copyWith(
                 color: Colors.black.withValues(alpha: .54),
               ),

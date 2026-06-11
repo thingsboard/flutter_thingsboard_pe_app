@@ -41,15 +41,19 @@ class TwoFactorConfirm extends _$TwoFactorConfirm {
           .checkTwoFaVerificationCode(
             providerType: type,
             verificationCode: code,
+            // Handle errors (e.g. 429) in-widget below instead of the global
+            // error overlay; the new client exposes this via Dio `extra`.
+            extra: const {'ignoreErrors': true},
           );
-      final jwtPair = res.data!;
+      final token = res.data?.token;
+      if (token == null) {
+        state = state.copyWith(loading: false, codeState: CodeState.invalid);
+        return;
+      }
       await ref
           .read(loginProvider.notifier)
           .twoFaConfirmed(
-            LoginResponse(
-              token: jwtPair.token ?? '',
-              refreshToken: jwtPair.refreshToken,
-            ),
+            LoginResponse(token: token, refreshToken: res.data?.refreshToken),
           );
       state = state.copyWith(loading: false, codeState: CodeState.valid);
     } catch (e) {
@@ -73,7 +77,10 @@ class TwoFactorConfirm extends _$TwoFactorConfirm {
     try {
       await _tbClient
           .getTwoFactorAuthControllerApi()
-          .requestTwoFaVerificationCode(providerType: type);
+          .requestTwoFaVerificationCode(
+            providerType: type,
+            extra: const {'ignoreErrors': true},
+          );
       _resendTimer?.cancel();
       _resendTimer = Timer(
         Duration(seconds: _resendTimerDurationSeconds),

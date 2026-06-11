@@ -34,6 +34,11 @@ extension AllowedPermissionsInfoExt on AllowedPermissionsInfo {
 /// underlying map back into the handwritten [AlarmCommentJsonNode] consumed by
 /// the alarm activity widgets.
 extension AlarmCommentInfoExt on AlarmCommentInfo {
-  AlarmCommentJsonNode get commentNode =>
-      AlarmCommentJsonNode.fromJson(comment!.asMap.cast<String, dynamic>());
+  /// `comment` is nullable on the new built_value model, and system-generated
+  /// activity entries may not carry a payload, so callers must handle null.
+  AlarmCommentJsonNode? get commentNode {
+    final raw = comment?.asMap;
+    if (raw == null) return null;
+    return AlarmCommentJsonNode.fromJson(raw.cast<String, dynamic>());
+  }
 }

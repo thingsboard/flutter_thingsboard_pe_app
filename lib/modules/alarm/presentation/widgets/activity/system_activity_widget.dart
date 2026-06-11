@@ -25,7 +25,7 @@ class SystemActivityWidget extends StatelessWidget {
           ),
         ),
         Text(
-          activity.commentNode.text,
+          activity.commentNode?.text ?? '',
           style: TbTextStyles.bodyLarge.copyWith(
             color: Colors.black.withValues(alpha: .54),
           ),

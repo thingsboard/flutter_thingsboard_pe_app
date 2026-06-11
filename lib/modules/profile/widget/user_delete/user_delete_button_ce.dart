@@ -61,14 +61,19 @@ Future<void> deleteAccount(
   if (delete == true) {
     final client = getIt<ITbClientService>().client;
     try {
+      // `user.authority` is the generated built_value enum, while the `Authority`
+      // constants below come from the hand-written enum the barrel re-exports.
+      // Bridge by name so the comparisons actually match (see profle_widget).
+      final authority = authorityFromString(user.authority.name);
+
       /// More strict way. Deletes overall tenant account.
-      if (user.authority == Authority.TENANT_ADMIN) {
+      if (authority == Authority.TENANT_ADMIN) {
         await client.getTenantControllerApi().deleteTenant(
           tenantId: user.tenantId?.id ?? '',
         );
       }
       // You can use this for tenant user's deletion as well, if you want to keep your tenant
-      if (user.authority == Authority.CUSTOMER_USER) {
+      if (authority == Authority.CUSTOMER_USER) {
         await client.getUserControllerApi().deleteUser(
           userId: user.id?.id ?? '',
         );

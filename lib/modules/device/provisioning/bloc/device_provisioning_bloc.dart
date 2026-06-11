@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plugin_wifi_connect/plugin_wifi_connect.dart';
@@ -106,17 +107,28 @@ class DeviceProvisioningBloc
         }
 
         try {
-          await tbClient
+          final response = await tbClient
               .getDeviceControllerApi()
               .claimDevice(
                 deviceName: deviceName,
-                claimRequest: ClaimRequest((b) => b..secretKey = deviceSecretKey),
+                claimRequest: ClaimRequest(
+                  (b) => b..secretKey = deviceSecretKey,
+                ),
               )
               .timeout(
                 const Duration(seconds: 20),
                 onTimeout:
                     () => throw Exception('Device claiming timeout reached'),
               );
+
+          // A 2xx no longer guarantees success: the endpoint can return a
+          // ClaimResult body whose `response` is FAILURE. Only treat an
+          // explicit non-success result as a failure; an empty/unparseable
+          // body (e.g. the CLAIMED case) is still considered success.
+          if (_isClaimFailure(response.data)) {
+            emit(const DeviceProvisioningClaimingErrorState(null));
+            return;
+          }
 
           communicationService.fire(
             const DeviceProvisioningStatusChangedEvent(
@@ -146,6 +158,25 @@ class DeviceProvisioningBloc
         mustReconnectToWifiBeforeClaiming = false;
         add(const SuccessfullyProvisionedEvent());
     }
+  }
+
+  /// Returns true only when the claim response body explicitly reports a
+  /// non-success result. Tolerant of empty/non-JSON bodies so legitimate
+  /// claims are never reported as failures.
+  bool _isClaimFailure(String? body) {
+    if (body == null || body.isEmpty) {
+      return false;
+    }
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map && decoded['response'] is String) {
+        final result = (decoded['response'] as String).toUpperCase();
+        return result != 'CLAIMED' && result != 'SUCCESS';
+      }
+    } catch (_) {
+      // Not a JSON ClaimResult body; assume success.
+    }
+    return false;
   }
 
   @override
