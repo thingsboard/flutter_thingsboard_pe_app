@@ -5,13 +5,13 @@ class DashboardBackHandler extends StatelessWidget {
   const DashboardBackHandler({
     required this.onBack,
     required this.child,
-    this.enabled = true,
+    this.interceptBack = true,
     super.key,
   });
 
   final Future<void> Function() onBack;
   final Widget child;
-  final bool enabled;
+  final bool interceptBack;
 
   static Future<bool> tryNavigateBack(DashboardController? controller) async {
     if (controller == null) return false;
@@ -30,7 +30,7 @@ class DashboardBackHandler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: !enabled,
+      canPop: !interceptBack,
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
         await onBack();

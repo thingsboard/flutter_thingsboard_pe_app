@@ -75,7 +75,7 @@ class _MainDashboardPageState extends State<MainDashboardPage>
             valueListenable: widget.controller.pageCtrl.currentIndex,
             builder: (context, pageIndex, child) {
               return DashboardBackHandler(
-                enabled: pageIndex == 1,
+                interceptBack: pageIndex == 1,
                 onBack: _handleBack,
                 child: child!,
               );
