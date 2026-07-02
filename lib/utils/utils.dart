@@ -41,7 +41,10 @@ abstract class Utils {
     final List<Map<String, dynamic>> stateObj = [{}];
     final params = <String, dynamic>{};
     if (entityId != null) {
-      params['entityId'] = entityId.toJson();
+      params['entityId'] = {
+        'entityType': entityId.entityType.name,
+        'id': entityId.id,
+      };
     }
     if (entityName != null) {
       params['entityName'] = entityName;
@@ -60,24 +63,6 @@ abstract class Utils {
       return String.fromCharCode(int.parse(p1, radix: 16));
     });
     return Uri.encodeComponent(base64.encode(utf8.encode(encodedUri)));
-  }
-
-  static String? contactToShortAddress(ContactBased contact) {
-    final addressParts = <String>[];
-    if (contact.country != null) {
-      addressParts.add(contact.country!);
-    }
-    if (contact.city != null) {
-      addressParts.add(contact.city!);
-    }
-    if (contact.address != null) {
-      addressParts.add(contact.address!);
-    }
-    if (addressParts.isNotEmpty) {
-      return addressParts.join(', ');
-    } else {
-      return null;
-    }
   }
 
   static Widget imageFromTbImage(
@@ -101,7 +86,7 @@ abstract class Utils {
         onError: onError,
       );
     } else {
-       final newImageUrl = _removeTbImagePrefix(imageUrl);
+      final newImageUrl = _removeTbImagePrefix(imageUrl);
       if (_isImageResourceUrl(imageUrl)) {
         final parts = newImageUrl.split('/');
         final key = Uri.encodeComponent(parts[parts.length - 1]);

@@ -1,7 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/constants/app_constants.dart';
-import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/core/auth/login/provider/oauth_provider.dart';
 import 'package:thingsboard_app/core/auth/noauth/data/model/switch_endpoint_args.dart';
 
@@ -29,7 +29,6 @@ class NoauthProvider extends _$NoauthProvider {
   }
 
   Future<void> switchEndpoint(SwitchEndpointParams params) async {
-    final _client = getIt<ITbClientService>().client;
     try {
       final uri = params.data.uri;
       final host = params.data.host ?? uri.origin;
@@ -44,19 +43,27 @@ class NoauthProvider extends _$NoauthProvider {
         message: 'Getting data from your host $host',
       );
 
-      final data = await _client.getLoginDataBySecretKey(host: host, key: key);
-
-      final authUserFromJwt = _client.getAuthUserFromJwt(data.token);
-      final currentlyAuthUser = _client.getAuthUser();
-      // if (_client.isAuthenticated()) {
-      //   state = NoAuthState(
-      //     error: null,
-      //     isDone: false,
-      //     message: 'Logging you out ...',
-      //   );
-      //   await ref.read(loginProvider.notifier).logout();
-      //   print('noath logout');
-      // }
+      // Fetch JWT pair using secret key from the TARGET host via the QR code
+      // API. A raw Dio is used (instead of the typed
+      // `getQrCodeSettingsControllerApi().getUserTokenByMobileSecret`) because
+      // the request must hit `host`, not the current client's endpoint.
+      final tempDio = Dio(
+        BaseOptions(
+          baseUrl: host,
+          connectTimeout: const Duration(seconds: 20),
+          receiveTimeout: const Duration(seconds: 20),
+        ),
+      );
+      final secretResponse = await tempDio.get('/api/noauth/qr/${key ?? ''}');
+      final data = secretResponse.data;
+      final tokenStr = data is Map ? data['token'] as String? : null;
+      final refreshTokenStr =
+          data is Map ? data['refreshToken'] as String? : null;
+      if (tokenStr == null) {
+        throw ThingsboardError(
+          message: 'Failed to obtain a login token from $host',
+        );
+      }
 
       if (isTheSameHost) {
         state = NoAuthState(
@@ -73,8 +80,8 @@ class NoauthProvider extends _$NoauthProvider {
       }
 
       await getIt<ITbClientService>().client.setUserFromJwtToken(
-        data.token,
-        data.refreshToken,
+        tokenStr,
+        refreshTokenStr,
         false,
       );
       await getIt<IEndpointService>().setEndpoint(host);

@@ -6,7 +6,7 @@ import 'package:thingsboard_app/utils/transition/page_transitions.dart';
 abstract class TbThemeUtils {
   //static final _tbTypography = Typography.material2018();
 
- // static const Color _tbTextColor = Color(0xFF282828);
+  // static const Color _tbTextColor = Color(0xFF282828);
 
   static final tbPrimary =
   // ignore: deprecated_member_use
@@ -36,8 +36,11 @@ abstract class TbThemeUtils {
       return primary ? tbPrimary : tbAccent;
     }
     if (palette.type == 'custom') {
-      final extendsColor = _colorFromType(palette.extendsPalette);
-      return _mergeColors(extendsColor, palette.colors);
+      final extendsColor = _colorFromType(palette.extends_);
+      return _mergeColors(
+        extendsColor,
+        palette.colors?.toMap().cast<String, dynamic>(),
+      );
     } else {
       return _colorFromType(palette.type);
     }

@@ -35,7 +35,7 @@ class _HomeDashboardState extends State<HomeDashboardPage> {
   DashboardController? _dashboardController;
   ValueNotifier<bool> canGoback = ValueNotifier<bool>(false);
   late final home =
-      '${getIt<IEndpointService>().getCachedEndpoint()}/dashboards/${widget.dashboard.dashboardId!}${widget.dashboard.hideDashboardToolbar ? '?hideToolbar=true' : ''}';
+      '${getIt<IEndpointService>().getCachedEndpoint()}/dashboards/${widget.dashboard.dashboardId!}${(widget.dashboard.hideDashboardToolbar ?? false) ? '?hideToolbar=true' : ''}';
 
   @override
   Widget build(BuildContext context) {

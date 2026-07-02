@@ -18,28 +18,28 @@ class TbClientService implements ITbClientService {
   @override
   ThingsboardClient get client => _client;
   final IOverlayService _overlayService = getIt();
+
+  ThingsboardClient _createClient(
+    String endpoint, {
+    required ErrorCallback onError,
+  }) {
+    return ThingsboardClient(
+      endpoint,
+      storage: getIt(),
+      onUserLoaded: onUserLoaded,
+      onError: onError,
+      onLoadStarted: onLoadStarted,
+      onLoadFinished: onLoadFinished,
+      computeFunc: <Q, R>(callback, message) => compute(callback, message),
+    );
+  }
+
   @override
   Future<void> init() async {
     final endpoint = await getIt<IEndpointService>().getEndpoint();
     log('TbClient::init() endpoint: $endpoint');
 
-    _client = ThingsboardClient(
-      endpoint,
-      storage: getIt(),
-      onUserLoaded: () {
-        onUserLoaded();
-      },
-      onError: (e) {
-        onClientError(e);
-      },
-      onLoadStarted: () {
-        onLoadStarted();
-      },
-      onLoadFinished: () {
-        onLoadFinished();
-      },
-      computeFunc: <Q, R>(callback, message) => compute(callback, message),
-    );
+    _client = _createClient(endpoint, onError: onClientError);
 
     try {
       await _client.init();
@@ -109,7 +109,14 @@ class TbClientService implements ITbClientService {
     required ErrorCallback onAuthError,
   }) async {
     log('TbClient:reinit()');
-    await _client.reInit(endpoint);
+    _client = _createClient(
+      endpoint,
+      onError: (e) {
+        onAuthError(e);
+        onClientError(e);
+      },
+    );
+    await _client.init();
     onDone();
   }
 }

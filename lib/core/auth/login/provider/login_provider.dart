@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/oauth2/i_oauth2_client.dart';
+import 'package:thingsboard_app/core/auth/user_authority_bridge.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
+import 'package:thingsboard_app/core/auth/login/models/mobile_basic_info.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/communication/events/user_loaded_event.dart';
@@ -68,7 +70,9 @@ class Login extends _$Login {
 
   Future<bool> login(String email, String password) async {
     try {
-      final res = await _tbClient.login(LoginRequest(email, password));
+      final res = await _tbClient.login(
+        LoginRequest(userName: email, password: password),
+      );
       final user = _tbClient.getAuthUser();
       if (user != null &&
           (user.isMfaConfigurationToken() || user.isPreVerificationToken())) {
@@ -81,15 +85,19 @@ class Login extends _$Login {
   }
 
   Future<void> loadUser() async {
-    final mobileInfo = await _tbClient.getMobileService().getUserMobileInfo(
-      MobileInfoQuery(
-        platformType: _deviceInfoService.getPlatformType(),
-        packageName: _deviceInfoService.getApplicationId(),
-      ),
-    );
+    final mobileResp = await _tbClient
+        .getMobileAppControllerApi()
+        .getUserMobileInfo(
+          pkgName: _deviceInfoService.getApplicationId(),
+          platform: _deviceInfoService.getPlatformType().name,
+        );
+    final mobileInfo = MobileBasicInfo.fromUserMobileInfo(mobileResp.data!);
 
-    final userInfo = await _tbClient.getUserService().getUser();
-    final lang = userInfo.additionalInfo?['lang'];
+    final userInfo = (await _tbClient.getAuthControllerApi().getUser()).data!;
+    final lang =
+        userInfo.additionalInfo?.isMap == true
+            ? userInfo.additionalInfo?.asMap['lang']
+            : null;
     final langStr = lang?.toString();
     final locale = S.delegate.supportedLocales.firstWhereOrNull(
       (l) => l.toString() == langStr || l.languageCode == langStr,
@@ -100,11 +108,14 @@ class Login extends _$Login {
       localeCode: (langStr != null && langStr.isNotEmpty) ? langStr : 'en_US',
     );
     final userPermissions =
-        await _tbClient.getUserPermissionsService().getAllowedPermissions();
+        (await _tbClient
+                .getUserPermissionsControllerApi()
+                .getAllowedPermissions())
+            .data!;
     state = state.copyWith(
       isUserLoaded: true,
       user: userInfo,
-      userScope: userInfo.authority,
+      userScope: userInfo.appAuthority,
       mobileLoginInfo: mobileInfo,
       userPermissions: userPermissions,
     );

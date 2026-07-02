@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/locator.dart';
@@ -7,38 +8,41 @@ import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_ser
 
 part 'oauth_provider.g.dart';
 
-final qrCode = OAuth2ClientInfo.fromJson({
-  'name': "qr",
-  'icon': 'qr-code',
-  'url': '',
-});
+final qrCode = OAuth2ClientLoginInfo(
+  (b) =>
+      b
+        ..name = 'qr'
+        ..icon = 'qr-code'
+        ..url = '',
+);
+
 @riverpod
 Future<LoginMobileInfo> oauth(Ref ref) async {
   final tbClient = getIt<ITbClientService>().client;
   final deviceInfoService = getIt<IDeviceInfoService>();
   try {
-    final loginInfo = await tbClient.getMobileService().getLoginMobileInfo(
-      MobileInfoQuery(
-        packageName: deviceInfoService.getApplicationId(),
-        platformType: deviceInfoService.getPlatformType(),
-
-      ),
-      requestConfig: RequestConfig(ignoreErrors: true)
-    );
-
+    final response = await tbClient
+        .getMobileAppControllerApi()
+        .getLoginMobileInfo(
+          pkgName: deviceInfoService.getApplicationId(),
+          platform: deviceInfoService.getPlatformType().name,
+        );
+    final loginInfo = response.data;
     if (loginInfo != null) {
-      return LoginMobileInfo(
-        oAuth2Clients: [...loginInfo.oAuth2Clients, qrCode],
-        storeInfo: loginInfo.storeInfo,
-        selfRegistrationParams: loginInfo.selfRegistrationParams,
-        versionInfo: loginInfo.versionInfo,
+      final existingClients =
+          loginInfo.oAuth2ClientLoginInfos?.toList() ??
+          <OAuth2ClientLoginInfo>[];
+      return loginInfo.rebuild(
+        (b) =>
+            b.oAuth2ClientLoginInfos = ListBuilder<OAuth2ClientLoginInfo>([
+              ...existingClients,
+              qrCode,
+            ]),
       );
     }
   } catch (_) {}
   return LoginMobileInfo(
-    oAuth2Clients: [qrCode],
-    selfRegistrationParams: null,
-    storeInfo: null,
-    versionInfo: null,
+    (b) =>
+        b.oAuth2ClientLoginInfos = ListBuilder<OAuth2ClientLoginInfo>([qrCode]),
   );
 }

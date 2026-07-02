@@ -14,9 +14,11 @@ import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/domain/entites/dashboard_arguments.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/thingsboard_client_extensions.dart';
 import 'package:thingsboard_app/utils/services/device_profile/device_profile_cache.dart';
 import 'package:thingsboard_app/utils/services/device_profile/model/cached_device_profile.dart';
 import 'package:thingsboard_app/utils/services/entity_query_api.dart';
+import 'package:thingsboard_app/utils/services/new_client_page_data.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/utils/utils.dart';
@@ -27,15 +29,18 @@ mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
   String title(BuildContext context) => S.of(context).devices(2);
 
   @override
-  String noItemsFoundText(BuildContext context) =>
-      S.of(context).noDevicesFound;
+  String noItemsFoundText(BuildContext context) => S.of(context).noDevicesFound;
   final tbClient = getIt<ITbClientService>().client;
   @override
   Future<PageData<EntityData>> fetchEntities(
     EntityDataQuery dataQuery, {
     bool refresh = false,
-  }) {
-    return tbClient.getEntityQueryService().findEntityDataByQuery(dataQuery);
+  }) async {
+    final response = await tbClient
+        .getEntityQueryControllerApi()
+        .findEntityDataByQuery(entityDataQuery: dataQuery);
+    final pd = response.data!;
+    return toPageData(pd.data, pd.totalPages, pd.totalElements, pd.hasNext);
   }
 
   @override
@@ -43,7 +48,7 @@ mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
     final profile = await DeviceProfileCache.getDeviceProfileInfo(
       tbClient,
       device.field('type')!,
-      device.entityId.id!,
+      device.entityId?.id ?? '',
     );
     final loginInfo = ref.read(loginProvider);
     if (profile.info.defaultDashboardId != null &&
@@ -56,7 +61,7 @@ mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
             Resource.WIDGET_TYPE,
             Operation.READ,
           )) {
-        final dashboardId = profile.info.defaultDashboardId!.id!;
+        final dashboardId = profile.info.defaultDashboardId?.id ?? '';
         final state = Utils.createDashboardEntityState(
           device.entityId,
           entityName: device.field('name'),
@@ -134,11 +139,24 @@ class DeviceQueryController extends PageKeyController<EntityDataQuery> {
        );
 
   @override
-  EntityDataQuery nextPageKey(EntityDataQuery pageKey) => pageKey.next();
+  EntityDataQuery nextPageKey(EntityDataQuery pageKey) {
+    final currentPage = pageKey.pageLink?.page ?? 0;
+    return pageKey.rebuild(
+      (b) => b.pageLink.update((pl) => pl..page = currentPage + 1),
+    );
+  }
 
   void onSearchText(String searchText) {
-    value.pageKey.pageLink.page = 0;
-    value.pageKey.pageLink.textSearch = searchText;
+    value = PageKeyValue(
+      value.pageKey.rebuild(
+        (b) => b.pageLink.update(
+          (pl) =>
+              pl
+                ..page = 0
+                ..textSearch = searchText,
+        ),
+      ),
+    );
     notifyListeners();
   }
 }
@@ -170,7 +188,7 @@ class _DeviceCardState extends State<DeviceCard> {
       deviceProfileFuture = DeviceProfileCache.getDeviceProfileInfo(
         tbClient,
         widget.device.field('type')!,
-        widget.device.entityId.id!,
+        widget.device.entityId?.id ?? '',
       );
     }
   }
@@ -185,7 +203,7 @@ class _DeviceCardState extends State<DeviceCard> {
         deviceProfileFuture = DeviceProfileCache.getDeviceProfileInfo(
           tbClient,
           widget.device.field('type')!,
-          widget.device.entityId.id!,
+          widget.device.entityId?.id ?? '',
         );
       }
     }
@@ -309,7 +327,13 @@ class _DeviceCardState extends State<DeviceCard> {
                                       Text(
                                         entityDateFormat.format(
                                           DateTime.fromMillisecondsSinceEpoch(
-                                            widget.device.createdTime!,
+                                            int.tryParse(
+                                                  widget.device.field(
+                                                        'createdTime',
+                                                      ) ??
+                                                      '0',
+                                                ) ??
+                                                0,
                                           ),
                                         ),
                                         style: const TextStyle(
@@ -321,7 +345,10 @@ class _DeviceCardState extends State<DeviceCard> {
                                       ),
                                     ],
                                   ),
-                                  if (widget.device.field('label')?.isNotEmpty == true)
+                                  if (widget.device
+                                          .field('label')
+                                          ?.isNotEmpty ==
+                                      true)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 2),
                                       child: Text(
