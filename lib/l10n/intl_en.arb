@@ -452,8 +452,6 @@
   "phoneIsRequired": "Phone is required",
   "phoneIsInvalid": "Phone is invalid",
   "addVerificationMethod": "Add verification method",
-  "areYouSureYouWantToExit": "Are you sure you want to exit?",
-  "confirmToCloseTheApp": "Confirm to close the app",
   "imageSavedToGallery": "Saved to platform 'Image gallery'",
   "failedToSaveImage": "Failed to save image",
   "nSelected": "{count} selected",

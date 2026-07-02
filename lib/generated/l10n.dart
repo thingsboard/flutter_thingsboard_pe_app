@@ -3378,26 +3378,6 @@ class S {
     );
   }
 
-  /// `Are you sure you want to exit?`
-  String get areYouSureYouWantToExit {
-    return Intl.message(
-      'Are you sure you want to exit?',
-      name: 'areYouSureYouWantToExit',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Confirm to close the app`
-  String get confirmToCloseTheApp {
-    return Intl.message(
-      'Confirm to close the app',
-      name: 'confirmToCloseTheApp',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Saved to platform 'Image gallery'`
   String get imageSavedToGallery {
     return Intl.message(
