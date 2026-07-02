@@ -196,12 +196,7 @@ class TbContext implements PopEntry {
 
             userDetails = mobileInfo?.user;
             homeDashboard = mobileInfo?.homeDashboardInfo;
-            versionInfo =
-                mobileInfo?.versionInfo != null
-                    ? VersionInfo.fromMobileAppVersionInfo(
-                      mobileInfo!.versionInfo!,
-                    )
-                    : null;
+            versionInfo = VersionInfo.fromNullable(mobileInfo?.versionInfo);
             storeInfo = mobileInfo?.storeInfo;
             _dashboardAccessDenied = false;
             if (_defaultDashboardId() != null) {
@@ -250,8 +245,6 @@ class TbContext implements PopEntry {
       if (_handleRootState) {
         await updateRouteState();
       }
-
-      if (isAuthenticated) {}
     } catch (e, s) {
       log.error('TbContext.onUserLoaded: $e', e, s);
 

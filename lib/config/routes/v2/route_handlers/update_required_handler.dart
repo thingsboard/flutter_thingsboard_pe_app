@@ -13,12 +13,10 @@ class UpdateRequiredHandler extends RouteHandler {
   @override
   void subscribe(BuildContext context, WidgetRef ref) {
     _subscription = ref.listenManual(oauthProvider, (prev, next) async  {
-      final rawVersionInfo = next.value?.versionInfo;
-      if (rawVersionInfo != null) {
-        final versionInfo = VersionInfo.fromMobileAppVersionInfo(rawVersionInfo);
-        if (getIt<IVersionService>().appUpdateRequired(versionInfo)) {
-          await ref.read(loginProvider.notifier).logout();
-        }
+      final versionInfo = VersionInfo.fromNullable(next.value?.versionInfo);
+      if (versionInfo != null &&
+          getIt<IVersionService>().appUpdateRequired(versionInfo)) {
+        await ref.read(loginProvider.notifier).logout();
       }
     });
   }

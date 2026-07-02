@@ -7,13 +7,13 @@ import 'package:intl/intl.dart';
 import 'package:thingsboard_app/config/themes/app_colors.dart';
 import 'package:thingsboard_app/config/themes/design_tokens.dart';
 import 'package:thingsboard_app/config/themes/tb_text_styles.dart';
+import 'package:thingsboard_app/core/entity/contact_info.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart' hide Direction;
 import 'package:thingsboard_pe_client/src/model/page/sort_order.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_exception_widget.dart';
-import 'package:thingsboard_app/utils/utils.dart';
 
 typedef EntityTapFunction<T> = Function(T entity);
 typedef EntityCardWidgetBuilder<T> =
@@ -63,8 +63,9 @@ mixin EntitiesBase<T, P> {
 mixin ContactBasedBase<T, P> on EntitiesBase<T, P> {
   @override
   Widget buildEntityListCard(BuildContext context, T contact) {
-    final e = contact as dynamic;
-    final address = Utils.contactToShortAddress(contact);
+    final info = ContactInfo.of(contact);
+    final email = info?.email;
+    final address = info?.shortAddress;
     return Container(
       constraints: const BoxConstraints(minHeight: 56),
       decoration: BoxDecoration(borderRadius: DesignTokens.borderRadiusSmall),
@@ -84,9 +85,7 @@ mixin ContactBasedBase<T, P> on EntitiesBase<T, P> {
                   children: [
                     Expanded(
                       child: Text(
-                        contact is HasName
-                            ? contact.getName()
-                            : (e.name as String? ?? ''),
+                        info?.name ?? '',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TbTextStyles.labelLarge.copyWith(
@@ -98,7 +97,7 @@ mixin ContactBasedBase<T, P> on EntitiesBase<T, P> {
                     Text(
                       entityDateFormat.format(
                         DateTime.fromMillisecondsSinceEpoch(
-                          e.createdTime as int? ?? 0,
+                          info?.createdTime ?? 0,
                         ),
                       ),
                       style: TbTextStyles.bodyMedium.copyWith(
@@ -108,9 +107,9 @@ mixin ContactBasedBase<T, P> on EntitiesBase<T, P> {
                   ],
                 ),
 
-                if ((e.email as String?) != null)
+                if (email != null)
                   Text(
-                    e.email as String,
+                    email,
                     style: TbTextStyles.labelSmall.copyWith(
                       color: AppColors.textTertiary,
                     ),

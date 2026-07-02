@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:thingsboard_app/config/themes/app_colors.dart';
 import 'package:thingsboard_app/config/themes/tb_text_styles.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
+import 'package:thingsboard_app/core/auth/user_authority_bridge.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/more/profle_widget.dart';
@@ -61,10 +62,7 @@ Future<void> deleteAccount(
   if (delete == true) {
     final client = getIt<ITbClientService>().client;
     try {
-      // `user.authority` is the generated built_value enum, while the `Authority`
-      // constants below come from the hand-written enum the barrel re-exports.
-      // Bridge by name so the comparisons actually match (see profle_widget).
-      final authority = authorityFromString(user.authority.name);
+      final authority = user.appAuthority;
 
       /// More strict way. Deletes overall tenant account.
       if (authority == Authority.TENANT_ADMIN) {

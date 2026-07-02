@@ -37,23 +37,23 @@ class NotificationPaginationRepository {
     bool refresh = false,
   }) async {
     try {
-      final response = await tbClient
-          .getNotificationControllerApi()
-          .getNotifications(
-            pageSize: pageKey.pageLink.pageSize,
-            page: pageKey.pageLink.page,
-            textSearch: pageKey.pageLink.textSearch,
-            unreadOnly: pageKey.unreadOnly,
-            deliveryMethod: pageKey.deliveryMethod,
-          );
+      // Fetch raw JSON via the client's Dio rather than the typed
+      // getNotifications endpoint: the generated NotificationInfo drops the
+      // alarm fields (severity/status/alarmId) during deserialization, which
+      // the notification UI (badge, swipe-to-ack/clear, deep-link) relies on.
+      // PushNotification.fromJson parses the full server payload directly.
+      final response = await tbClient.dio.get<Map<String, dynamic>>(
+        '/api/notifications',
+        queryParameters: pageKey.toQueryParameters(),
+      );
 
-      final page = response.data!;
-      final items = (page.data?.toList() ?? <Notification>[])
-          .map((n) => _toPushNotification(n))
-          .whereType<PushNotification>()
-          .toList();
+      final page = PageData.fromJson(
+        response.data!,
+        (json) => PushNotification.fromJson(json as Map<String, dynamic>),
+      );
+      final items = page.data;
 
-      final isLastPage = !(page.hasNext ?? false);
+      final isLastPage = !page.hasNext;
       if (refresh) {
         final state = pagingController.value;
         if (state.itemList != null) {
@@ -68,26 +68,6 @@ class NotificationPaginationRepository {
       }
     } catch (error) {
       pagingController.error = error;
-    }
-  }
-
-  PushNotification? _toPushNotification(Notification n) {
-    try {
-      final json = <String, dynamic>{
-        'id': {'id': n.id?.id, 'entityType': 'NOTIFICATION'},
-        'createdTime': n.createdTime,
-        'requestId': {'id': n.requestId?.id ?? '', 'entityType': 'NOTIFICATION_REQUEST'},
-        'recipientId': {'id': n.recipientId?.id ?? '', 'entityType': 'USER'},
-        'subject': n.subject ?? '',
-        'text': n.text ?? '',
-        'type': n.type?.name ?? 'GENERAL',
-        'status': n.status?.name ?? 'UNREAD',
-        if (n.additionalConfig != null && n.additionalConfig!.isMap)
-          'additionalConfig': n.additionalConfig!.asMap,
-      };
-      return PushNotification.fromJson(json);
-    } catch (_) {
-      return null;
     }
   }
 

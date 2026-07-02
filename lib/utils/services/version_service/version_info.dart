@@ -23,6 +23,9 @@ class VersionInfo {
     );
   }
 
+  static VersionInfo? fromNullable(MobileAppVersionInfo? info) =>
+      info == null ? null : VersionInfo.fromMobileAppVersionInfo(info);
+
   static PlatformVersion? _tryParse(String v) {
     try {
       return PlatformVersion.fromString(v);

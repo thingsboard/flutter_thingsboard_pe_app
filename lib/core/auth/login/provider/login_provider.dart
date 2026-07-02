@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/oauth2/i_oauth2_client.dart';
+import 'package:thingsboard_app/core/auth/user_authority_bridge.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/core/auth/login/models/mobile_basic_info.dart';
 import 'package:thingsboard_app/locator.dart';
@@ -114,7 +115,7 @@ class Login extends _$Login {
     state = state.copyWith(
       isUserLoaded: true,
       user: userInfo,
-      userScope: authorityFromString(userInfo.authority?.name ?? 'ANONYMOUS'),
+      userScope: userInfo.appAuthority,
       mobileLoginInfo: mobileInfo,
       userPermissions: userPermissions,
     );

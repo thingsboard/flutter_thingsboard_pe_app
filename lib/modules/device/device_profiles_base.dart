@@ -309,7 +309,7 @@ class _DeviceProfileCardState extends State<DeviceProfileCard> {
   void _countDevices() {
     countedProfile = DeviceProfileCache.getDevicesCount(
       tbClient,
-      widget.deviceProfile.name ?? '' ?? '',
+      widget.deviceProfile.name ?? '',
     );
   }
 

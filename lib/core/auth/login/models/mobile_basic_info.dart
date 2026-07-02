@@ -18,9 +18,7 @@ class MobileBasicInfo {
       homeDashboardInfo: info.homeDashboardInfo,
       pages: _parsePages(info.pages),
       storeInfo: info.storeInfo,
-      versionInfo: info.versionInfo != null
-          ? VersionInfo.fromMobileAppVersionInfo(info.versionInfo!)
-          : null,
+      versionInfo: VersionInfo.fromNullable(info.versionInfo),
     );
   }
 

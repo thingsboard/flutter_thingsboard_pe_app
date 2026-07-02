@@ -21,12 +21,10 @@ class VersionRedirect implements Redirect {
       return null;
     }
     final oauth = ref.read(oauthProvider);
-    final rawVersionInfo = oauth.value?.versionInfo;
-    if (rawVersionInfo != null) {
-      final versionInfo = VersionInfo.fromMobileAppVersionInfo(rawVersionInfo);
-      if (getIt<IVersionService>().appUpdateRequired(versionInfo)) {
-        return LoginRoutes.login + LoginRoutes.updateRequired;
-      }
+    final versionInfo = VersionInfo.fromNullable(oauth.value?.versionInfo);
+    if (versionInfo != null &&
+        getIt<IVersionService>().appUpdateRequired(versionInfo)) {
+      return LoginRoutes.login + LoginRoutes.updateRequired;
     }
     return null;
   }

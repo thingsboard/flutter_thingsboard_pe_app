@@ -14,6 +14,7 @@ import 'package:thingsboard_app/core/auth/2FA/setup/widgets/backup_code_configur
 import 'package:thingsboard_app/core/auth/2FA/setup/widgets/email_configure_widget.dart';
 import 'package:thingsboard_app/core/auth/2FA/setup/widgets/phone_configure_widget.dart';
 import 'package:thingsboard_app/core/auth/2FA/setup/widgets/totp_configure_widget.dart';
+import 'package:thingsboard_app/core/auth/2FA/two_fa_provider_type_parser.dart';
 import 'package:thingsboard_app/core/auth/2FA/two_fa_providers_helper.dart';
 import 'package:thingsboard_app/core/auth/2FA/two_fa_view_type.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
@@ -106,14 +107,14 @@ class TwoFactorAuthSetup extends HookConsumerWidget {
           providers.value != null &&
                   !(userConfig.isLoading || userConfig.isRefreshing)
               ? SelectProviderTypeWidget(
-                defaultProvider: _parseProviderType(
+                defaultProvider: tryParseTwoFaProviderType(
                   userConfig.value?.configs?.entries
                       .firstWhereOrNull((e) => e.value.useByDefault ?? false)
                       ?.key,
                 ),
                 activeProviders:
                     userConfig.value?.configs?.keys
-                        .map(_parseProviderType)
+                        .map(tryParseTwoFaProviderType)
                         .whereType<TwoFaProviderType>()
                         .toList() ??
                     [],
@@ -180,14 +181,5 @@ class TwoFactorAuthSetup extends HookConsumerWidget {
     final route =
         '${LoginRoutes.login}${LoginRoutes.mfaForceSuccess}${'?force=$isForce'}&selectedProvider=${configuredType.name}';
     context.pushReplacement(route, extra: configuredType);
-  }
-}
-
-TwoFaProviderType? _parseProviderType(String? name) {
-  if (name == null) return null;
-  try {
-    return TwoFaProviderType.valueOf(name);
-  } catch (_) {
-    return null;
   }
 }

@@ -65,24 +65,6 @@ abstract class Utils {
     return Uri.encodeComponent(base64.encode(utf8.encode(encodedUri)));
   }
 
-  static String? contactToShortAddress(dynamic contact) {
-    final addressParts = <String>[];
-    if (contact.country != null) {
-      addressParts.add(contact.country as String);
-    }
-    if (contact.city != null) {
-      addressParts.add(contact.city as String);
-    }
-    if (contact.address != null) {
-      addressParts.add(contact.address as String);
-    }
-    if (addressParts.isNotEmpty) {
-      return addressParts.join(', ');
-    } else {
-      return null;
-    }
-  }
-
   static Widget imageFromTbImage(
     BuildContext context,
     ThingsboardClient tbClient,

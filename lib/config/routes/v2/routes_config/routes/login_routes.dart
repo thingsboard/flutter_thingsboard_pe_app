@@ -3,6 +3,7 @@ import 'package:thingsboard_app/core/auth/2FA/confirm/two_factor_authentication_
 import 'package:thingsboard_app/core/auth/2FA/setup/two_factor_auth_config_success.dart';
 import 'package:thingsboard_app/core/auth/2FA/setup/two_factor_auth_force_description.dart';
 import 'package:thingsboard_app/core/auth/2FA/setup/two_factor_auth_setup.dart';
+import 'package:thingsboard_app/core/auth/2FA/two_fa_provider_type_parser.dart';
 import 'package:thingsboard_app/core/auth/login/view/login_page.dart';
 import 'package:thingsboard_app/core/auth/reset_password/reset_password_request_page.dart';
 import 'package:thingsboard_app/modules/version/view/update_required_page.dart';
@@ -43,7 +44,7 @@ final loginRoutes = [
           final providerQuery = state.uri.queryParameters['selectedProvider'];
           final providerType =
               providerQuery != null
-                  ? _parseTwoFaProviderType(providerQuery)
+                  ? tryParseTwoFaProviderType(providerQuery)
                   : null;
 
           return TwoFactorAuthenticationPage(
@@ -61,7 +62,7 @@ final loginRoutes = [
         builder: (context, state) {
           final providerQuery = state.uri.queryParameters['selectedProvider'];
           final providerType =
-              _parseTwoFaProviderType(providerQuery) ??
+              tryParseTwoFaProviderType(providerQuery) ??
               TwoFaProviderType.unknownDefaultOpenApi;
 
           final force =
@@ -79,7 +80,7 @@ final loginRoutes = [
           final providerQuery = state.uri.queryParameters['selectedProvider'];
           final providerType =
               providerQuery != null
-                  ? _parseTwoFaProviderType(providerQuery)
+                  ? tryParseTwoFaProviderType(providerQuery)
                   : null;
 
           return TwoFactorAuthSetup(
@@ -95,12 +96,3 @@ final loginRoutes = [
     },
   ),
 ];
-
-TwoFaProviderType? _parseTwoFaProviderType(String? name) {
-  if (name == null) return null;
-  try {
-    return TwoFaProviderType.valueOf(name);
-  } catch (_) {
-    return null;
-  }
-}

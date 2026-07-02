@@ -259,21 +259,18 @@ class NotificationService {
                 (data['dashboardId'] ?? data['onClick.dashboardId']).toString();
           }
           EntityId? entityId;
-          if ((data['stateEntityId'] ?? data['onClick.stateEntityId']) !=
-                  null &&
-              (data['stateEntityType'] ?? data['onClick.stateEntityType']) !=
-                  null) {
+          final rawEntityId =
+              data['stateEntityId'] ?? data['onClick.stateEntityId'];
+          final entityType = _tryParseEntityType(
+            (data['stateEntityType'] ?? data['onClick.stateEntityType'])
+                ?.toString(),
+          );
+          if (rawEntityId != null && entityType != null) {
             entityId = $EntityId(
               (b) =>
                   b
-                    ..entityType = EntityType.valueOf(
-                      (data['stateEntityType'] ??
-                              data['onClick.stateEntityType'])
-                          .toString(),
-                    )
-                    ..id =
-                        (data['stateEntityId'] ?? data['onClick.stateEntityId'])
-                            .toString(),
+                    ..entityType = entityType
+                    ..id = rawEntityId.toString(),
             );
           }
 
@@ -323,5 +320,17 @@ class NotificationService {
     } catch (_) {
       return 0;
     }
+  }
+}
+
+/// [EntityType.valueOf] throws on an unknown name, so tolerate server-sent
+/// entity types this client's enum doesn't know: the tapped notification just
+/// resolves without an entity target instead of crashing.
+EntityType? _tryParseEntityType(String? name) {
+  if (name == null) return null;
+  try {
+    return EntityType.valueOf(name);
+  } catch (_) {
+    return null;
   }
 }
