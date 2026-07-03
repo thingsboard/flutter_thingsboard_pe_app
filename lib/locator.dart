@@ -20,6 +20,8 @@ import 'package:thingsboard_app/utils/services/loading_service/i_loading_service
 import 'package:thingsboard_app/utils/services/loading_service/loading_service.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/local_database/local_database_service.dart';
+import 'package:thingsboard_app/utils/services/location/i_location_service.dart';
+import 'package:thingsboard_app/utils/services/location/location_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/overlay_service.dart';
@@ -58,6 +60,9 @@ Future<void> setUpRootDependencies() async {
     ..registerLazySingleton<ITbImageGalleryService>(() => TbImageGalleryService())
       ..registerLazySingleton<ThingsboardAppRouter>(() => ThingsboardAppRouter(overlayService: getIt()))
     ..registerLazySingleton<IDeviceInfoService>(() => deviceInfoService)
+    ..registerLazySingleton<ILocationService>(
+      () => LocationService(logger: getIt()),
+    )
     // ..registerLazySingleton(() => TbContext())
     ..registerSingletonAsync<ITbClientService>(() async {
       final client = TbClientService();
