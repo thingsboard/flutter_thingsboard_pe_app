@@ -7,6 +7,7 @@ enum LiveTrackingError {
   targetNotFound,
   noConnection,
   unauthorized,
+  savePermissionDenied,
   saveFailed,
   locationServicesDisabled,
   locationPermissionDenied,
@@ -33,6 +34,13 @@ enum LiveTrackingError {
     if (error.status == 404 ||
         error.errorCode == ThingsBoardErrorCode.itemNotFound) {
       return targetNotFound;
+    }
+    // A group permission may deny telemetry/attribute writes on the target:
+    // unlike a transient save failure, retrying cannot help until access is
+    // granted, so it is surfaced as its own cause.
+    if (error.status == 403 ||
+        error.errorCode == ThingsBoardErrorCode.permissionDenied) {
+      return savePermissionDenied;
     }
     return saveFailed;
   }

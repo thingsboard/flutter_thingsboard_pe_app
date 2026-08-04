@@ -538,6 +538,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "liveTrackingErrorSaveFailed": MessageLookupByLibrary.simpleMessage(
       "Couldn\'t save this fix to the server. Saving retries with the next fix.",
     ),
+    "liveTrackingErrorSavePermissionDenied": MessageLookupByLibrary.simpleMessage(
+      "Can\'t save to this entity — you don\'t have permission. Tracking continues; ask your administrator to grant access.",
+    ),
     "liveTrackingErrorServicesDisabled": MessageLookupByLibrary.simpleMessage(
       "Location services are turned off on this device.",
     ),

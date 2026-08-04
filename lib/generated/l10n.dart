@@ -3619,6 +3619,16 @@ class S {
     );
   }
 
+  /// `Can't save to this entity — you don't have permission. Tracking continues; ask your administrator to grant access.`
+  String get liveTrackingErrorSavePermissionDenied {
+    return Intl.message(
+      'Can\'t save to this entity — you don\'t have permission. Tracking continues; ask your administrator to grant access.',
+      name: 'liveTrackingErrorSavePermissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Couldn't save this fix to the server. Saving retries with the next fix.`
   String get liveTrackingErrorSaveFailed {
     return Intl.message(

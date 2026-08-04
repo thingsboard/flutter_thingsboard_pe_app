@@ -56,6 +56,8 @@ String _errorLabel(
     S.of(context).liveTrackingErrorTargetNotFound,
   LiveTrackingError.noConnection => S.of(context).liveTrackingErrorNoConnection,
   LiveTrackingError.unauthorized => S.of(context).liveTrackingErrorUnauthorized,
+  LiveTrackingError.savePermissionDenied =>
+    S.of(context).liveTrackingErrorSavePermissionDenied,
   LiveTrackingError.saveFailed => S.of(context).liveTrackingErrorSaveFailed,
   LiveTrackingError.locationServicesDisabled =>
     S.of(context).liveTrackingErrorServicesDisabled,
