@@ -1,11 +1,12 @@
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/device_provisioning_action.dart';
-import 'package:thingsboard_app/utils/services/mobile_actions/actions/get_live_location_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/get_location_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/make_phone_call_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/scan_qr_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/show_map_location_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/show_map_with_directions_action.dart';
+import 'package:thingsboard_app/utils/services/mobile_actions/actions/start_live_location_action.dart';
+import 'package:thingsboard_app/utils/services/mobile_actions/actions/stop_live_location_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/take_photo_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/take_picture_from_gallery_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/take_screenshot_action.dart';
@@ -24,7 +25,8 @@ class WidgetActionHandler {
     ScanQrAction(),
     MakePhoneCallAction(),
     GetLocationAction(),
-    GetLiveLocationAction(),
+    StartLiveLocationAction(),
+    StopLiveLocationAction(),
     TakeScreenshotAction(),
   ];
   Future<Map<String, dynamic>> handleWidgetMobileAction(

@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/utils/services/location/i_location_service.dart';
 import 'package:thingsboard_app/utils/services/location/model/geo_position.dart';
 import 'package:thingsboard_app/utils/services/location/model/location_fix.dart';
+import 'package:thingsboard_app/utils/services/location/model/location_stream_settings.dart';
 
 class LocationService implements ILocationService {
   LocationService({required TbLogger logger, GeolocatorPlatform? geolocator})
@@ -30,12 +32,14 @@ class LocationService implements ILocationService {
       return LocationSuccess(_toGeoPosition(position));
     } catch (e, s) {
       _log.error('LocationService.getCurrentPosition failed', e, s);
-      return LocationFixError(e.toString());
+      return _fixFromPlatformError(e);
     }
   }
 
   @override
-  Stream<LocationFix> positionStream({double distanceFilterMeters = 0}) async* {
+  Stream<LocationFix> positionStream({
+    LocationStreamSettings settings = const LocationStreamSettings(),
+  }) async* {
     final unavailable = await _ensureAvailable();
     if (unavailable != null) {
       yield unavailable;
@@ -43,10 +47,7 @@ class LocationService implements ILocationService {
     }
 
     final raw = _geolocator.getPositionStream(
-      locationSettings: LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: distanceFilterMeters.round(),
-      ),
+      locationSettings: _toLocationSettings(settings),
     );
 
     yield* raw.transform(
@@ -56,11 +57,21 @@ class LocationService implements ILocationService {
                 sink.add(LocationSuccess(_toGeoPosition(position))),
         handleError: (e, s, sink) {
           _log.error('LocationService.positionStream error', e, s);
-          sink.add(LocationFixError(e.toString()));
+          sink.add(_fixFromPlatformError(e));
         },
       ),
     );
   }
+
+  /// Geolocator reports a mid-stream loss of location availability as a
+  /// stream *error*, not as a status; mapping it back to the sealed cases
+  /// keeps the "services disabled" / "permission denied" handling identical
+  /// whether it happens at start or mid-session.
+  LocationFix _fixFromPlatformError(Object e) => switch (e) {
+    LocationServiceDisabledException() => const LocationServicesDisabled(),
+    PermissionDeniedException() => const LocationPermissionDenied(),
+    _ => LocationFixError(e.toString()),
+  };
 
   @override
   Future<bool> openLocationSettings() => _geolocator.openLocationSettings();
@@ -89,10 +100,49 @@ class LocationService implements ILocationService {
     return null;
   }
 
+  LocationSettings _toLocationSettings(LocationStreamSettings settings) {
+    final accuracy = switch (settings.accuracy) {
+      LocationAccuracyLevel.low => LocationAccuracy.low,
+      LocationAccuracyLevel.balanced => LocationAccuracy.medium,
+      LocationAccuracyLevel.high => LocationAccuracy.high,
+    };
+    final background = settings.background;
+
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.android => AndroidSettings(
+        accuracy: accuracy,
+        distanceFilter: settings.distanceFilterMeters,
+        intervalDuration: settings.interval,
+        foregroundNotificationConfig:
+            background == null
+                ? null
+                : ForegroundNotificationConfig(
+                  notificationTitle: background.notificationTitle,
+                  notificationText: background.notificationText,
+                  enableWakeLock: true,
+                  setOngoing: true,
+                ),
+      ),
+      TargetPlatform.iOS => AppleSettings(
+        accuracy: accuracy,
+        distanceFilter: settings.distanceFilterMeters,
+        allowBackgroundLocationUpdates: background != null,
+        showBackgroundLocationIndicator: true,
+      ),
+      _ => LocationSettings(
+        accuracy: accuracy,
+        distanceFilter: settings.distanceFilterMeters,
+      ),
+    };
+  }
+
   GeoPosition _toGeoPosition(Position p) => GeoPosition(
     latitude: p.latitude,
     longitude: p.longitude,
     accuracy: p.accuracy,
     timestamp: p.timestamp,
+    altitude: p.altitude,
+    speed: p.speed,
+    heading: p.heading,
   );
 }

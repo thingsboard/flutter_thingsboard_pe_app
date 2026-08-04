@@ -507,6 +507,78 @@ class MessageLookup extends MessageLookupByLibrary {
     "listIsEmptyText": MessageLookupByLibrary.simpleMessage(
       "The list is currently empty.",
     ),
+    "liveTrackingActive": MessageLookupByLibrary.simpleMessage(
+      "Live location tracking",
+    ),
+    "liveTrackingDashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
+    "liveTrackingEndReason": MessageLookupByLibrary.simpleMessage("End reason"),
+    "liveTrackingEndReasonInterrupted": MessageLookupByLibrary.simpleMessage(
+      "Interrupted",
+    ),
+    "liveTrackingEndReasonManual": MessageLookupByLibrary.simpleMessage(
+      "Stopped manually",
+    ),
+    "liveTrackingEndReasonMaxDuration": MessageLookupByLibrary.simpleMessage(
+      "Reached max duration",
+    ),
+    "liveTrackingEnded": MessageLookupByLibrary.simpleMessage("End time"),
+    "liveTrackingErrorLocation": MessageLookupByLibrary.simpleMessage(
+      "Couldn\'t get a location fix.",
+    ),
+    "liveTrackingErrorNoConnection": MessageLookupByLibrary.simpleMessage(
+      "No connection to the server. These fixes weren\'t saved — saving resumes when you\'re back online.",
+    ),
+    "liveTrackingErrorPermissionDenied": MessageLookupByLibrary.simpleMessage(
+      "Location permission was denied.",
+    ),
+    "liveTrackingErrorPermissionDeniedForever":
+        MessageLookupByLibrary.simpleMessage(
+          "Location permission is permanently denied. Enable it in the app settings.",
+        ),
+    "liveTrackingErrorSaveFailed": MessageLookupByLibrary.simpleMessage(
+      "Couldn\'t save this fix to the server. Saving retries with the next fix.",
+    ),
+    "liveTrackingErrorServicesDisabled": MessageLookupByLibrary.simpleMessage(
+      "Location services are turned off on this device.",
+    ),
+    "liveTrackingErrorTargetNotFound": MessageLookupByLibrary.simpleMessage(
+      "Can\'t save to this entity — it no longer exists. Tracking continues; update the target in the dashboard action.",
+    ),
+    "liveTrackingErrorUnauthorized": MessageLookupByLibrary.simpleMessage(
+      "Your session ended. Sign in again to keep saving location.",
+    ),
+    "liveTrackingErrors": MessageLookupByLibrary.simpleMessage("Errors"),
+    "liveTrackingFixes": MessageLookupByLibrary.simpleMessage("Fixes"),
+    "liveTrackingHide": MessageLookupByLibrary.simpleMessage("Hide"),
+    "liveTrackingLastError": MessageLookupByLibrary.simpleMessage("Last error"),
+    "liveTrackingLastFix": MessageLookupByLibrary.simpleMessage("Last fix"),
+    "liveTrackingLastSession": MessageLookupByLibrary.simpleMessage(
+      "Last session",
+    ),
+    "liveTrackingMenuTitle": MessageLookupByLibrary.simpleMessage(
+      "Live location tracking",
+    ),
+    "liveTrackingNoRecord": MessageLookupByLibrary.simpleMessage(
+      "No active tracking and no recent session.",
+    ),
+    "liveTrackingPause": MessageLookupByLibrary.simpleMessage("Pause"),
+    "liveTrackingPaused": MessageLookupByLibrary.simpleMessage(
+      "Live tracking paused",
+    ),
+    "liveTrackingResume": MessageLookupByLibrary.simpleMessage("Resume"),
+    "liveTrackingSaved": MessageLookupByLibrary.simpleMessage("Saved"),
+    "liveTrackingSessionTitle": MessageLookupByLibrary.simpleMessage(
+      "Live location tracking",
+    ),
+    "liveTrackingStartAgain": MessageLookupByLibrary.simpleMessage(
+      "Start again",
+    ),
+    "liveTrackingStarted": MessageLookupByLibrary.simpleMessage("Start time"),
+    "liveTrackingStatus": MessageLookupByLibrary.simpleMessage("Status"),
+    "liveTrackingStop": MessageLookupByLibrary.simpleMessage("Stop"),
+    "liveTrackingTarget": MessageLookupByLibrary.simpleMessage(
+      "Save location to entity",
+    ),
     "login": MessageLookupByLibrary.simpleMessage("Log In"),
     "loginToApp": MessageLookupByLibrary.simpleMessage("Login to app"),
     "loginToYourAccount": MessageLookupByLibrary.simpleMessage(

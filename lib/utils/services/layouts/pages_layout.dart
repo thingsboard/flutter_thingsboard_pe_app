@@ -8,6 +8,7 @@ enum Pages {
   notifications,
   device_list,
   dashboards,
+  live_location_tracking,
   undefined,
 }
 

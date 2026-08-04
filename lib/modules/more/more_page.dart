@@ -34,20 +34,19 @@ class MorePage extends HookConsumerWidget {
       getIt<NotificationService>().updateNotificationsCount();
       return null;
     }, []);
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                spacing: 20,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ProfileWidget(userDetails: userDetails, user: login.user),
-                  if(items.isNotEmpty)
-                  ...[Divider(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              spacing: 20,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ProfileWidget(userDetails: userDetails, user: login.user),
+                if (items.isNotEmpty) ...[
+                  Divider(
                     color: Colors.black.withValues(alpha: .05),
                     thickness: 1,
                     height: 0,
@@ -55,7 +54,8 @@ class MorePage extends HookConsumerWidget {
                   Flexible(
                     child: SingleChildScrollView(
                       child: Column(
-                        children: items
+                        children:
+                            items
                                 .map(
                                   (e) => MoreMenuItemWidget(
                                     TbMainNavigationItem(
@@ -67,7 +67,8 @@ class MorePage extends HookConsumerWidget {
                                       ),
                                       icon: e.icon,
                                       path: e.path,
-                                      showAdditionalIcon: e.showNotificationBadge,
+                                      showAdditionalIcon:
+                                          e.showNotificationBadge,
                                     ),
                                     onTap: () {
                                       context.push(e.path);
@@ -75,35 +76,32 @@ class MorePage extends HookConsumerWidget {
                                   ),
                                 )
                                 .toList(),
-                              
-                                
                       ),
                     ),
                   ),
-                 ],
-                  Divider(
-                    color: Colors.black.withValues(alpha: .05),
-                    thickness: 1,
-                    height: 0,
-                  ),
-                  MoreMenuItemWidget(
-                    TbMainNavigationItem(
-                      title: S.of(context).logout,
-                      icon: Icons.logout,
-                      path: '',
-                    ),
-                    showTrailing: false,
-                    color: AppColors.textError,
-                    onTap: () async  {
-                   await    ref.read(loginProvider.notifier).logout();
-                    },
-                  ),
                 ],
-              ),
+                Divider(
+                  color: Colors.black.withValues(alpha: .05),
+                  thickness: 1,
+                  height: 0,
+                ),
+                MoreMenuItemWidget(
+                  TbMainNavigationItem(
+                    title: S.of(context).logout,
+                    icon: Icons.logout,
+                    path: '',
+                  ),
+                  showTrailing: false,
+                  color: AppColors.textError,
+                  onTap: () async {
+                    await ref.read(loginProvider.notifier).logout();
+                  },
+                ),
+              ],
             ),
-            const MorePageFooter(),
-          ],
-        ),
+          ),
+          const MorePageFooter(),
+        ],
       ),
     );
   }

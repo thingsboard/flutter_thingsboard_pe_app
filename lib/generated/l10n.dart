@@ -3453,6 +3453,311 @@ class S {
       args: [count],
     );
   }
+
+  /// `Live location tracking`
+  String get liveTrackingActive {
+    return Intl.message(
+      'Live location tracking',
+      name: 'liveTrackingActive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Live tracking paused`
+  String get liveTrackingPaused {
+    return Intl.message(
+      'Live tracking paused',
+      name: 'liveTrackingPaused',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fixes`
+  String get liveTrackingFixes {
+    return Intl.message('Fixes', name: 'liveTrackingFixes', desc: '', args: []);
+  }
+
+  /// `Saved`
+  String get liveTrackingSaved {
+    return Intl.message('Saved', name: 'liveTrackingSaved', desc: '', args: []);
+  }
+
+  /// `Errors`
+  String get liveTrackingErrors {
+    return Intl.message(
+      'Errors',
+      name: 'liveTrackingErrors',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stop`
+  String get liveTrackingStop {
+    return Intl.message('Stop', name: 'liveTrackingStop', desc: '', args: []);
+  }
+
+  /// `Pause`
+  String get liveTrackingPause {
+    return Intl.message('Pause', name: 'liveTrackingPause', desc: '', args: []);
+  }
+
+  /// `Resume`
+  String get liveTrackingResume {
+    return Intl.message(
+      'Resume',
+      name: 'liveTrackingResume',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide`
+  String get liveTrackingHide {
+    return Intl.message('Hide', name: 'liveTrackingHide', desc: '', args: []);
+  }
+
+  /// `Live location tracking`
+  String get liveTrackingSessionTitle {
+    return Intl.message(
+      'Live location tracking',
+      name: 'liveTrackingSessionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save location to entity`
+  String get liveTrackingTarget {
+    return Intl.message(
+      'Save location to entity',
+      name: 'liveTrackingTarget',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dashboard`
+  String get liveTrackingDashboard {
+    return Intl.message(
+      'Dashboard',
+      name: 'liveTrackingDashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Status`
+  String get liveTrackingStatus {
+    return Intl.message(
+      'Status',
+      name: 'liveTrackingStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start time`
+  String get liveTrackingStarted {
+    return Intl.message(
+      'Start time',
+      name: 'liveTrackingStarted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last fix`
+  String get liveTrackingLastFix {
+    return Intl.message(
+      'Last fix',
+      name: 'liveTrackingLastFix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last error`
+  String get liveTrackingLastError {
+    return Intl.message(
+      'Last error',
+      name: 'liveTrackingLastError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Can't save to this entity — it no longer exists. Tracking continues; update the target in the dashboard action.`
+  String get liveTrackingErrorTargetNotFound {
+    return Intl.message(
+      'Can\'t save to this entity — it no longer exists. Tracking continues; update the target in the dashboard action.',
+      name: 'liveTrackingErrorTargetNotFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No connection to the server. These fixes weren't saved — saving resumes when you're back online.`
+  String get liveTrackingErrorNoConnection {
+    return Intl.message(
+      'No connection to the server. These fixes weren\'t saved — saving resumes when you\'re back online.',
+      name: 'liveTrackingErrorNoConnection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your session ended. Sign in again to keep saving location.`
+  String get liveTrackingErrorUnauthorized {
+    return Intl.message(
+      'Your session ended. Sign in again to keep saving location.',
+      name: 'liveTrackingErrorUnauthorized',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn't save this fix to the server. Saving retries with the next fix.`
+  String get liveTrackingErrorSaveFailed {
+    return Intl.message(
+      'Couldn\'t save this fix to the server. Saving retries with the next fix.',
+      name: 'liveTrackingErrorSaveFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Location services are turned off on this device.`
+  String get liveTrackingErrorServicesDisabled {
+    return Intl.message(
+      'Location services are turned off on this device.',
+      name: 'liveTrackingErrorServicesDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Location permission was denied.`
+  String get liveTrackingErrorPermissionDenied {
+    return Intl.message(
+      'Location permission was denied.',
+      name: 'liveTrackingErrorPermissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Location permission is permanently denied. Enable it in the app settings.`
+  String get liveTrackingErrorPermissionDeniedForever {
+    return Intl.message(
+      'Location permission is permanently denied. Enable it in the app settings.',
+      name: 'liveTrackingErrorPermissionDeniedForever',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn't get a location fix.`
+  String get liveTrackingErrorLocation {
+    return Intl.message(
+      'Couldn\'t get a location fix.',
+      name: 'liveTrackingErrorLocation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Live location tracking`
+  String get liveTrackingMenuTitle {
+    return Intl.message(
+      'Live location tracking',
+      name: 'liveTrackingMenuTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No active tracking and no recent session.`
+  String get liveTrackingNoRecord {
+    return Intl.message(
+      'No active tracking and no recent session.',
+      name: 'liveTrackingNoRecord',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last session`
+  String get liveTrackingLastSession {
+    return Intl.message(
+      'Last session',
+      name: 'liveTrackingLastSession',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start again`
+  String get liveTrackingStartAgain {
+    return Intl.message(
+      'Start again',
+      name: 'liveTrackingStartAgain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `End time`
+  String get liveTrackingEnded {
+    return Intl.message(
+      'End time',
+      name: 'liveTrackingEnded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `End reason`
+  String get liveTrackingEndReason {
+    return Intl.message(
+      'End reason',
+      name: 'liveTrackingEndReason',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stopped manually`
+  String get liveTrackingEndReasonManual {
+    return Intl.message(
+      'Stopped manually',
+      name: 'liveTrackingEndReasonManual',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reached max duration`
+  String get liveTrackingEndReasonMaxDuration {
+    return Intl.message(
+      'Reached max duration',
+      name: 'liveTrackingEndReasonMaxDuration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Interrupted`
+  String get liveTrackingEndReasonInterrupted {
+    return Intl.message(
+      'Interrupted',
+      name: 'liveTrackingEndReasonInterrupted',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

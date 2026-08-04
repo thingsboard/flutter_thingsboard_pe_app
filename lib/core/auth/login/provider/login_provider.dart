@@ -16,6 +16,8 @@ import 'package:thingsboard_app/utils/services/communication/i_communication_ser
 import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_location_tracking_service.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_tracking_store.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
@@ -41,6 +43,15 @@ class Login extends _$Login {
   }
 
   Future<void> logout() async {
+    // Tracking teardown writes gpsActive=false to the target entity, which
+    // needs the still-valid token — it must complete before the client logout
+    // invalidates it. A teardown failure must not keep the user logged in.
+    try {
+      await getIt<ILiveLocationTrackingService>().stop();
+      await getIt<ILiveTrackingStore>().clear();
+    } catch (e) {
+      log('logout: live tracking teardown failed: $e');
+    }
     if (getIt<IFirebaseService>().apps.isNotEmpty &&
         state.isFullyAuthenticated()) {
       await getIt<NotificationService>().logout();

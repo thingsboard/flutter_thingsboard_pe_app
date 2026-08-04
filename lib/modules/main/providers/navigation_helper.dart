@@ -33,14 +33,18 @@ class NavigationHelper {
         return s.deviceList;
       case 'dashboards':
         return s.dashboards(2);
+      case 'live_location_tracking':
+        return s.liveTrackingMenuTitle;
     }
     if (path == '/more') return s.more;
     if (path.contains('/profile')) return s.profile;
     return fallbackTitle;
   }
 
-static  int? getCurrentIndexFromPath(String path, List<NavigationItemData> items) {
-
+  static int? getCurrentIndexFromPath(
+    String path,
+    List<NavigationItemData> items,
+  ) {
     for (int i = 0; i < items.length; i++) {
       if (items[i].path == path) {
         return i;
@@ -49,37 +53,40 @@ static  int? getCurrentIndexFromPath(String path, List<NavigationItemData> items
     return null;
   }
 
-// Helper functions
-static String getLabel(PageLayout pageLayout) {
-  if (pageLayout.label != null) {
-    return pageLayout.label!;
+  // Helper functions
+  static String getLabel(PageLayout pageLayout) {
+    if (pageLayout.label != null) {
+      return pageLayout.label!;
+    }
+
+    switch (pageLayout.id) {
+      case Pages.home:
+        return 'Home';
+      case Pages.alarms:
+        return 'Alarms';
+      case Pages.devices:
+        return 'Devices';
+      case Pages.customers:
+        return 'Customers';
+      case Pages.assets:
+        return 'Assets';
+      case Pages.audit_logs:
+        return 'Audit Logs';
+      case Pages.notifications:
+        return 'Notifications';
+      case Pages.device_list:
+        return 'Device List';
+      case Pages.dashboards:
+        return 'Dashboards';
+      case Pages.live_location_tracking:
+        return 'Live location tracking';
+      case Pages.undefined:
+      case null:
+        return pageLayout.label ?? '-';
+    }
   }
 
-  switch (pageLayout.id) {
-    case Pages.home:
-      return 'Home';
-    case Pages.alarms:
-      return 'Alarms';
-    case Pages.devices:
-      return 'Devices';
-    case Pages.customers:
-      return 'Customers';
-    case Pages.assets:
-      return 'Assets';
-    case Pages.audit_logs:
-      return 'Audit Logs';
-    case Pages.notifications:
-      return 'Notifications';
-    case Pages.device_list:
-      return 'Device List';
-    case Pages.dashboards:
-      return 'Dashboards';
-    case Pages.undefined:
-    case null:
-      return pageLayout.label ?? '-';
-  }
-}
-static Set<Resource> getRecource(PageLayout pageLayout) {
+  static Set<Resource> getRecource(PageLayout pageLayout) {
     switch (pageLayout.id) {
       case Pages.home:
         return {};
@@ -99,85 +106,91 @@ static Set<Resource> getRecource(PageLayout pageLayout) {
         return {Resource.DEVICE_GROUP, Resource.DEVICE};
       case Pages.dashboards:
         return {Resource.DASHBOARD, Resource.DASHBOARD_GROUP};
+      case Pages.live_location_tracking:
+        return {};
       case Pages.undefined:
       case null:
         return {};
     }
   }
-static IconData getIcon(PageLayout pageLayout) {
-  if (pageLayout.icon != null) {
-    return getIconFromString(pageLayout.icon);
-  }
 
-  switch (pageLayout.id) {
-    case Pages.home:
-      return Icons.home_outlined;
-    case Pages.alarms:
-      return Icons.notifications_outlined;
-    case Pages.devices:
-      return Icons.devices_other_outlined;
-    case Pages.customers:
-      return Icons.supervisor_account_sharp;
-    case Pages.assets:
-      return Icons.domain_outlined;
-    case Pages.audit_logs:
-      return Icons.track_changes_outlined;
-    case Pages.notifications:
-      return Icons.notifications_active_sharp;
-    case Pages.device_list:
-      return Icons.devices;
-    case Pages.dashboards:
-      return Icons.dashboard_outlined;
-    case Pages.undefined:
-    case null:
+  static IconData getIcon(PageLayout pageLayout) {
+    if (pageLayout.icon != null) {
       return getIconFromString(pageLayout.icon);
-  }
-}
-
-static  String getPath(PageLayout pageLayout) {
-  switch (pageLayout.id) {
-    case Pages.home:
-      return '/home';
-    case Pages.alarms:
-      return '/alarms';
-    case Pages.devices:
-      return '/devices';
-    case Pages.customers:
-      return '/customers';
-    case Pages.assets:
-      return '/assets';
-    case Pages.audit_logs:
-      return '/auditLogs';
-    case Pages.notifications:
-      return '/notifications';
-    case Pages.device_list:
-      return '/deviceList';
-    case Pages.dashboards:
-      return '/dashboards';
-    case Pages.undefined:
-    case null:
-      if (pageLayout.url != null) {
-        return '/url/${Uri.encodeComponent(pageLayout.url!)}';
-      } else if (pageLayout.dashboardId != null) {
-        return '/dashboard/${pageLayout.dashboardId}';
-      } else if (pageLayout.path?.startsWith('/url/') == true) {
-        return '/url/${Uri.encodeComponent(pageLayout.path!.split('/url/').last)}';
-      }
-
-      return pageLayout.path ?? '/error';
-  }
-}
-
-static  IconData getIconFromString(String? icon) {
-  if (icon != null) {
-    if (icon.contains('mdi')) {
-      return MdiIcons.fromString(icon.split('mdi:').last) ??
-          Icons.error_outline;
     }
 
-    return materialIconsMap[icon] ?? Icons.error_outline;
+    switch (pageLayout.id) {
+      case Pages.home:
+        return Icons.home_outlined;
+      case Pages.alarms:
+        return Icons.notifications_outlined;
+      case Pages.devices:
+        return Icons.devices_other_outlined;
+      case Pages.customers:
+        return Icons.supervisor_account_sharp;
+      case Pages.assets:
+        return Icons.domain_outlined;
+      case Pages.audit_logs:
+        return Icons.track_changes_outlined;
+      case Pages.notifications:
+        return Icons.notifications_active_sharp;
+      case Pages.device_list:
+        return Icons.devices;
+      case Pages.dashboards:
+        return Icons.dashboard_outlined;
+      case Pages.live_location_tracking:
+        return Icons.my_location;
+      case Pages.undefined:
+      case null:
+        return getIconFromString(pageLayout.icon);
+    }
   }
-  return Icons.error_outline;
-}
 
+  static String getPath(PageLayout pageLayout) {
+    switch (pageLayout.id) {
+      case Pages.home:
+        return '/home';
+      case Pages.alarms:
+        return '/alarms';
+      case Pages.devices:
+        return '/devices';
+      case Pages.customers:
+        return '/customers';
+      case Pages.assets:
+        return '/assets';
+      case Pages.audit_logs:
+        return '/auditLogs';
+      case Pages.notifications:
+        return '/notifications';
+      case Pages.device_list:
+        return '/deviceList';
+      case Pages.dashboards:
+        return '/dashboards';
+      case Pages.live_location_tracking:
+        return '/liveTracking';
+      case Pages.undefined:
+      case null:
+        if (pageLayout.url != null) {
+          return '/url/${Uri.encodeComponent(pageLayout.url!)}';
+        } else if (pageLayout.dashboardId != null) {
+          return '/dashboard/${pageLayout.dashboardId}';
+        } else if (pageLayout.path?.startsWith('/url/') == true) {
+          return '/url/${Uri.encodeComponent(pageLayout.path!.split('/url/').last)}';
+        }
+
+        return pageLayout.path ?? '/error';
+    }
+  }
+
+  static IconData getIconFromString(String? icon) {
+    if (icon != null) {
+      if (icon.contains('mdi')) {
+        return MdiIcons.fromString(icon.split('mdi:').last) ??
+            Icons.error_outline;
+      }
+
+      return materialIconsMap[icon] ?? Icons.error_outline;
+    }
+    return Icons.error_outline;
+  }
 }

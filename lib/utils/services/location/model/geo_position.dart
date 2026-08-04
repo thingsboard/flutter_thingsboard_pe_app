@@ -11,5 +11,8 @@ abstract class GeoPosition with _$GeoPosition {
     required double longitude,
     required double accuracy,
     DateTime? timestamp,
+    double? altitude,
+    double? speed,
+    double? heading,
   }) = _GeoPosition;
 }

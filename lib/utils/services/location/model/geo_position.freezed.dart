@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GeoPosition {
 
- double get latitude; double get longitude; double get accuracy; DateTime? get timestamp;
+ double get latitude; double get longitude; double get accuracy; DateTime? get timestamp; double? get altitude; double? get speed; double? get heading;
 /// Create a copy of GeoPosition
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $GeoPositionCopyWith<GeoPosition> get copyWith => _$GeoPositionCopyWithImpl<GeoP
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GeoPosition&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.accuracy, accuracy) || other.accuracy == accuracy)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GeoPosition&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.accuracy, accuracy) || other.accuracy == accuracy)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.altitude, altitude) || other.altitude == altitude)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.heading, heading) || other.heading == heading));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,latitude,longitude,accuracy,timestamp);
+int get hashCode => Object.hash(runtimeType,latitude,longitude,accuracy,timestamp,altitude,speed,heading);
 
 @override
 String toString() {
-  return 'GeoPosition(latitude: $latitude, longitude: $longitude, accuracy: $accuracy, timestamp: $timestamp)';
+  return 'GeoPosition(latitude: $latitude, longitude: $longitude, accuracy: $accuracy, timestamp: $timestamp, altitude: $altitude, speed: $speed, heading: $heading)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $GeoPositionCopyWith<$Res>  {
   factory $GeoPositionCopyWith(GeoPosition value, $Res Function(GeoPosition) _then) = _$GeoPositionCopyWithImpl;
 @useResult
 $Res call({
- double latitude, double longitude, double accuracy, DateTime? timestamp
+ double latitude, double longitude, double accuracy, DateTime? timestamp, double? altitude, double? speed, double? heading
 });
 
 
@@ -62,13 +62,16 @@ class _$GeoPositionCopyWithImpl<$Res>
 
 /// Create a copy of GeoPosition
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? latitude = null,Object? longitude = null,Object? accuracy = null,Object? timestamp = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? latitude = null,Object? longitude = null,Object? accuracy = null,Object? timestamp = freezed,Object? altitude = freezed,Object? speed = freezed,Object? heading = freezed,}) {
   return _then(_self.copyWith(
 latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,accuracy: null == accuracy ? _self.accuracy : accuracy // ignore: cast_nullable_to_non_nullable
 as double,timestamp: freezed == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,altitude: freezed == altitude ? _self.altitude : altitude // ignore: cast_nullable_to_non_nullable
+as double?,speed: freezed == speed ? _self.speed : speed // ignore: cast_nullable_to_non_nullable
+as double?,heading: freezed == heading ? _self.heading : heading // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -153,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double latitude,  double longitude,  double accuracy,  DateTime? timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double latitude,  double longitude,  double accuracy,  DateTime? timestamp,  double? altitude,  double? speed,  double? heading)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GeoPosition() when $default != null:
-return $default(_that.latitude,_that.longitude,_that.accuracy,_that.timestamp);case _:
+return $default(_that.latitude,_that.longitude,_that.accuracy,_that.timestamp,_that.altitude,_that.speed,_that.heading);case _:
   return orElse();
 
 }
@@ -174,10 +177,10 @@ return $default(_that.latitude,_that.longitude,_that.accuracy,_that.timestamp);c
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double latitude,  double longitude,  double accuracy,  DateTime? timestamp)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double latitude,  double longitude,  double accuracy,  DateTime? timestamp,  double? altitude,  double? speed,  double? heading)  $default,) {final _that = this;
 switch (_that) {
 case _GeoPosition():
-return $default(_that.latitude,_that.longitude,_that.accuracy,_that.timestamp);case _:
+return $default(_that.latitude,_that.longitude,_that.accuracy,_that.timestamp,_that.altitude,_that.speed,_that.heading);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +197,10 @@ return $default(_that.latitude,_that.longitude,_that.accuracy,_that.timestamp);c
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double latitude,  double longitude,  double accuracy,  DateTime? timestamp)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double latitude,  double longitude,  double accuracy,  DateTime? timestamp,  double? altitude,  double? speed,  double? heading)?  $default,) {final _that = this;
 switch (_that) {
 case _GeoPosition() when $default != null:
-return $default(_that.latitude,_that.longitude,_that.accuracy,_that.timestamp);case _:
+return $default(_that.latitude,_that.longitude,_that.accuracy,_that.timestamp,_that.altitude,_that.speed,_that.heading);case _:
   return null;
 
 }
@@ -209,13 +212,16 @@ return $default(_that.latitude,_that.longitude,_that.accuracy,_that.timestamp);c
 
 
 class _GeoPosition implements GeoPosition {
-  const _GeoPosition({required this.latitude, required this.longitude, required this.accuracy, this.timestamp});
+  const _GeoPosition({required this.latitude, required this.longitude, required this.accuracy, this.timestamp, this.altitude, this.speed, this.heading});
   
 
 @override final  double latitude;
 @override final  double longitude;
 @override final  double accuracy;
 @override final  DateTime? timestamp;
+@override final  double? altitude;
+@override final  double? speed;
+@override final  double? heading;
 
 /// Create a copy of GeoPosition
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +233,16 @@ _$GeoPositionCopyWith<_GeoPosition> get copyWith => __$GeoPositionCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GeoPosition&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.accuracy, accuracy) || other.accuracy == accuracy)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GeoPosition&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.accuracy, accuracy) || other.accuracy == accuracy)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.altitude, altitude) || other.altitude == altitude)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.heading, heading) || other.heading == heading));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,latitude,longitude,accuracy,timestamp);
+int get hashCode => Object.hash(runtimeType,latitude,longitude,accuracy,timestamp,altitude,speed,heading);
 
 @override
 String toString() {
-  return 'GeoPosition(latitude: $latitude, longitude: $longitude, accuracy: $accuracy, timestamp: $timestamp)';
+  return 'GeoPosition(latitude: $latitude, longitude: $longitude, accuracy: $accuracy, timestamp: $timestamp, altitude: $altitude, speed: $speed, heading: $heading)';
 }
 
 
@@ -247,7 +253,7 @@ abstract mixin class _$GeoPositionCopyWith<$Res> implements $GeoPositionCopyWith
   factory _$GeoPositionCopyWith(_GeoPosition value, $Res Function(_GeoPosition) _then) = __$GeoPositionCopyWithImpl;
 @override @useResult
 $Res call({
- double latitude, double longitude, double accuracy, DateTime? timestamp
+ double latitude, double longitude, double accuracy, DateTime? timestamp, double? altitude, double? speed, double? heading
 });
 
 
@@ -264,13 +270,16 @@ class __$GeoPositionCopyWithImpl<$Res>
 
 /// Create a copy of GeoPosition
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? latitude = null,Object? longitude = null,Object? accuracy = null,Object? timestamp = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? latitude = null,Object? longitude = null,Object? accuracy = null,Object? timestamp = freezed,Object? altitude = freezed,Object? speed = freezed,Object? heading = freezed,}) {
   return _then(_GeoPosition(
 latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,accuracy: null == accuracy ? _self.accuracy : accuracy // ignore: cast_nullable_to_non_nullable
 as double,timestamp: freezed == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,altitude: freezed == altitude ? _self.altitude : altitude // ignore: cast_nullable_to_non_nullable
+as double?,speed: freezed == speed ? _self.speed : speed // ignore: cast_nullable_to_non_nullable
+as double?,heading: freezed == heading ? _self.heading : heading // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 

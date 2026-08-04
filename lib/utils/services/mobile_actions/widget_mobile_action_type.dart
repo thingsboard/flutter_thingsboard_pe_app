@@ -6,7 +6,8 @@ enum WidgetMobileActionType {
   scanQrCode,
   makePhoneCall,
   getLocation,
-  getLiveLocation,
+  startLiveLocation,
+  stopLiveLocation,
   takeScreenshot,
   deviceProvision,
   unknown;

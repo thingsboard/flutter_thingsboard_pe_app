@@ -16,6 +16,16 @@ import 'package:thingsboard_app/utils/services/firebase/firebase_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
 import 'package:thingsboard_app/utils/services/layouts/layout_service.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/entity_name_resolver.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_entity_name_resolver.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_location_tracking_service.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_tracking_notifications.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_tracking_remote.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_tracking_store.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/live_location_tracking_service.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/live_tracking_notifications.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/live_tracking_remote.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/live_tracking_store.dart';
 import 'package:thingsboard_app/utils/services/loading_service/i_loading_service.dart';
 import 'package:thingsboard_app/utils/services/loading_service/loading_service.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
@@ -57,11 +67,37 @@ Future<void> setUpRootDependencies() async {
       () => EndpointService(databaseService: getIt()),
     )
     ..registerLazySingleton<IOverlayService>(() => OverlayService())
-    ..registerLazySingleton<ITbImageGalleryService>(() => TbImageGalleryService())
-      ..registerLazySingleton<ThingsboardAppRouter>(() => ThingsboardAppRouter(overlayService: getIt()))
+    ..registerLazySingleton<ITbImageGalleryService>(
+      () => TbImageGalleryService(),
+    )
+    ..registerLazySingleton<ThingsboardAppRouter>(
+      () => ThingsboardAppRouter(overlayService: getIt()),
+    )
     ..registerLazySingleton<IDeviceInfoService>(() => deviceInfoService)
     ..registerLazySingleton<ILocationService>(
       () => LocationService(logger: getIt()),
+    )
+    ..registerLazySingleton<ILiveTrackingRemote>(
+      () => LiveTrackingRemote(clientService: getIt()),
+    )
+    ..registerLazySingleton<ILiveTrackingStore>(
+      () => LiveTrackingStore(storage: getIt(), logger: getIt()),
+    )
+    ..registerLazySingleton<IEntityNameResolver>(
+      () => EntityNameResolver(clientService: getIt(), logger: getIt()),
+    )
+    ..registerLazySingleton<ILiveTrackingNotifications>(
+      () => LiveTrackingNotifications(logger: getIt()),
+    )
+    ..registerLazySingleton<ILiveLocationTrackingService>(
+      () => LiveLocationTrackingService(
+        locationService: getIt(),
+        remote: getIt(),
+        logger: getIt(),
+        store: getIt(),
+        nameResolver: getIt(),
+        notifications: getIt(),
+      ),
     )
     // ..registerLazySingleton(() => TbContext())
     ..registerSingletonAsync<ITbClientService>(() async {

@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:thingsboard_app/constants/app_constants.dart';
 import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/modules/location_tracking/presentation/widgets/live_tracking_bar.dart';
 import 'package:thingsboard_app/modules/main/model/main_navigation_item.dart';
-import 'package:thingsboard_app/modules/main/model/navigation_item_data.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_type.dart';
 import 'package:thingsboard_app/modules/main/providers/navigation_helper.dart';
 import 'package:thingsboard_app/modules/main/providers/navigation_provider.dart';
@@ -60,61 +60,65 @@ class NavigationPage extends HookConsumerWidget {
         }
       },
       canPop: false,
-      child: Scaffold(
-        body: child,
-        bottomNavigationBar:
-            currentIndex.value == null
-                ? null
-                : TbNavigationBarWidget(
-                  currentIndex: currentIndex.value!,
-                  onTap: (index) {
-                    if (index == currentIndex.value) {
-                      return;
-                    }
-                    if (index < items.length) {
-                      final path = items[index].path;
-                      currentIndex.value = index;
-                      if (ThingsboardAppConstants.navigationType ==
-                          TbNavigationType.push) {
-                        context.push(path);
+      child: SafeArea(
+        child: Scaffold(
+          body: Column(
+            children: [const LiveTrackingBar(), Expanded(child: child)],
+          ),
+          bottomNavigationBar:
+              currentIndex.value == null
+                  ? null
+                  : TbNavigationBarWidget(
+                    currentIndex: currentIndex.value!,
+                    onTap: (index) {
+                      if (index == currentIndex.value) {
                         return;
                       }
-                      if (path.contains('/home') || path.contains('/url')) {
-                        return context.go(path);
+                      if (index < items.length) {
+                        final path = items[index].path;
+                        currentIndex.value = index;
+                        if (ThingsboardAppConstants.navigationType ==
+                            TbNavigationType.push) {
+                          context.push(path);
+                          return;
+                        }
+                        if (path.contains('/home') || path.contains('/url')) {
+                          return context.go(path);
+                        }
+                        context.push(path);
                       }
-                      context.push(path);
-                    }
-                  },
-                  customBottomBarItems:
-                      items
-                          .map(
-                            (item) => TbMainNavigationItem(
-                              title: NavigationHelper.getLocalizedTitle(
-                                context,
-                                item.id,
-                                item.path,
-                                item.title,
+                    },
+                    customBottomBarItems:
+                        items
+                            .map(
+                              (item) => TbMainNavigationItem(
+                                title: NavigationHelper.getLocalizedTitle(
+                                  context,
+                                  item.id,
+                                  item.path,
+                                  item.title,
+                                ),
+                                icon: item.icon,
+                                path: item.path,
+                                id: item.id,
+                                showAdditionalIcon: item.showNotificationBadge,
+                                additionalIconLarge:
+                                    item.showNotificationBadge
+                                        ? const NavigationBadgeWidget(
+                                          isLarge: false,
+                                        )
+                                        : null,
+                                additionalIconSmall:
+                                    item.showNotificationBadge
+                                        ? const NavigationBadgeWidget(
+                                          isLarge: false,
+                                        )
+                                        : null,
                               ),
-                              icon: item.icon,
-                              path: item.path,
-                              id: item.id,
-                              showAdditionalIcon: item.showNotificationBadge,
-                              additionalIconLarge:
-                                  item.showNotificationBadge
-                                      ? const NavigationBadgeWidget(
-                                        isLarge: false,
-                                      )
-                                      : null,
-                              additionalIconSmall:
-                                  item.showNotificationBadge
-                                      ? const NavigationBadgeWidget(
-                                        isLarge: false,
-                                      )
-                                      : null,
-                            ),
-                          )
-                          .toList(),
-                ),
+                            )
+                            .toList(),
+                  ),
+        ),
       ),
     );
   }

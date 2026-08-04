@@ -18,8 +18,14 @@ abstract final class ThingsboardAppConstants {
   /// Dio `extra` flag telling the TB client to skip the global error overlay so
   /// the caller can handle the failure (e.g. a 429) inline.
   static const ignoreErrors = {'ignoreErrors': true};
-  static final navigationType =
-  TbNavigationType.fromString(
-  const String.fromEnvironment('navigationType'),
+
+  /// Dio `extra` flags for requests that run behind the user's back (periodic
+  /// live-tracking saves): no global error dialog, no loading indicator.
+  static const backgroundRequest = {
+    'ignoreErrors': true,
+    'ignoreLoading': true,
+  };
+  static final navigationType = TbNavigationType.fromString(
+    const String.fromEnvironment('navigationType'),
   );
 }

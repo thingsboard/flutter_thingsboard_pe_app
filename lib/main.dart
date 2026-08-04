@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:app_links/app_links.dart';
@@ -16,6 +17,7 @@ import 'package:thingsboard_app/firebase_options.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_app.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_tracking_notifications.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -24,9 +26,12 @@ Future<void> main() async {
       WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Hive.initFlutter();
- SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
   Hive.registerAdapter(RegionAdapter());
   await setUpRootDependencies();
+  // A paused-session notification survives process death while the session
+  // itself does not, so drop any leftover from a previous run.
+  unawaited(getIt<ILiveTrackingNotifications>().clear());
   if (UniversalPlatform.isAndroid) {
     await InAppWebViewController.setWebContentsDebuggingEnabled(
       kDebugMode || EnvironmentVariables.verbose,
