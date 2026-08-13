@@ -8,7 +8,7 @@ part of 'switch_endpoint_args.dart';
 
 _SwitchEndpointArgs _$SwitchEndpointArgsFromJson(Map<String, dynamic> json) =>
     _SwitchEndpointArgs(
-      secret: json['secret'] as String,
+      secret: json['secret'] as String?,
       host: json['host'] as String?,
       ttl: json['ttl'] as String?,
       uri: fromFluroData(json['uri']),

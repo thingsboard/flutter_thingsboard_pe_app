@@ -21,11 +21,19 @@ Future<LoginMobileInfo> oauth(Ref ref) async {
   final tbClient = getIt<ITbClientService>().client;
   final deviceInfoService = getIt<IDeviceInfoService>();
   try {
+    // Best-effort call with a graceful fallback below: don't let the
+    // interceptor surface its failures as error toasts (e.g. some servers
+    // answer 403 for a package they don't know about) (PROD-8200).
     final response = await tbClient
         .getMobileAppControllerApi()
         .getLoginMobileInfo(
           pkgName: deviceInfoService.getApplicationId(),
           platform: deviceInfoService.getPlatformType().name,
+          extra:
+              InterceptorConfig(
+                ignoreErrors: true,
+                ignoreLoading: true,
+              ).toExtra(),
         );
     final loginInfo = response.data;
     if (loginInfo != null) {

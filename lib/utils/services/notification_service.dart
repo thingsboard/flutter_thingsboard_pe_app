@@ -18,7 +18,16 @@ class NotificationService {
   static FirebaseMessaging _messaging = FirebaseMessaging.instance;
   late NotificationDetails _notificationDetails;
   final TbLogger _log = getIt();
-  final ThingsboardClient _tbClient = getIt<ITbClientService>().client;
+  // Read the live client on every access: a QR-code endpoint switch re-creates
+  // the client (ITbClientService.reInit), so a reference captured at
+  // construction would keep pointing at the old host (PROD-8200).
+  ThingsboardClient get _tbClient => getIt<ITbClientService>().client;
+
+  // Notifications are best-effort: some servers answer 403 for a mobile
+  // package they don't know about, and that must not surface as an error
+  // toast right after a successful login (PROD-8200).
+  static Map<String, dynamic> get _bestEffortRequestExtra =>
+      InterceptorConfig(ignoreErrors: true, ignoreLoading: true).toExtra();
   final INotificationsLocalService _localService = NotificationsLocalService();
   StreamSubscription? _foregroundMessageSubscription;
   StreamSubscription? _onMessageOpenedAppSubscription;
@@ -55,7 +64,10 @@ class NotificationService {
             if (_fcmToken != null) {
               _tbClient
                   .getUserControllerApi()
-                  .removeMobileSession(xMobileToken: _fcmToken!)
+                  .removeMobileSession(
+                    xMobileToken: _fcmToken!,
+                    extra: _bestEffortRequestExtra,
+                  )
                   .then((_) {
                     _fcmToken = token;
                     if (_fcmToken != null) {
@@ -100,6 +112,7 @@ class NotificationService {
       );
       _tbClient.getUserControllerApi().removeMobileSession(
         xMobileToken: _fcmToken!,
+        extra: _bestEffortRequestExtra,
       );
     }
 
@@ -173,7 +186,10 @@ class NotificationService {
 
   Future<String?> _resetToken(String? token) async {
     if (token != null) {
-      _tbClient.getUserControllerApi().removeMobileSession(xMobileToken: token);
+      _tbClient.getUserControllerApi().removeMobileSession(
+        xMobileToken: token,
+        extra: _bestEffortRequestExtra,
+      );
     }
 
     await _messaging.deleteToken();
@@ -181,27 +197,39 @@ class NotificationService {
   }
 
   Future<void> _getAndSaveToken() async {
-    String? fcmToken = await getToken();
+    final fcmToken = await getToken();
     _log.debug('FCM token: $fcmToken');
 
-    if (fcmToken != null) {
-      final mobileInfo =
-          (await _tbClient.getUserControllerApi().getMobileSession(
-            xMobileToken: fcmToken,
-          )).data;
-      if (mobileInfo != null) {
-        final int timeAfterCreatedToken =
-            DateTime.now().millisecondsSinceEpoch -
-            (mobileInfo.fcmTokenTimestamp ?? 0);
-        if (timeAfterCreatedToken > const Duration(days: 30).inMilliseconds) {
-          fcmToken = await _resetToken(fcmToken);
-          if (fcmToken != null) {
-            await _saveToken(fcmToken);
-          }
+    try {
+      await _syncMobileSession(fcmToken);
+    } catch (e) {
+      // The server may reject the session for an unknown mobile package:
+      // push notifications simply stay off, nothing else should break.
+      _log.error('NotificationService: failed to sync mobile session $e');
+    }
+  }
+
+  Future<void> _syncMobileSession(String? fcmToken) async {
+    if (fcmToken == null) {
+      return;
+    }
+    final mobileInfo =
+        (await _tbClient.getUserControllerApi().getMobileSession(
+          xMobileToken: fcmToken,
+          extra: _bestEffortRequestExtra,
+        )).data;
+    if (mobileInfo != null) {
+      final int timeAfterCreatedToken =
+          DateTime.now().millisecondsSinceEpoch -
+          (mobileInfo.fcmTokenTimestamp ?? 0);
+      if (timeAfterCreatedToken > const Duration(days: 30).inMilliseconds) {
+        final refreshedToken = await _resetToken(fcmToken);
+        if (refreshedToken != null) {
+          await _saveToken(refreshedToken);
         }
-      } else {
-        await _saveToken(fcmToken);
       }
+    } else {
+      await _saveToken(fcmToken);
     }
   }
 
@@ -211,6 +239,7 @@ class NotificationService {
       mobileSessionInfo: MobileSessionInfo(
         (b) => b..fcmTokenTimestamp = DateTime.now().millisecondsSinceEpoch,
       ),
+      extra: _bestEffortRequestExtra,
     );
   }
 
@@ -315,7 +344,10 @@ class NotificationService {
     try {
       final resp = await _tbClient
           .getNotificationControllerApi()
-          .getUnreadNotificationsCount(deliveryMethod: 'MOBILE_APP');
+          .getUnreadNotificationsCount(
+            deliveryMethod: 'MOBILE_APP',
+            extra: _bestEffortRequestExtra,
+          );
       return resp.data ?? 0;
     } catch (_) {
       return 0;
