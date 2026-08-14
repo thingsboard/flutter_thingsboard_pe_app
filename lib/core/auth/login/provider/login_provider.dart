@@ -53,6 +53,9 @@ class Login extends _$Login {
     log('handle user loaded: ${_tbClient.getAuthUser()?.userId}');
 
     if (!_tbClient.isAuthenticated()) {
+      if (getIt<IFirebaseService>().apps.isNotEmpty) {
+        await getIt<NotificationService>().handleSessionExpired();
+      }
       state = const LoginState(isUserLoaded: false);
       return;
     }
