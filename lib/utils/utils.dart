@@ -124,20 +124,20 @@ abstract class Utils {
           semanticLabel: semanticLabel,
           onError: onError,
         );
-      } else if (_isBase64DataImageUrl(imageUrl)) {
+      } else if (_isBase64DataImageUrl(newImageUrl)) {
         return _imageFromBase64(
           context,
-          imageUrl,
+          newImageUrl,
           color: color,
           width: width,
           height: height,
           semanticLabel: semanticLabel,
           onError: onError,
         );
-      } else if (_isValidUrl(imageUrl)) {
+      } else if (_isValidUrl(newImageUrl)) {
         return _networkImage(
           context,
-          imageUrl,
+          newImageUrl,
           color: color,
           width: width,
           height: height,
