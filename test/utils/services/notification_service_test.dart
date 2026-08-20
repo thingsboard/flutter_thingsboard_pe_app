@@ -160,6 +160,9 @@ void main() {
     ).thenAnswer((_) async => true);
     when(() => localNotificationsPlugin.cancelAll()).thenAnswer((_) async {});
     when(
+      () => localNotificationsPlugin.getNotificationAppLaunchDetails(),
+    ).thenAnswer((_) async => null);
+    when(
       () => localService.clearNotificationBadgeCount(),
     ).thenAnswer((_) async {});
     when(
