@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/config/routes/v2/router_2.dart';
-import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_item_data.dart';
@@ -27,7 +26,6 @@ class Navigation extends _$Navigation {
   List<NavigationItemData> _allPages = [];
   late final StreamSubscription<NativeDeviceOrientation>
   _orientationSubscription;
-  late final ProviderSubscription<LoginState> _loginSub;
   @override
   NavigationState build() {
     final login = ref.read(loginProvider);
@@ -45,7 +43,6 @@ class Navigation extends _$Navigation {
         });
     ref.onDispose(() {
       _orientationSubscription.cancel();
-      _loginSub.close();
     });
     if (!login.isUserLoaded || login.mobileLoginInfo == null) {
       return const NavigationState(bottomBarPages: [], morePages: []);
@@ -97,8 +94,12 @@ class Navigation extends _$Navigation {
   }
 
   NavigationState _getPages(List<PageLayout> layouts) {
+    final login = ref.read(loginProvider);
     _allPages =
         layouts
+            .where(
+              (pageLayout) => NavigationHelper.isPageVisible(pageLayout, login),
+            )
             .map(
               (pageLayout) => NavigationItemData(
                 title: NavigationHelper.getLabel(pageLayout),

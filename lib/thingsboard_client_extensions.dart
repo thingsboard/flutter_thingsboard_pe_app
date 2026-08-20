@@ -17,13 +17,33 @@ extension AllowedPermissionsInfoExt on AllowedPermissionsInfo {
         (ops.contains(Operation.ALL) || ops.contains(operation))) {
       return true;
     }
-    final allOps = genericPerms[Operation.ALL.name];
+    // The `Resource.ALL` wildcard entry applies only to resources allowed for
+    // the user's authority — same as `hasGenericAllPermission` in the web UI.
+    if (!_isResourceAllowed(resource)) return false;
+    final allOps = genericPerms[Resource.ALL.name];
     return allOps != null &&
         (allOps.contains(Operation.ALL) || allOps.contains(operation));
   }
 
   bool hasReadGenericPermission(Resource resource) =>
       hasGenericPermission(resource, Operation.READ);
+
+  /// Mirrors `hasSharedReadGroupsPermission` in the web UI: the user has at
+  /// least one entity group of [entityType] shared via a group role.
+  ///
+  /// `hasGenericRead` is intentionally ignored here — it reflects the generic
+  /// group-resource permission (e.g. "Customer group"), which only unlocks the
+  /// group-browsing UI that exists on the web but not in the mobile app; the
+  /// `/api/user/*` list endpoints ignore it too.
+  bool hasSharedReadGroupsPermission(EntityType entityType) {
+    final info = userPermissions?.readGroupPermissions?[entityType.name];
+    return info?.entityGroupIds?.isNotEmpty ?? false;
+  }
+
+  bool _isResourceAllowed(Resource resource) {
+    final allowed = allowedResources;
+    return allowed == null || allowed.contains(resource);
+  }
 }
 
 /// Extension that restores typed access to an [AlarmCommentInfo]'s free-form

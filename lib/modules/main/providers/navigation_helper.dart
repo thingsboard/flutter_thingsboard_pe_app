@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_item_data.dart';
 import 'package:thingsboard_app/modules/notification/widgets/notification_icon.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/thingsboard_client_extensions.dart';
 import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 
 class NavigationHelper {
@@ -39,8 +41,10 @@ class NavigationHelper {
     return fallbackTitle;
   }
 
-static  int? getCurrentIndexFromPath(String path, List<NavigationItemData> items) {
-
+  static int? getCurrentIndexFromPath(
+    String path,
+    List<NavigationItemData> items,
+  ) {
     for (int i = 0; i < items.length; i++) {
       if (items[i].path == path) {
         return i;
@@ -49,135 +53,147 @@ static  int? getCurrentIndexFromPath(String path, List<NavigationItemData> items
     return null;
   }
 
-// Helper functions
-static String getLabel(PageLayout pageLayout) {
-  if (pageLayout.label != null) {
-    return pageLayout.label!;
-  }
+  // Helper functions
+  static String getLabel(PageLayout pageLayout) {
+    if (pageLayout.label != null) {
+      return pageLayout.label!;
+    }
 
-  switch (pageLayout.id) {
-    case Pages.home:
-      return 'Home';
-    case Pages.alarms:
-      return 'Alarms';
-    case Pages.devices:
-      return 'Devices';
-    case Pages.customers:
-      return 'Customers';
-    case Pages.assets:
-      return 'Assets';
-    case Pages.audit_logs:
-      return 'Audit Logs';
-    case Pages.notifications:
-      return 'Notifications';
-    case Pages.device_list:
-      return 'Device List';
-    case Pages.dashboards:
-      return 'Dashboards';
-    case Pages.undefined:
-    case null:
-      return pageLayout.label ?? '-';
-  }
-}
-static Set<Resource> getRecource(PageLayout pageLayout) {
     switch (pageLayout.id) {
       case Pages.home:
-        return {};
+        return 'Home';
       case Pages.alarms:
-        return {Resource.ALARM};
+        return 'Alarms';
       case Pages.devices:
-        return {Resource.DEVICE_PROFILE};
+        return 'Devices';
       case Pages.customers:
-        return {Resource.CUSTOMER};
+        return 'Customers';
       case Pages.assets:
-        return {Resource.ASSET, Resource.ASSET_PROFILE};
+        return 'Assets';
       case Pages.audit_logs:
-        return {Resource.AUDIT_LOG};
+        return 'Audit Logs';
       case Pages.notifications:
-        return {};
+        return 'Notifications';
       case Pages.device_list:
-        return {Resource.DEVICE_GROUP, Resource.DEVICE};
+        return 'Device List';
       case Pages.dashboards:
-        return {Resource.DASHBOARD, Resource.DASHBOARD_GROUP};
+        return 'Dashboards';
       case Pages.undefined:
       case null:
-        return {};
+        return pageLayout.label ?? '-';
     }
   }
-static IconData getIcon(PageLayout pageLayout) {
-  if (pageLayout.icon != null) {
-    return getIconFromString(pageLayout.icon);
+
+  /// Mirrors the web UI's `menuFilters`: a page is visible only if the user
+  /// can read its underlying resource, either generically or via group roles.
+  static bool isPageVisible(PageLayout pageLayout, LoginState login) {
+    if (login.userScope == Authority.SYS_ADMIN) {
+      return true;
+    }
+    final permissions = login.userPermissions;
+    if (permissions == null) {
+      return true;
+    }
+    switch (pageLayout.id) {
+      case Pages.alarms:
+        return permissions.hasReadGenericPermission(Resource.ALARM);
+      case Pages.devices:
+        return permissions.hasReadGenericPermission(Resource.DEVICE_PROFILE);
+      case Pages.device_list:
+        return permissions.hasReadGenericPermission(Resource.DEVICE) ||
+            permissions.hasSharedReadGroupsPermission(EntityType.DEVICE);
+      case Pages.assets:
+        return permissions.hasReadGenericPermission(Resource.ASSET) ||
+            permissions.hasSharedReadGroupsPermission(EntityType.ASSET);
+      case Pages.customers:
+        return permissions.hasReadGenericPermission(Resource.CUSTOMER) ||
+            permissions.hasSharedReadGroupsPermission(EntityType.CUSTOMER);
+      case Pages.dashboards:
+        return permissions.hasReadGenericPermission(Resource.DASHBOARD) ||
+            permissions.hasSharedReadGroupsPermission(EntityType.DASHBOARD);
+      case Pages.audit_logs:
+        return permissions.hasReadGenericPermission(Resource.AUDIT_LOG);
+      case Pages.home:
+      case Pages.notifications:
+      case Pages.undefined:
+      case null:
+        return true;
+    }
   }
 
-  switch (pageLayout.id) {
-    case Pages.home:
-      return Icons.home_outlined;
-    case Pages.alarms:
-      return Icons.notifications_outlined;
-    case Pages.devices:
-      return Icons.devices_other_outlined;
-    case Pages.customers:
-      return Icons.supervisor_account_sharp;
-    case Pages.assets:
-      return Icons.domain_outlined;
-    case Pages.audit_logs:
-      return Icons.track_changes_outlined;
-    case Pages.notifications:
-      return Icons.notifications_active_sharp;
-    case Pages.device_list:
-      return Icons.devices;
-    case Pages.dashboards:
-      return Icons.dashboard_outlined;
-    case Pages.undefined:
-    case null:
+  static IconData getIcon(PageLayout pageLayout) {
+    if (pageLayout.icon != null) {
       return getIconFromString(pageLayout.icon);
-  }
-}
+    }
 
-static  String getPath(PageLayout pageLayout) {
-  switch (pageLayout.id) {
-    case Pages.home:
-      return '/home';
-    case Pages.alarms:
-      return '/alarms';
-    case Pages.devices:
-      return '/devices';
-    case Pages.customers:
-      return '/customers';
-    case Pages.assets:
-      return '/assets';
-    case Pages.audit_logs:
-      return '/auditLogs';
-    case Pages.notifications:
-      return '/notifications';
-    case Pages.device_list:
-      return '/deviceList';
-    case Pages.dashboards:
-      return '/dashboards';
-    case Pages.undefined:
-    case null:
-      if (pageLayout.url != null) {
-        return '/url/${Uri.encodeComponent(pageLayout.url!)}';
-      } else if (pageLayout.dashboardId != null) {
-        return '/dashboard/${pageLayout.dashboardId}';
-      } else if (pageLayout.path?.startsWith('/url/') == true) {
-        return '/url/${Uri.encodeComponent(pageLayout.path!.split('/url/').last)}';
+    switch (pageLayout.id) {
+      case Pages.home:
+        return Icons.home_outlined;
+      case Pages.alarms:
+        return Icons.notifications_outlined;
+      case Pages.devices:
+        return Icons.devices_other_outlined;
+      case Pages.customers:
+        return Icons.supervisor_account_sharp;
+      case Pages.assets:
+        return Icons.domain_outlined;
+      case Pages.audit_logs:
+        return Icons.track_changes_outlined;
+      case Pages.notifications:
+        return Icons.notifications_active_sharp;
+      case Pages.device_list:
+        return Icons.devices;
+      case Pages.dashboards:
+        return Icons.dashboard_outlined;
+      case Pages.undefined:
+      case null:
+        return getIconFromString(pageLayout.icon);
+    }
+  }
+
+  static String getPath(PageLayout pageLayout) {
+    switch (pageLayout.id) {
+      case Pages.home:
+        return '/home';
+      case Pages.alarms:
+        return '/alarms';
+      case Pages.devices:
+        return '/devices';
+      case Pages.customers:
+        return '/customers';
+      case Pages.assets:
+        return '/assets';
+      case Pages.audit_logs:
+        return '/auditLogs';
+      case Pages.notifications:
+        return '/notifications';
+      case Pages.device_list:
+        return '/deviceList';
+      case Pages.dashboards:
+        return '/dashboards';
+      case Pages.undefined:
+      case null:
+        if (pageLayout.url != null) {
+          return '/url/${Uri.encodeComponent(pageLayout.url!)}';
+        } else if (pageLayout.dashboardId != null) {
+          return '/dashboard/${pageLayout.dashboardId}';
+        } else if (pageLayout.path?.startsWith('/url/') == true) {
+          return '/url/${Uri.encodeComponent(pageLayout.path!.split('/url/').last)}';
+        }
+
+        return pageLayout.path ?? '/error';
+    }
+  }
+
+  static IconData getIconFromString(String? icon) {
+    if (icon != null) {
+      if (icon.contains('mdi')) {
+        return MdiIcons.fromString(icon.split('mdi:').last) ??
+            Icons.error_outline;
       }
 
-      return pageLayout.path ?? '/error';
-  }
-}
-
-static  IconData getIconFromString(String? icon) {
-  if (icon != null) {
-    if (icon.contains('mdi')) {
-      return MdiIcons.fromString(icon.split('mdi:').last) ??
-          Icons.error_outline;
+      return materialIconsMap[icon] ?? Icons.error_outline;
     }
-
-    return materialIconsMap[icon] ?? Icons.error_outline;
+    return Icons.error_outline;
   }
-  return Icons.error_outline;
-}
-
 }
