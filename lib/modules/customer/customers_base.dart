@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/entity/entities_base.dart';
@@ -22,9 +21,18 @@ mixin CustomersBase on EntitiesBase<Customer, PageLink> {
     PageLink pageLink, {
     bool refresh = false,
   }) async {
-    final r = await tbClient.getCustomerControllerApi().getCustomers(
-      pageSize: pageLink.pageSize,
-      page: pageLink.page,
+    if (tbClient.isTenantAdmin()) {
+      final r = await tbClient.getCustomerControllerApi().getCustomers(
+        pageSize: pageLink.pageSize,
+        page: pageLink.page,
+        textSearch: pageLink.textSearch,
+      );
+      final p = r.data!;
+      return toPageData(p.data, p.totalPages, p.totalElements, p.hasNext);
+    }
+    final r = await tbClient.getCustomerControllerApi().getUserCustomers(
+      pageSize: pageLink.pageSize.toString(),
+      page: pageLink.page.toString(),
       textSearch: pageLink.textSearch,
     );
     final p = r.data!;
