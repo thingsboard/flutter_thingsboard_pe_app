@@ -5,6 +5,7 @@ import 'package:thingsboard_app/config/themes/tb_text_styles.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/alarm/alarms_base.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/translation_utils.dart';
 
 class AlarmCard extends StatefulWidget {
@@ -53,7 +54,8 @@ class _AlarmCardState extends State<AlarmCard> {
                                 Flexible(
                                   fit: FlexFit.tight,
                                   child: Text(
-                                    widget.alarm.type,
+                                    getIt<ICustomTranslationService>()
+                                        .translate(widget.alarm.type),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: TbTextStyles.labelLarge,
@@ -79,9 +81,8 @@ class _AlarmCardState extends State<AlarmCard> {
                                 Flexible(
                                   fit: FlexFit.tight,
                                   child: Text(
-                                    widget.alarm.originatorName != null
-                                        ? widget.alarm.originatorName!
-                                        : '',
+                                    getIt<ICustomTranslationService>()
+                                        .translate(widget.alarm.originatorName),
                                     style: TbTextStyles.bodyMedium.copyWith(
                                       color: Colors.black.withValues(
                                         alpha: .54,

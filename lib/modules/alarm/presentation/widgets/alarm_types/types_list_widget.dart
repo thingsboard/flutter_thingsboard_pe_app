@@ -4,6 +4,7 @@ import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarm_types/bloc.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class TypesListWidget extends StatelessWidget {
@@ -74,7 +75,9 @@ class TypesListWidget extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              item.type ?? '',
+                              getIt<ICustomTranslationService>().translate(
+                                item.type,
+                              ),
                               style: const TextStyle(fontSize: 16, height: 1.5),
                             ),
                           ),

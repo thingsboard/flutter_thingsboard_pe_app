@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
+import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
@@ -64,7 +66,9 @@ class _EntityDetailsPageState<T extends Object>
       titleValue = ValueNotifier(widget._defaultTitle);
       entityFuture.then((value) {
         if (value is HasName) {
-          titleValue.value = (value! as HasName).getName();
+          titleValue.value = getIt<ICustomTranslationService>().translate(
+            (value! as HasName).getName(),
+          );
         }
       });
     } else {
@@ -160,7 +164,9 @@ abstract class ContactBasedDetailsPage<T extends Object>
         children: [
           Text(S.of(context).title, style: labelTextStyle),
           Text(
-            entity is HasName ? entity.getName() : (e.name as String? ?? ''),
+            getIt<ICustomTranslationService>().translate(
+              entity is HasName ? entity.getName() : e.name as String?,
+            ),
             style: valueTextStyle,
           ),
           const SizedBox(height: 16),

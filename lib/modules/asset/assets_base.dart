@@ -5,6 +5,7 @@ import 'package:thingsboard_app/core/entity/entities_base.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/new_client_page_data.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 
@@ -57,7 +58,7 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
 
   @override
   Widget buildEntityGridCard(BuildContext context, Asset asset) {
-    return Text(asset.name ?? '');
+    return Text(getIt<ICustomTranslationService>().translate(asset.name));
   }
 
   Widget _buildCard(BuildContext context, Asset asset) {
@@ -80,7 +81,9 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                         children: [
                           Flexible(
                             child: Text(
-                              asset.name ?? '',
+                              getIt<ICustomTranslationService>().translate(
+                                asset.name,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -110,7 +113,9 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
                           child: Text(
-                            asset.label!,
+                            getIt<ICustomTranslationService>().translate(
+                              asset.label,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -161,7 +166,9 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        asset.name,
+                        getIt<ICustomTranslationService>().translate(
+                          asset.name,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -175,7 +182,9 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
                           child: Text(
-                            asset.label!,
+                            getIt<ICustomTranslationService>().translate(
+                              asset.label,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(

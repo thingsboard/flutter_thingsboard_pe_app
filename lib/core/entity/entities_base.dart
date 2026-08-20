@@ -12,6 +12,7 @@ import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart' hide Direction;
 import 'package:thingsboard_pe_client/src/model/page/sort_order.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_exception_widget.dart';
 
@@ -85,7 +86,9 @@ mixin ContactBasedBase<T, P> on EntitiesBase<T, P> {
                   children: [
                     Expanded(
                       child: Text(
-                        info?.name ?? '',
+                        getIt<ICustomTranslationService>().translate(
+                          info?.name,
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TbTextStyles.labelLarge.copyWith(
