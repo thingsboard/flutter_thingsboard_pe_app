@@ -11,6 +11,7 @@ import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/notification/service/i_notifications_local_service.dart';
 import 'package:thingsboard_app/modules/notification/service/notifications_local_service.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/best_effort_request.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 
@@ -23,11 +24,6 @@ class NotificationService {
   // construction would keep pointing at the old host (PROD-8200).
   ThingsboardClient get _tbClient => getIt<ITbClientService>().client;
 
-  // Notifications are best-effort: some servers answer 403 for a mobile
-  // package they don't know about, and that must not surface as an error
-  // toast right after a successful login (PROD-8200).
-  static Map<String, dynamic> get _bestEffortRequestExtra =>
-      InterceptorConfig(ignoreErrors: true, ignoreLoading: true).toExtra();
   final INotificationsLocalService _localService = NotificationsLocalService();
   StreamSubscription? _foregroundMessageSubscription;
   StreamSubscription? _onMessageOpenedAppSubscription;
@@ -66,7 +62,7 @@ class NotificationService {
                   .getUserControllerApi()
                   .removeMobileSession(
                     xMobileToken: _fcmToken!,
-                    extra: _bestEffortRequestExtra,
+                    extra: bestEffortRequestExtra(),
                   )
                   .then((_) {
                     _fcmToken = token;
@@ -112,7 +108,7 @@ class NotificationService {
       );
       _tbClient.getUserControllerApi().removeMobileSession(
         xMobileToken: _fcmToken!,
-        extra: _bestEffortRequestExtra,
+        extra: bestEffortRequestExtra(),
       );
     }
 
@@ -188,7 +184,7 @@ class NotificationService {
     if (token != null) {
       _tbClient.getUserControllerApi().removeMobileSession(
         xMobileToken: token,
-        extra: _bestEffortRequestExtra,
+        extra: bestEffortRequestExtra(),
       );
     }
 
@@ -216,7 +212,7 @@ class NotificationService {
     final mobileInfo =
         (await _tbClient.getUserControllerApi().getMobileSession(
           xMobileToken: fcmToken,
-          extra: _bestEffortRequestExtra,
+          extra: bestEffortRequestExtra(),
         )).data;
     if (mobileInfo != null) {
       final int timeAfterCreatedToken =
@@ -239,7 +235,7 @@ class NotificationService {
       mobileSessionInfo: MobileSessionInfo(
         (b) => b..fcmTokenTimestamp = DateTime.now().millisecondsSinceEpoch,
       ),
-      extra: _bestEffortRequestExtra,
+      extra: bestEffortRequestExtra(),
     );
   }
 
@@ -346,7 +342,7 @@ class NotificationService {
           .getNotificationControllerApi()
           .getUnreadNotificationsCount(
             deliveryMethod: 'MOBILE_APP',
-            extra: _bestEffortRequestExtra,
+            extra: bestEffortRequestExtra(),
           );
       return resp.data ?? 0;
     } catch (_) {

@@ -23,16 +23,25 @@ class TbClientService implements ITbClientService {
   // server version check hits /api/admin/updates, which answers 403 for
   // non-SYS_ADMIN users). Those must not surface as error toasts, and the
   // generated client library can't be modified to ignore them (PROD-8200).
-  bool _suppressErrorNotifications = false;
-
+  //
   // The client delivers error callbacks via Future(() => cb(error)), so an
-  // error raised during init() reaches onClientError one event-loop turn
-  // AFTER init() returns. Keep suppressing for a grace period instead of
-  // lifting the flag synchronously.
-  void _scheduleErrorNotificationsRestore() {
-    Future.delayed(const Duration(seconds: 2), () {
-      _suppressErrorNotifications = false;
-    });
+  // error raised during init() reaches onClientError one event-loop turn AFTER
+  // init() returns: the suppression has to outlive the call. ThingsboardError
+  // carries no request path, so it can't be narrowed down to those calls - it
+  // stays a time window, but a counted one, so that overlapping inits (a QR
+  // endpoint switch started during an init) can't lift each other's window.
+  static const _initErrorSuppression = Duration(seconds: 2);
+
+  int _pendingInits = 0;
+  bool get _suppressErrorNotifications => _pendingInits > 0;
+
+  Future<void> _initClient() async {
+    _pendingInits++;
+    try {
+      await _client.init();
+    } finally {
+      Future.delayed(_initErrorSuppression, () => _pendingInits--);
+    }
   }
 
   ThingsboardClient _createClient(
@@ -58,13 +67,10 @@ class TbClientService implements ITbClientService {
     _client = _createClient(endpoint, onError: onClientError);
 
     try {
-      _suppressErrorNotifications = true;
-      await _client.init();
+      await _initClient();
     } catch (e) {
       log('Failed to init tbClient: $e');
       onInitError(e);
-    } finally {
-      _scheduleErrorNotificationsRestore();
     }
   }
 
@@ -138,12 +144,7 @@ class TbClientService implements ITbClientService {
         onClientError(e);
       },
     );
-    try {
-      _suppressErrorNotifications = true;
-      await _client.init();
-    } finally {
-      _scheduleErrorNotificationsRestore();
-    }
+    await _initClient();
     onDone();
   }
 }

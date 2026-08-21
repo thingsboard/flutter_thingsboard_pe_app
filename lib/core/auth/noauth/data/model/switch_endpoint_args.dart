@@ -8,7 +8,6 @@ abstract class SwitchEndpointArgs with _$SwitchEndpointArgs {
   const factory SwitchEndpointArgs({
     String? secret,
     String? host,
-    String? ttl,
     @JsonKey(fromJson: fromFluroData, toJson: uriToJson) required Uri uri,
   }) = _SwitchEndpointArgs;
 

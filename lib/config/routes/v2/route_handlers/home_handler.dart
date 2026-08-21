@@ -35,14 +35,13 @@ class HomeHandler extends RouteHandler {
       if (next.isFullyAuthenticated() &&
           prev?.isFullyAuthenticated() == false &&
           path != LoginRoutes.login + LoginRoutes.updateRequired) {
-        ref.read(navigationProvider.notifier).onLoggedIn();
-        final t = ref.read(navigationProvider);
-        if (t.bottomBarPages.isEmpty) {
+        final homePath =
+            ref.read(navigationProvider.notifier).resolveHomePath();
+        if (homePath == null) {
           return;
         }
-        final p = t.bottomBarPages.first;
         SchedulerBinding.instance.addPostFrameCallback((_) {
-          scheduleMicrotask(() => context.go(p.path));
+          scheduleMicrotask(() => context.go(homePath));
         });
       }
     });
