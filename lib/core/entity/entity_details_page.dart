@@ -66,9 +66,7 @@ class _EntityDetailsPageState<T extends Object>
       titleValue = ValueNotifier(widget._defaultTitle);
       entityFuture.then((value) {
         if (value is HasName) {
-          titleValue.value = getIt<ICustomTranslationService>().translate(
-            (value! as HasName).getName(),
-          );
+          titleValue.value = (value! as HasName).getName();
         }
       });
     } else {
@@ -93,7 +91,7 @@ class _EntityDetailsPageState<T extends Object>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          title,
+                          getIt<ICustomTranslationService>().translate(title),
                           style:
                               widget._subTitle != null
                                   ? Theme.of(context)

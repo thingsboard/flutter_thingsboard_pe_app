@@ -27,6 +27,7 @@ class EntityCardSettings {
 
 mixin EntitiesBase<T, P> {
   final entityDateFormat = DateFormat('yyyy-MM-dd');
+  final ICustomTranslationService customTranslationService = getIt();
 
   String title(BuildContext context);
 
@@ -86,9 +87,7 @@ mixin ContactBasedBase<T, P> on EntitiesBase<T, P> {
                   children: [
                     Expanded(
                       child: Text(
-                        getIt<ICustomTranslationService>().translate(
-                          info?.name,
-                        ),
+                        customTranslationService.translate(info?.name),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TbTextStyles.labelLarge.copyWith(
