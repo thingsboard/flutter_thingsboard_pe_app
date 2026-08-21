@@ -86,9 +86,9 @@ abstract class Utils {
         onError: onError,
       );
     } else {
-      final newImageUrl = _removeTbImagePrefix(imageUrl);
-      if (_isImageResourceUrl(imageUrl)) {
-        final parts = newImageUrl.split('/');
+      final resolvedImageUrl = _removeTbImagePrefix(imageUrl);
+      if (_isImageResourceUrl(resolvedImageUrl)) {
+        final parts = resolvedImageUrl.split('/');
         final key = Uri.encodeComponent(parts[parts.length - 1]);
         String imageLink;
         Map<String, String>? headers;
@@ -124,20 +124,10 @@ abstract class Utils {
           semanticLabel: semanticLabel,
           onError: onError,
         );
-      } else if (_isBase64DataImageUrl(newImageUrl)) {
+      } else if (_isBase64DataImageUrl(resolvedImageUrl)) {
         return _imageFromBase64(
           context,
-          newImageUrl,
-          color: color,
-          width: width,
-          height: height,
-          semanticLabel: semanticLabel,
-          onError: onError,
-        );
-      } else if (_isValidUrl(newImageUrl)) {
-        return _networkImage(
-          context,
-          newImageUrl,
+          resolvedImageUrl,
           color: color,
           width: width,
           height: height,
@@ -145,8 +135,20 @@ abstract class Utils {
           onError: onError,
         );
       } else {
-        return _onErrorImage(
+        final imageLink = _resolveNetworkImageLink(resolvedImageUrl);
+        if (imageLink == null) {
+          return _onErrorImage(
+            context,
+            color: color,
+            width: width,
+            height: height,
+            semanticLabel: semanticLabel,
+            onError: onError,
+          );
+        }
+        return _networkImage(
           context,
+          imageLink,
           color: color,
           width: width,
           height: height,
@@ -296,15 +298,31 @@ abstract class Utils {
   }
 
   static String _removeTbImagePrefix(String url) {
-    return url.replaceFirst(_tbImagePrefix, '');
+    return url.startsWith(_tbImagePrefix)
+        ? url.substring(_tbImagePrefix.length)
+        : url;
   }
 
   static bool _isImageResourceUrl(String url) {
     return _imagesUrlRegexp.hasMatch(url);
   }
 
-  static bool _isValidUrl(String url) {
-    return Uri.tryParse(url) != null;
+  /// Absolute links are fetched as they are. Links relative to the platform,
+  /// such as an image public link, are resolved against the active endpoint the
+  /// same way a browser resolves them against its origin. Anything else has no
+  /// meaningful target and is rendered as a missing image.
+  static String? _resolveNetworkImageLink(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      return null;
+    }
+    if (uri.scheme == 'http' || uri.scheme == 'https') {
+      return url;
+    }
+    if (!uri.hasScheme && url.startsWith('/')) {
+      return getIt<IEndpointService>().getCachedEndpoint() + url;
+    }
+    return null;
   }
 
   static double degreesToRadians(double degrees) {
