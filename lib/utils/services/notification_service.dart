@@ -11,30 +11,48 @@ import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/notification/service/i_notifications_local_service.dart';
 import 'package:thingsboard_app/modules/notification/service/notifications_local_service.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
+import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 
 class NotificationService {
-  static const _pushRegisteredKey = 'push_notifications_registered';
+  NotificationService({
+    FirebaseMessaging? messaging,
+    FlutterLocalNotificationsPlugin? localNotificationsPlugin,
+    INotificationsLocalService? localService,
+  }) : _messagingOverride = messaging,
+       flutterLocalNotificationsPlugin =
+           localNotificationsPlugin ?? FlutterLocalNotificationsPlugin(),
+       _localService = localService ?? NotificationsLocalService();
 
-  static FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final FirebaseMessaging? _messagingOverride;
   late NotificationDetails _notificationDetails;
   final TbLogger _log = getIt();
   final ThingsboardClient _tbClient = getIt<ITbClientService>().client;
-  final INotificationsLocalService _localService = NotificationsLocalService();
+  final ILocalDatabaseService _localDatabase = getIt();
+  final INotificationsLocalService _localService;
   StreamSubscription? _foregroundMessageSubscription;
   StreamSubscription? _onMessageOpenedAppSubscription;
   StreamSubscription? _onTokenRefreshSubscription;
 
   String? _fcmToken;
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+  FirebaseMessaging get _messaging =>
+      _messagingOverride ?? FirebaseMessaging.instance;
+
+  bool get _isFirebaseConfigured => getIt<IFirebaseService>().apps.isNotEmpty;
 
   Future<void> init() async {
+    if (!_isFirebaseConfigured) {
+      return;
+    }
+
     _log.debug('NotificationService::init()');
 
-    final message = await FirebaseMessaging.instance.getInitialMessage();
+    final message = await _messaging.getInitialMessage();
     if (message != null) {
       NotificationService.handleClickOnNotification(message.data);
     }
@@ -52,20 +70,32 @@ class NotificationService {
         settings.authorizationStatus == AuthorizationStatus.provisional) {
       await _getAndSaveToken();
 
-      _onTokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh
-          .listen((token) {
-            if (_fcmToken != null) {
-              _tbClient
-                  .getUserControllerApi()
-                  .removeMobileSession(xMobileToken: _fcmToken!)
-                  .then((_) {
-                    _fcmToken = token;
-                    if (_fcmToken != null) {
-                      _saveToken(_fcmToken!);
-                    }
-                  });
-            }
-          });
+      _onTokenRefreshSubscription = _messaging.onTokenRefresh.listen((
+        token,
+      ) async {
+        if (_fcmToken == null) {
+          return;
+        }
+        final previousToken = _fcmToken!;
+        _fcmToken = token;
+        try {
+          await _tbClient.getUserControllerApi().removeMobileSession(
+            xMobileToken: previousToken,
+          );
+        } catch (e) {
+          _log.warn(
+            'NotificationService: failed to remove the mobile session of '
+            'the previous FCM token: $e',
+          );
+        }
+        try {
+          await _saveToken(token);
+        } catch (e) {
+          _log.warn(
+            'NotificationService: failed to save the refreshed FCM token: $e',
+          );
+        }
+      });
 
       await _initFlutterLocalNotificationsPlugin();
       await _configFirebaseMessaging();
@@ -75,9 +105,7 @@ class NotificationService {
   }
 
   Future<void> updateNotificationsCount() async {
-    final localService = NotificationsLocalService();
-
-    await localService.updateNotificationsCount(
+    await _localService.updateNotificationsCount(
       await _getNotificationsCountRemote(),
     );
   }
@@ -95,11 +123,13 @@ class NotificationService {
   }
 
   Future<void> logout() async {
-    getIt<TbLogger>().debug('NotificationService::logout()');
+    if (!_isFirebaseConfigured) {
+      return;
+    }
+
+    _log.debug('NotificationService::logout()');
     if (_fcmToken != null) {
-      getIt<TbLogger>().debug(
-        'NotificationService::logout() removeMobileSession',
-      );
+      _log.debug('NotificationService::logout() removeMobileSession');
       try {
         await _tbClient.getUserControllerApi().removeMobileSession(
           xMobileToken: _fcmToken!,
@@ -107,41 +137,53 @@ class NotificationService {
       } catch (e) {
         // Best effort: the session may already be invalid (e.g. expired JWT).
         // Deleting the local FCM token below still stops the notifications.
-        getIt<TbLogger>().debug(
+        _log.warn(
           'NotificationService::logout() removeMobileSession failed: $e',
         );
       }
     }
 
+    await _cleanupPushRegistration();
+  }
+
+  /// Cleans up a stale push registration left by a session that ended
+  /// without an explicit logout (e.g. the refresh token expired while the
+  /// app was closed, #304). The JWT is already invalid at this point, so the
+  /// server-side mobile session usually can't be removed here; deleting the
+  /// local FCM token makes further pushes bounce, and the platform purges
+  /// the session on the next delivery attempt.
+  ///
+  /// Idempotent and safe to call whenever the client is unauthenticated.
+  Future<void> cleanUpStalePushRegistration() async {
+    if (!_isFirebaseConfigured) {
+      return;
+    }
+    if (!await _localDatabase.isPushRegistered()) {
+      return;
+    }
+
+    _log.debug('NotificationService::cleanUpStalePushRegistration()');
+    try {
+      await _cleanupPushRegistration();
+    } catch (e) {
+      // The registration flag is deleted last, so an interrupted cleanup
+      // (e.g. no network) is retried on the next launch.
+      _log.warn(
+        'NotificationService::cleanUpStalePushRegistration() failed: $e',
+      );
+    }
+  }
+
+  Future<void> _cleanupPushRegistration() async {
     await _foregroundMessageSubscription?.cancel();
     await _onMessageOpenedAppSubscription?.cancel();
     await _onTokenRefreshSubscription?.cancel();
     await _messaging.deleteToken();
+    _fcmToken = null;
     await _messaging.setAutoInitEnabled(false);
     await flutterLocalNotificationsPlugin.cancelAll();
     await _localService.clearNotificationBadgeCount();
-    await getIt<TbStorage>().deleteItem(_pushRegisteredKey);
-  }
-
-  /// Cleans up the push registration after a session that ended without an
-  /// explicit logout (e.g. the refresh token expired while the app was
-  /// closed, #304). The JWT is already invalid at this point, so the
-  /// server-side mobile session usually can't be removed here; deleting the
-  /// local FCM token makes further pushes bounce, and the platform purges
-  /// the session on the next delivery attempt.
-  Future<void> handleSessionExpired() async {
-    final registered =
-        await getIt<TbStorage>().getItem(_pushRegisteredKey) as String?;
-    if (registered != 'true') {
-      return;
-    }
-
-    _log.debug('NotificationService::handleSessionExpired()');
-    try {
-      await logout();
-    } catch (e) {
-      _log.debug('NotificationService::handleSessionExpired() failed: $e');
-    }
+    await _localDatabase.clearPushRegistered();
   }
 
   Future<void> _configFirebaseMessaging() async {
@@ -193,7 +235,6 @@ class NotificationService {
   }
 
   Future<NotificationSettings> _requestPermission() async {
-    _messaging = FirebaseMessaging.instance;
     final result = await _messaging.requestPermission(provisional: true);
 
     if (result.authorizationStatus == AuthorizationStatus.denied) {
@@ -205,7 +246,15 @@ class NotificationService {
 
   Future<String?> _resetToken(String? token) async {
     if (token != null) {
-      _tbClient.getUserControllerApi().removeMobileSession(xMobileToken: token);
+      try {
+        await _tbClient.getUserControllerApi().removeMobileSession(
+          xMobileToken: token,
+        );
+      } catch (e) {
+        _log.warn(
+          'NotificationService::_resetToken() removeMobileSession failed: $e',
+        );
+      }
     }
 
     await _messaging.deleteToken();
@@ -216,26 +265,30 @@ class NotificationService {
     String? fcmToken = await getToken();
     _log.debug('FCM token: $fcmToken');
 
-    if (fcmToken != null) {
-      final mobileInfo =
-          (await _tbClient.getUserControllerApi().getMobileSession(
-            xMobileToken: fcmToken,
-          )).data;
-      if (mobileInfo != null) {
-        final int timeAfterCreatedToken =
-            DateTime.now().millisecondsSinceEpoch -
-            (mobileInfo.fcmTokenTimestamp ?? 0);
-        if (timeAfterCreatedToken > const Duration(days: 30).inMilliseconds) {
-          fcmToken = await _resetToken(fcmToken);
-          if (fcmToken != null) {
-            await _saveToken(fcmToken);
-          }
-        } else {
-          await _markPushRegistered();
+    if (fcmToken == null) {
+      return;
+    }
+
+    final mobileInfo =
+        (await _tbClient.getUserControllerApi().getMobileSession(
+          xMobileToken: fcmToken,
+        )).data;
+    if (mobileInfo == null) {
+      await _saveToken(fcmToken);
+    } else {
+      final int timeAfterCreatedToken =
+          DateTime.now().millisecondsSinceEpoch -
+          (mobileInfo.fcmTokenTimestamp ?? 0);
+      if (timeAfterCreatedToken > const Duration(days: 30).inMilliseconds) {
+        fcmToken = await _resetToken(fcmToken);
+        if (fcmToken != null) {
+          await _saveToken(fcmToken);
         }
-      } else {
-        await _saveToken(fcmToken);
       }
+    }
+
+    if (fcmToken != null) {
+      await _localDatabase.setPushRegistered();
     }
   }
 
@@ -246,11 +299,7 @@ class NotificationService {
         (b) => b..fcmTokenTimestamp = DateTime.now().millisecondsSinceEpoch,
       ),
     );
-    await _markPushRegistered();
-  }
-
-  Future<void> _markPushRegistered() {
-    return getIt<TbStorage>().setItem(_pushRegisteredKey, 'true');
+    await _localDatabase.setPushRegistered();
   }
 
   Future<void> showNotification(RemoteMessage message) async {
