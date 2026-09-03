@@ -21,15 +21,9 @@ mixin CustomersBase on EntitiesBase<Customer, PageLink> {
     PageLink pageLink, {
     bool refresh = false,
   }) async {
-    if (tbClient.isTenantAdmin()) {
-      final r = await tbClient.getCustomerControllerApi().getCustomers(
-        pageSize: pageLink.pageSize,
-        page: pageLink.page,
-        textSearch: pageLink.textSearch,
-      );
-      final p = r.data!;
-      return toPageData(p.data, p.totalPages, p.totalElements, p.hasNext);
-    }
+    // `/api/user/customers` is the only list endpoint that honours RBAC for
+    // every authority: `/api/customers` is tenant-only and requires generic
+    // CUSTOMER read, so a tenant admin with group-scoped roles gets a 403.
     final r = await tbClient.getCustomerControllerApi().getUserCustomers(
       pageSize: pageLink.pageSize.toString(),
       page: pageLink.page.toString(),

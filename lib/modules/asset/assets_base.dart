@@ -20,15 +20,9 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
     PageLink pageLink, {
     bool refresh = false,
   }) async {
-    if (tbClient.isTenantAdmin()) {
-      final r = await tbClient.getAssetControllerApi().getTenantAssets(
-        pageSize: pageLink.pageSize,
-        page: pageLink.page,
-        textSearch: pageLink.textSearch,
-      );
-      final p = r.data!;
-      return toPageData(p.data, p.totalPages, p.totalElements, p.hasNext);
-    }
+    // `/api/user/assets` honours RBAC for every authority; `/api/assets` is
+    // tenant-only and requires generic ASSET read, so a tenant admin with
+    // group-scoped roles would get a 403 there.
     final r = await tbClient.getAssetControllerApi().getUserAssets(
       pageSize: pageLink.pageSize.toString(),
       page: pageLink.page.toString(),
