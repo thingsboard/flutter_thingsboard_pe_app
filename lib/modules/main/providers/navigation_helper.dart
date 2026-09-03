@@ -86,6 +86,12 @@ class NavigationHelper {
 
   /// Mirrors the web UI's `menuFilters`: a page is visible only if the user
   /// can read its underlying resource, either generically or via group roles.
+  ///
+  /// `userPermissions` is only null before `loadUser()` has completed (it is
+  /// published together with `mobileLoginInfo`), so the null branch fails open
+  /// on purpose: a permissions hiccup must not lock the user out of navigation.
+  /// This differs from `LoginState.hasGenericPermission`, which fails closed
+  /// because it guards actions rather than menu entries.
   static bool isPageVisible(PageLayout pageLayout, LoginState login) {
     if (login.userScope == Authority.SYS_ADMIN) {
       return true;
@@ -98,19 +104,30 @@ class NavigationHelper {
       case Pages.alarms:
         return permissions.hasReadGenericPermission(Resource.ALARM);
       case Pages.devices:
+        // The Devices grid is backed by `/api/deviceProfileInfos`, which the
+        // server gates on generic DEVICE_PROFILE read even for customer users,
+        // so DEVICE permissions alone would only lead to a 403 here.
         return permissions.hasReadGenericPermission(Resource.DEVICE_PROFILE);
       case Pages.device_list:
-        return permissions.hasReadGenericPermission(Resource.DEVICE) ||
-            permissions.hasSharedReadGroupsPermission(EntityType.DEVICE);
+        return permissions.hasReadGenericOrSharedGroupsPermission(
+          Resource.DEVICE,
+          EntityType.DEVICE,
+        );
       case Pages.assets:
-        return permissions.hasReadGenericPermission(Resource.ASSET) ||
-            permissions.hasSharedReadGroupsPermission(EntityType.ASSET);
+        return permissions.hasReadGenericOrSharedGroupsPermission(
+          Resource.ASSET,
+          EntityType.ASSET,
+        );
       case Pages.customers:
-        return permissions.hasReadGenericPermission(Resource.CUSTOMER) ||
-            permissions.hasSharedReadGroupsPermission(EntityType.CUSTOMER);
+        return permissions.hasReadGenericOrSharedGroupsPermission(
+          Resource.CUSTOMER,
+          EntityType.CUSTOMER,
+        );
       case Pages.dashboards:
-        return permissions.hasReadGenericPermission(Resource.DASHBOARD) ||
-            permissions.hasSharedReadGroupsPermission(EntityType.DASHBOARD);
+        return permissions.hasReadGenericOrSharedGroupsPermission(
+          Resource.DASHBOARD,
+          EntityType.DASHBOARD,
+        );
       case Pages.audit_logs:
         return permissions.hasReadGenericPermission(Resource.AUDIT_LOG);
       case Pages.home:

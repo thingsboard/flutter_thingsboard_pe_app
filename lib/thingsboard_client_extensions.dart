@@ -40,6 +40,17 @@ extension AllowedPermissionsInfoExt on AllowedPermissionsInfo {
     return info?.entityGroupIds?.isNotEmpty ?? false;
   }
 
+  /// The user can list entities of [resource]: either through a generic READ
+  /// permission or because at least one group of [entityType] is shared with
+  /// them via a group role. This is what the `/api/user/*` list endpoints
+  /// resolve data by, so it is the right gate for list pages.
+  bool hasReadGenericOrSharedGroupsPermission(
+    Resource resource,
+    EntityType entityType,
+  ) =>
+      hasReadGenericPermission(resource) ||
+      hasSharedReadGroupsPermission(entityType);
+
   bool _isResourceAllowed(Resource resource) {
     final allowed = allowedResources;
     return allowed == null || allowed.contains(resource);
