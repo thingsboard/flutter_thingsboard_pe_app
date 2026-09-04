@@ -19,6 +19,7 @@ class AlarmTypesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customTranslationService = getIt<ICustomTranslationService>();
     return AlarmFilterWidget(
       filterTitle: S.of(context).alarmTypeList,
       child: Container(
@@ -94,7 +95,7 @@ class AlarmTypesWidget extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Text(
-                                  getIt<ICustomTranslationService>().translate(
+                                  customTranslationService.translate(
                                     state.selectedTypes.elementAt(index),
                                   ),
                                   style: TextStyle(

@@ -14,6 +14,7 @@ class TypesListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customTranslationService = getIt<ICustomTranslationService>();
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.7,
@@ -75,9 +76,7 @@ class TypesListWidget extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              getIt<ICustomTranslationService>().translate(
-                                item.type,
-                              ),
+                              customTranslationService.translate(item.type),
                               style: const TextStyle(fontSize: 16, height: 1.5),
                             ),
                           ),

@@ -56,6 +56,7 @@ class _EntityDetailsPageState<T extends Object>
     extends State<EntityDetailsPage<T>> {
   late Future<T?> entityFuture;
   late ValueNotifier<String> titleValue;
+  final ICustomTranslationService customTranslationService = getIt();
 
   @override
   void initState() {
@@ -91,7 +92,7 @@ class _EntityDetailsPageState<T extends Object>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          getIt<ICustomTranslationService>().translate(title),
+                          customTranslationService.translate(title),
                           style:
                               widget._subTitle != null
                                   ? Theme.of(context)
