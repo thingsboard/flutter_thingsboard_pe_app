@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/config/routes/v2/router_2.dart';
+import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_item_data.dart';
@@ -47,7 +48,7 @@ class Navigation extends _$Navigation {
     if (!login.isUserLoaded || login.mobileLoginInfo == null) {
       return const NavigationState(bottomBarPages: [], morePages: []);
     }
-    return _getPages(_pagesLayout);
+    return _getPages(_pagesLayout, login);
   }
 
   void onLoggedIn() {
@@ -93,8 +94,7 @@ class Navigation extends _$Navigation {
     }
   }
 
-  NavigationState _getPages(List<PageLayout> layouts) {
-    final login = ref.read(loginProvider);
+  NavigationState _getPages(List<PageLayout> layouts, LoginState login) {
     _allPages =
         layouts
             .where(
@@ -171,7 +171,7 @@ class Navigation extends _$Navigation {
   }
 
   void updatePages() {
-    state = _getPages(_pagesLayout);
+    state = _getPages(_pagesLayout, ref.read(loginProvider));
   }
 
   List<NavigationItemData> _getMorePages(List<NavigationItemData> elements) {

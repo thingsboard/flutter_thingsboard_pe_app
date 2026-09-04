@@ -93,6 +93,8 @@ class NavigationHelper {
   /// This differs from `LoginState.hasGenericPermission`, which fails closed
   /// because it guards actions rather than menu entries.
   static bool isPageVisible(PageLayout pageLayout, LoginState login) {
+    // Sysadmins have no RBAC roles: their pages come from the system-tenant
+    // bundle (or the sysadmin default layout) and are shown as configured.
     if (login.userScope == Authority.SYS_ADMIN) {
       return true;
     }

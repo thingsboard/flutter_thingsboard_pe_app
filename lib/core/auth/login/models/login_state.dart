@@ -30,11 +30,4 @@ abstract class LoginState with _$LoginState {
       return false;
     }
   }
-    bool haveViewDashboardPermission() {
-    return 
-     hasGenericPermission(
-      Resource.DASHBOARD,
-      Operation.READ,
-    );
-  }
 }

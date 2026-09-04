@@ -51,6 +51,8 @@ extension AllowedPermissionsInfoExt on AllowedPermissionsInfo {
       hasReadGenericPermission(resource) ||
       hasSharedReadGroupsPermission(entityType);
 
+  /// A null `allowedResources` means the authority is unrestricted — same as
+  /// `isResourceAllowed` in the web UI.
   bool _isResourceAllowed(Resource resource) {
     final allowed = allowedResources;
     return allowed == null || allowed.contains(resource);
