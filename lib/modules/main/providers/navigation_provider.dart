@@ -48,7 +48,7 @@ class Navigation extends _$Navigation {
     if (!login.isUserLoaded || login.mobileLoginInfo == null) {
       return const NavigationState(bottomBarPages: [], morePages: []);
     }
-    return _getPages(_pagesLayout, login);
+    return _getPages(login);
   }
 
   void onLoggedIn() {
@@ -94,9 +94,9 @@ class Navigation extends _$Navigation {
     }
   }
 
-  NavigationState _getPages(List<PageLayout> layouts, LoginState login) {
+  NavigationState _getPages(LoginState login) {
     _allPages =
-        layouts
+        _pagesLayout
             .where(
               (pageLayout) => NavigationHelper.isPageVisible(pageLayout, login),
             )
@@ -171,7 +171,7 @@ class Navigation extends _$Navigation {
   }
 
   void updatePages() {
-    state = _getPages(_pagesLayout, ref.read(loginProvider));
+    state = _getPages(ref.read(loginProvider));
   }
 
   List<NavigationItemData> _getMorePages(List<NavigationItemData> elements) {
