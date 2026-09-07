@@ -84,7 +84,7 @@ class NavigationHelper {
     }
   }
 
-  /// Mirrors the web UI's `menuFilters` (ui-ngx
+  /// Mirrors the web UI's `menuFilters` (PE ui-ngx
   /// `src/app/core/services/menu.models.ts`): a page is visible only if the
   /// user can read its underlying resource, either generically or via group
   /// roles.
