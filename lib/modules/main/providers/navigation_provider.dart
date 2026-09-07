@@ -31,6 +31,8 @@ class Navigation extends _$Navigation {
   NavigationState build() {
     final login = ref.read(loginProvider);
 
+    // `ref.listen` rather than `ref.watch`: rebuilding this provider on every
+    // login emission would tear down and re-create `_orientationSubscription`.
     ref.listen(loginProvider, (prev, next) {
       onLoggedIn();
     });
@@ -95,11 +97,20 @@ class Navigation extends _$Navigation {
   }
 
   NavigationState _getPages(LoginState login) {
+    final visibleLayouts = <PageLayout>[];
+    final hiddenPageIds = <String?>[];
+    for (final pageLayout in _pagesLayout) {
+      if (NavigationHelper.isPageVisible(pageLayout, login)) {
+        visibleLayouts.add(pageLayout);
+      } else {
+        hiddenPageIds.add(pageLayout.id?.name ?? pageLayout.label);
+      }
+    }
+    if (hiddenPageIds.isNotEmpty) {
+      _logger.debug('Navigation pages hidden by RBAC: $hiddenPageIds');
+    }
     _allPages =
-        _pagesLayout
-            .where(
-              (pageLayout) => NavigationHelper.isPageVisible(pageLayout, login),
-            )
+        visibleLayouts
             .map(
               (pageLayout) => NavigationItemData(
                 title: NavigationHelper.getLabel(pageLayout),

@@ -7,6 +7,10 @@ import 'package:thingsboard_pe_client/thingsboard_pe_client.dart';
 /// `userPermissions.genericPermissions: BuiltMap<String, BuiltSet<Operation>>`.
 /// The key is the resource name string (e.g. `'ALARM'`), mirroring the
 /// old `Map<Resource, Set<Operation>>` but JSON-serialised.
+///
+/// The web UI symbols named below (`hasGenericAllPermission`,
+/// `isResourceAllowed`, `hasSharedReadGroupsPermission`) live in ui-ngx
+/// `src/app/core/http/user-permissions.service.ts`.
 extension AllowedPermissionsInfoExt on AllowedPermissionsInfo {
   bool hasGenericPermission(Resource resource, Operation operation) {
     final genericPerms = userPermissions?.genericPermissions;

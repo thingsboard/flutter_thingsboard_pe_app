@@ -84,8 +84,10 @@ class NavigationHelper {
     }
   }
 
-  /// Mirrors the web UI's `menuFilters`: a page is visible only if the user
-  /// can read its underlying resource, either generically or via group roles.
+  /// Mirrors the web UI's `menuFilters` (ui-ngx
+  /// `src/app/core/services/menu.models.ts`): a page is visible only if the
+  /// user can read its underlying resource, either generically or via group
+  /// roles.
   ///
   /// `userPermissions` is only null before `loadUser()` has completed (it is
   /// published together with `mobileLoginInfo`), so the null branch fails open
