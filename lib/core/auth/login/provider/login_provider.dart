@@ -55,6 +55,8 @@ class Login extends _$Login {
       // Fire-and-forget: the cleanup swallows its own errors, and the
       // registration flag is deleted last, so an interrupted attempt is
       // retried on the next launch without delaying the login screen.
+      // NotificationService.init() waits for it, so a fast auto-login
+      // (QR code, OAuth2) cannot register a token while it is being deleted.
       unawaited(getIt<NotificationService>().cleanUpStalePushRegistration());
       return;
     }

@@ -1,3 +1,4 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/locator.dart';
@@ -18,26 +19,19 @@ class MockFirebaseService extends Mock implements IFirebaseService {}
 
 /// Registers the locator dependencies that services resolve in their field
 /// initializers, so a test can construct them without booting the real app.
-/// Pass overrides for the collaborators the test stubs or asserts on.
+/// The locator is reset automatically when the current test finishes.
 void registerTestDependencies({
-  ThingsboardClient? tbClient,
-  ILocalDatabaseService? localDatabase,
-  IFirebaseService? firebaseService,
+  required ThingsboardClient tbClient,
+  required ILocalDatabaseService localDatabase,
+  required IFirebaseService firebaseService,
 }) {
   final clientService = MockTbClientService();
-  when(
-    () => clientService.client,
-  ).thenReturn(tbClient ?? MockThingsboardClient());
+  when(() => clientService.client).thenReturn(tbClient);
 
   getIt
     ..registerLazySingleton<TbLogger>(() => MockTbLogger())
     ..registerLazySingleton<ITbClientService>(() => clientService)
-    ..registerLazySingleton<ILocalDatabaseService>(
-      () => localDatabase ?? MockLocalDatabaseService(),
-    )
-    ..registerLazySingleton<IFirebaseService>(
-      () => firebaseService ?? MockFirebaseService(),
-    );
+    ..registerLazySingleton<ILocalDatabaseService>(() => localDatabase)
+    ..registerLazySingleton<IFirebaseService>(() => firebaseService);
+  addTearDown(getIt.reset);
 }
-
-Future<void> resetTestDependencies() => getIt.reset();

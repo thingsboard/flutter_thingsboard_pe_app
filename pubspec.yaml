@@ -95,6 +95,7 @@ dependencies:
   barcode: ^2.2.9
   riverpod_annotation: ^2.6.1
   path_provider: ^2.1.5
+  dio: ^5.7.0
 dev_dependencies:
   integration_test:
     sdk: flutter
@@ -102,7 +103,6 @@ dev_dependencies:
     sdk: flutter
   flutter_launcher_icons: ^0.14.4
   mocktail: ^1.0.3
-  dio: ^5.7.0
   bloc_test: ^9.1.7
   flutter_lints: ^2.0.3
   build_runner: ^2.4.9

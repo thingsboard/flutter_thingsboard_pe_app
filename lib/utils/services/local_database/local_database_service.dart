@@ -47,8 +47,9 @@ class LocalDatabaseService implements ILocalDatabaseService {
   }
 
   @override
-  Future<bool> isPushRegistered() {
-    return storage.containsKey(DatabaseKeys.pushNotificationsRegistered);
+  Future<bool> isPushRegistered() async {
+    return await storage.getItem(DatabaseKeys.pushNotificationsRegistered) ==
+        true;
   }
 
   @override

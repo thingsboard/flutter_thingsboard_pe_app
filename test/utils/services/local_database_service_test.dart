@@ -25,18 +25,22 @@ void main() {
       await service.setPushRegistered();
 
       verify(
-        () => storage.setItem('push_notifications_registered', true),
+        () => storage.setItem('pushNotificationsRegistered', true),
       ).called(1);
     });
 
-    test('isPushRegistered checks the persisted key', () async {
-      when(() => storage.containsKey(any())).thenAnswer((_) async => true);
+    test('isPushRegistered reads the stored flag', () async {
+      when(() => storage.getItem(any())).thenAnswer((_) async => true);
 
       expect(await service.isPushRegistered(), isTrue);
 
-      verify(
-        () => storage.containsKey('push_notifications_registered'),
-      ).called(1);
+      verify(() => storage.getItem('pushNotificationsRegistered')).called(1);
+    });
+
+    test('isPushRegistered is false when the flag was never stored', () async {
+      when(() => storage.getItem(any())).thenAnswer((_) async => null);
+
+      expect(await service.isPushRegistered(), isFalse);
     });
 
     test('clearPushRegistered deletes the persisted key', () async {
@@ -44,9 +48,7 @@ void main() {
 
       await service.clearPushRegistered();
 
-      verify(
-        () => storage.deleteItem('push_notifications_registered'),
-      ).called(1);
+      verify(() => storage.deleteItem('pushNotificationsRegistered')).called(1);
     });
   });
 }
