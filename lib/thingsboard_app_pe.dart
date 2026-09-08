@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:thingsboard_app/config/routes/router.dart';
+import 'package:thingsboard_app/config/routes/use_app_links.dart';
 import 'package:thingsboard_app/config/routes/v2/router_2.dart';
 import 'package:thingsboard_app/config/themes/app_colors.dart';
 import 'package:thingsboard_app/config/themes/dark_theme.dart';
 import 'package:thingsboard_app/config/themes/tb_theme.dart';
 
 import 'package:thingsboard_app/generated/l10n.dart';
-import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
 import 'package:thingsboard_app/utils/services/wl_provider.dart';
 import 'package:toastification/toastification.dart';
@@ -21,6 +19,8 @@ class ThingsboardApp extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final wlState = ref.watch(wlProvider);
+
+    useAppLinks();
 
     return ToastificationWrapper(
       child: MaterialApp.router(
