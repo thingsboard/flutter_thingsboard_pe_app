@@ -99,6 +99,7 @@ class QrCodeScannerPage extends HookWidget {
                   context.mounted &&
                   context.canPop()) {
                 detectionHandled.value = true;
+                unawaited(controller.stop());
                 context.pop(barcodes.barcodes.first);
               }
             },

@@ -33,7 +33,11 @@ class TbClientService implements ITbClientService {
   static const _initErrorSuppression = Duration(seconds: 2);
 
   int _pendingInits = 0;
-  bool get _suppressErrorNotifications => _pendingInits > 0;
+
+  // An unreachable server is never what the init-time 401/403 answers look
+  // like: keep it visible even inside the suppression window.
+  bool _shouldSuppress(ThingsboardError e) =>
+      _pendingInits > 0 && !Utils.isConnectionError(e);
 
   Future<void> _initClient() async {
     _pendingInits++;
@@ -101,7 +105,7 @@ class TbClientService implements ITbClientService {
 
   void onClientError(ThingsboardError e) {
     log('client on error: $e');
-    if (_suppressErrorNotifications) {
+    if (_shouldSuppress(e)) {
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {

@@ -11,8 +11,8 @@ import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/notification/service/i_notifications_local_service.dart';
 import 'package:thingsboard_app/modules/notification/service/notifications_local_service.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
-import 'package:thingsboard_app/utils/best_effort_request.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
+import 'package:thingsboard_app/utils/silent_request.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 
 class NotificationService {
@@ -62,7 +62,7 @@ class NotificationService {
                   .getUserControllerApi()
                   .removeMobileSession(
                     xMobileToken: _fcmToken!,
-                    extra: bestEffortRequestExtra(),
+                    extra: silentRequestExtra(),
                   )
                   .then((_) {
                     _fcmToken = token;
@@ -108,7 +108,7 @@ class NotificationService {
       );
       _tbClient.getUserControllerApi().removeMobileSession(
         xMobileToken: _fcmToken!,
-        extra: bestEffortRequestExtra(),
+        extra: silentRequestExtra(),
       );
     }
 
@@ -184,7 +184,7 @@ class NotificationService {
     if (token != null) {
       _tbClient.getUserControllerApi().removeMobileSession(
         xMobileToken: token,
-        extra: bestEffortRequestExtra(),
+        extra: silentRequestExtra(),
       );
     }
 
@@ -212,7 +212,7 @@ class NotificationService {
     final mobileInfo =
         (await _tbClient.getUserControllerApi().getMobileSession(
           xMobileToken: fcmToken,
-          extra: bestEffortRequestExtra(),
+          extra: silentRequestExtra(),
         )).data;
     if (mobileInfo != null) {
       final int timeAfterCreatedToken =
@@ -235,7 +235,7 @@ class NotificationService {
       mobileSessionInfo: MobileSessionInfo(
         (b) => b..fcmTokenTimestamp = DateTime.now().millisecondsSinceEpoch,
       ),
-      extra: bestEffortRequestExtra(),
+      extra: silentRequestExtra(),
     );
   }
 
@@ -342,7 +342,7 @@ class NotificationService {
           .getNotificationControllerApi()
           .getUnreadNotificationsCount(
             deliveryMethod: 'MOBILE_APP',
-            extra: bestEffortRequestExtra(),
+            extra: silentRequestExtra(),
           );
       return resp.data ?? 0;
     } catch (_) {

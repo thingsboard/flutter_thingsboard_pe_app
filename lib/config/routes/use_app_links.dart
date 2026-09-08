@@ -2,6 +2,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
+import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 
@@ -28,19 +29,22 @@ void useAppLinks() {
       getIt<ThingsboardAppRouter>().navigateByAppLink(link);
     }
 
-    final subscription = AppLinks().uriLinkStream.listen((uri) {
-      final link = uri.toString();
-      final isDuplicate =
-          link == lastLink &&
-          lastLinkAt != null &&
-          DateTime.now().difference(lastLinkAt!) < _duplicateLinkWindow;
-      if (isDuplicate) {
-        lastLinkAt = DateTime.now();
-
-        return;
-      }
-      navigate(link);
-    });
+    final subscription = AppLinks().uriLinkStream.listen(
+      (uri) {
+        final link = uri.toString();
+        final isDuplicate =
+            link == lastLink &&
+            lastLinkAt != null &&
+            DateTime.now().difference(lastLinkAt!) < _duplicateLinkWindow;
+        if (isDuplicate) {
+          return;
+        }
+        navigate(link);
+      },
+      onError:
+          (Object e) =>
+              getIt<TbLogger>().error('useAppLinks: uriLinkStream $e', e),
+    );
 
     // Consume the link the app was cold-started with (stored in main()).
     WidgetsBinding.instance.addPostFrameCallback((_) async {

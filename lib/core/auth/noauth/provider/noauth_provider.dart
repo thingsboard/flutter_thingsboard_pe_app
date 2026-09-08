@@ -13,10 +13,11 @@ import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart'
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 part 'noauth_provider.g.dart';
 
-/// Storage keys `ThingsboardClient.init()` reads to restore a session
-/// (see `thingsboard_client_base.dart` of the client pinned in pubspec.yaml).
-/// The QR switch writes them directly to hand the freshly created client
-/// exactly the exchanged pair, so they must be kept in sync with the client.
+/// Storage keys `ThingsboardClient.init()` reads to restore a session (see
+/// `thingsboard_client_base.dart` in `../thingsboard-dart-client/pe`, a path
+/// dependency with no version pin to check against). The QR switch writes them
+/// directly to hand the freshly created client exactly the exchanged pair, so
+/// they must be kept in sync with the client.
 const _jwtTokenStorageKey = 'jwt_token';
 const _refreshTokenStorageKey = 'refresh_token';
 
@@ -32,19 +33,40 @@ final class SwitchEndpointParams {
 /// copy: the provider has no BuildContext.
 enum NoAuthStep { fetchingSession, loggingIn, switchingHost }
 
-/// What went wrong, for the cases where the server did not supply a message.
-enum NoAuthFailure { tokenExchangeFailed, sessionInvalid, unknown }
+/// What went wrong. The view resolves it to localized copy and falls back to
+/// the server's message only for [unknown].
+enum NoAuthFailure {
+  /// No HTTP answer from the target host at all (timeout, refused, DNS).
+  connectionFailed,
+  tokenExchangeFailed,
+  sessionInvalid,
+  unknown,
+}
 
+/// A request to the target host that failed, already classified for the view.
+/// [status] and [cause] are diagnostics only and reach the logs through
+/// [toString]; the classification has already happened in `_asFailure`.
 final class SwitchEndpointFailure implements Exception {
-  const SwitchEndpointFailure(this.failure, {this.serverMessage, this.status});
+  const SwitchEndpointFailure(
+    this.failure, {
+    this.serverMessage,
+    this.status,
+    this.cause,
+  });
 
   final NoAuthFailure failure;
   final String? serverMessage;
+
+  /// HTTP status of the answer, if there was one.
   final int? status;
+
+  /// What Dio reported: separates a timeout from a refused connection or a
+  /// bad certificate.
+  final DioExceptionType? cause;
 
   @override
   String toString() =>
-      'SwitchEndpointFailure($failure, status: $status, '
+      'SwitchEndpointFailure($failure, status: $status, cause: $cause, '
       'serverMessage: $serverMessage)';
 }
 
@@ -62,28 +84,29 @@ class NoauthProvider extends _$NoauthProvider {
   }
 
   Future<void> switchEndpoint(SwitchEndpointParams params) async {
-    final uri = params.data.uri;
     final secret = params.data.secret;
     final previousEndpoint = await getIt<IEndpointService>().getEndpoint();
-    final host =
-        params.data.host ?? (uri.isAbsolute ? uri.origin : previousEndpoint);
-    final isTheSameHost =
-        Uri.parse(host).host.compareTo(Uri.parse(previousEndpoint).host) == 0;
     // Captured before anything is written: the rollback has to restore the
     // session of the host we came from, not just its endpoint (PROD-8200).
     final previousSession = await _readStoredSession();
-
-    _logger.debug(
-      'SwitchEndpointUseCase: host=$host previousEndpoint=$previousEndpoint '
-      'isTheSameHost=$isTheSameHost hasSecret=${secret != null}',
-    );
+    // Resolved inside the try: a malformed link has to end on the error screen
+    // like any other failure instead of leaving the view on the spinner.
+    String? host;
 
     try {
+      host = _resolveHost(params.data, previousEndpoint);
+      final isSameOrigin = _isSameOrigin(host, previousEndpoint);
+
+      _logger.debug(
+        'SwitchEndpointUseCase: host=$host previousEndpoint=$previousEndpoint '
+        'isSameOrigin=$isSameOrigin hasSecret=${secret != null}',
+      );
+
       if (secret == null || secret.isEmpty) {
         // A QR link without a secret (e.g. the mobile app QR shown on the
         // login page) cannot log the user in: just switch to the target host
         // and let the login page of that host take over.
-        if (!isTheSameHost) {
+        if (!isSameOrigin) {
           await _switchHostOnly(host: host, previousEndpoint: previousEndpoint);
         }
         state = const NoAuthState(isDone: true);
@@ -95,14 +118,14 @@ class NoauthProvider extends _$NoauthProvider {
       await _verifySession(host: host, token: session.token);
 
       state = NoAuthState(
-        step: isTheSameHost ? NoAuthStep.loggingIn : NoAuthStep.switchingHost,
+        step: isSameOrigin ? NoAuthStep.loggingIn : NoAuthStep.switchingHost,
         host: host,
       );
       await _installSession(
         session,
         host: host,
         previousEndpoint: previousEndpoint,
-        isTheSameHost: isTheSameHost,
+        isSameOrigin: isSameOrigin,
       );
 
       _logger.debug('SwitchEndpointUseCase: switch to $host done');
@@ -113,6 +136,38 @@ class NoauthProvider extends _$NoauthProvider {
       state = _failureState(e, host: host);
     }
   }
+
+  /// Only http(s) links carry a host the app can switch to; anything else
+  /// (e.g. a custom-scheme link) targets the current endpoint. `Uri.origin`
+  /// still throws on an empty host, which the caller's catch turns into the
+  /// regular error screen.
+  String _resolveHost(SwitchEndpointArgs args, String previousEndpoint) {
+    final uri = args.uri;
+
+    return args.host ?? (_isHttpUri(uri) ? uri.origin : previousEndpoint);
+  }
+
+  /// Scheme and port are part of the identity: `http://acme.local:8080` and
+  /// `https://acme.local` are different servers, so a link that differs only
+  /// there still has to switch. `Uri.origin` normalizes case and default ports
+  /// (`https://Acme.local:443/` still matches `https://acme.local`).
+  ///
+  /// Deliberately asymmetric: an unusable target throws and ends on the error
+  /// screen, while an unusable stored endpoint (empty without the dart-define,
+  /// or schemeless from an older build) is nothing to stay on, so the switch
+  /// proceeds. `EndpointService.isCustomEndpoint` keeps comparing hosts only:
+  /// Firebase is bound to the default host, not to a scheme or port.
+  bool _isSameOrigin(String targetEndpoint, String previousEndpoint) {
+    final target = Uri.parse(targetEndpoint).origin;
+    final previous = Uri.tryParse(previousEndpoint);
+    if (previous == null || !_isHttpUri(previous) || previous.host.isEmpty) {
+      return false;
+    }
+
+    return target == previous.origin;
+  }
+
+  bool _isHttpUri(Uri uri) => uri.isScheme('http') || uri.isScheme('https');
 
   /// Exchanges the one-time QR secret for a JWT pair on the TARGET host.
   ///
@@ -127,9 +182,9 @@ class NoauthProvider extends _$NoauthProvider {
     try {
       response = await _hostClient(host).get('/api/noauth/qr/$secret');
     } on DioException catch (e) {
-      // The server replies with a ThingsboardError body (e.g. an expired
-      // one-time secret): surface its message instead of the raw Dio text.
-      throw _asFailure(e, NoAuthFailure.tokenExchangeFailed);
+      // /api/noauth/** is permitAll on the server, so a 401 here can only be
+      // the secret being rejected as unknown or expired.
+      throw _asFailure(e, rejectedAs: NoAuthFailure.tokenExchangeFailed);
     }
 
     final data = response.data;
@@ -159,7 +214,7 @@ class NoauthProvider extends _$NoauthProvider {
         options: Options(headers: {'X-Authorization': 'Bearer $token'}),
       );
     } on DioException catch (e) {
-      throw _asFailure(e, NoAuthFailure.sessionInvalid);
+      throw _asFailure(e, rejectedAs: NoAuthFailure.sessionInvalid);
     }
   }
 
@@ -168,14 +223,14 @@ class NoauthProvider extends _$NoauthProvider {
   /// with exactly these tokens instead of a session an earlier host left
   /// behind (PROD-8200).
   Future<void> _installSession(
-    _Session session, {
+    _ExchangedSession session, {
     required String host,
     required String previousEndpoint,
-    required bool isTheSameHost,
+    required bool isSameOrigin,
   }) async {
     await _writeStoredSession(session);
     await getIt<IEndpointService>().setEndpoint(host);
-    if (!isTheSameHost) {
+    if (!isSameOrigin) {
       await _switchFirebaseApps(previousEndpoint);
     }
     await _reInitClient(host, logTag: 'switch');
@@ -310,19 +365,34 @@ class NoauthProvider extends _$NoauthProvider {
     }
   }
 
-  SwitchEndpointFailure _asFailure(DioException e, NoAuthFailure failure) {
-    final body = e.response?.data;
+  /// No response at all is a transport failure and says nothing about the QR
+  /// session. A 401 is the server rejecting the secret or the pair (it maps
+  /// JWT_TOKEN_EXPIRED to 401) and becomes [rejectedAs]; any other answer is
+  /// left to the server's own message.
+  SwitchEndpointFailure _asFailure(
+    DioException e, {
+    required NoAuthFailure rejectedAs,
+  }) {
+    final response = e.response;
+    if (response == null) {
+      return SwitchEndpointFailure(
+        NoAuthFailure.connectionFailed,
+        cause: e.type,
+      );
+    }
+
+    final body = response.data;
     return SwitchEndpointFailure(
-      failure,
+      response.statusCode == 401 ? rejectedAs : NoAuthFailure.unknown,
       serverMessage: body is Map ? body['message'] as String? : null,
-      status: e.response?.statusCode,
+      status: response.statusCode,
+      cause: e.type,
     );
   }
 
-  NoAuthState _failureState(Object error, {required String host}) {
+  NoAuthState _failureState(Object error, {required String? host}) {
     if (error is SwitchEndpointFailure) {
       return NoAuthState(
-        error: error,
         host: host,
         failure: error.failure,
         serverMessage: error.serverMessage,
@@ -330,7 +400,6 @@ class NoauthProvider extends _$NoauthProvider {
     }
 
     return NoAuthState(
-      error: error,
       host: host,
       failure: NoAuthFailure.unknown,
       // Only the message is ever handed to the UI: ThingsboardError.toString()
@@ -342,7 +411,6 @@ class NoauthProvider extends _$NoauthProvider {
 
 class NoAuthState {
   const NoAuthState({
-    this.error,
     this.isDone = false,
     this.step,
     this.host,
@@ -350,13 +418,13 @@ class NoAuthState {
     this.serverMessage,
   });
 
-  final Object? error;
   final bool isDone;
   final NoAuthStep? step;
   final String? host;
   final NoAuthFailure? failure;
 
-  /// Message returned by the server, shown as-is: it is already localized
-  /// server-side and carries detail the app cannot reconstruct.
+  /// Message returned by the server, if any. It is hardcoded English on the
+  /// server side, so the view prefers localized copy for the failures it can
+  /// classify and shows this only for [NoAuthFailure.unknown].
   final String? serverMessage;
 }
