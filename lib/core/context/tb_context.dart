@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:app_links/app_links.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +37,6 @@ class TbContext implements PopEntry {
   final _deviceInfoService = getIt<IDeviceInfoService>();
   final _isLoadingNotifier = ValueNotifier<bool>(false);
   final _log = TbLogger();
-  StreamSubscription? _appLinkStreamSubscription;
-  final appLinks = AppLinks();
 
   bool _closeMainFirst = false;
   late bool _handleRootState;
@@ -278,14 +275,6 @@ class TbContext implements PopEntry {
         );
       }
     } finally {
-      _appLinkStreamSubscription ??= appLinks.uriLinkStream.listen(
-        (link) {
-          thingsboardAppRouter.navigateByAppLink(link.toString());
-        },
-        onError: (err) {
-          log.error('linkStream.listen $err');
-        },
-      );
       FlutterNativeSplash.remove();
     }
   }
@@ -300,9 +289,6 @@ class TbContext implements PopEntry {
     await getIt<NotificationService>().logout();
 
     await tbClient.logout(requestConfig: requestConfig, notifyUser: notifyUser);
-
-    _appLinkStreamSubscription?.cancel();
-    _appLinkStreamSubscription = null;
   }
 
   Future<void> updateRouteState() async {

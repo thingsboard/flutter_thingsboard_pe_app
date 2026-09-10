@@ -14,6 +14,7 @@ dependencies:
     sdk: flutter
   thingsboard_pe_client:
     path: ../thingsboard-dart-client/pe
+  dio: ^5.7.0
   intl: ^0.19.0
   flutter_secure_storage: ^9.0.0
   flutter_speed_dial: ^7.0.0
@@ -95,7 +96,6 @@ dependencies:
   barcode: ^2.2.9
   riverpod_annotation: ^2.6.1
   path_provider: ^2.1.5
-  dio: ^5.7.0
 dev_dependencies:
   integration_test:
     sdk: flutter

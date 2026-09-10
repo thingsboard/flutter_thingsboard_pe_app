@@ -15,6 +15,7 @@ import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/domain/entites/dashboard_arguments.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/thingsboard_client_extensions.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/device_profile/device_profile_cache.dart';
 import 'package:thingsboard_app/utils/services/device_profile/model/cached_device_profile.dart';
 import 'package:thingsboard_app/utils/services/entity_query_api.dart';
@@ -105,7 +106,7 @@ mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
 
   @override
   Widget buildEntityGridCard(BuildContext context, EntityData device) {
-    return Text(device.field('name')!);
+    return Text(customTranslationService.translate(device.field('name')));
   }
 
   bool displayCardImage(bool listWidgetCard) => listWidgetCard;
@@ -181,6 +182,7 @@ class _DeviceCardState extends State<DeviceCard> {
 
   late Future<CachedDeviceProfileInfo> deviceProfileFuture;
   final tbClient = getIt<ITbClientService>().client;
+  final ICustomTranslationService customTranslationService = getIt();
   @override
   void initState() {
     super.initState();
@@ -219,6 +221,12 @@ class _DeviceCardState extends State<DeviceCard> {
   }
 
   Widget buildCard(BuildContext context) {
+    final name = customTranslationService.translate(
+      widget.device.field('name'),
+    );
+    final label = customTranslationService.translate(
+      widget.device.field('label'),
+    );
     return Stack(
       children: [
         Positioned.fill(
@@ -312,7 +320,7 @@ class _DeviceCardState extends State<DeviceCard> {
                                       Flexible(
                                         fit: FlexFit.tight,
                                         child: Text(
-                                          widget.device.field('name')!,
+                                          name,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -345,14 +353,11 @@ class _DeviceCardState extends State<DeviceCard> {
                                       ),
                                     ],
                                   ),
-                                  if (widget.device
-                                          .field('label')
-                                          ?.isNotEmpty ==
-                                      true)
+                                  if (label.isNotEmpty)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 2),
                                       child: Text(
-                                        widget.device.field('label')!,
+                                        label,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
@@ -435,6 +440,12 @@ class _DeviceCardState extends State<DeviceCard> {
   }
 
   Widget buildListWidgetCard(BuildContext context) {
+    final name = customTranslationService.translate(
+      widget.device.field('name'),
+    );
+    final label = customTranslationService.translate(
+      widget.device.field('label'),
+    );
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -507,7 +518,7 @@ class _DeviceCardState extends State<DeviceCard> {
                   children: [
                     Flexible(
                       child: Text(
-                        widget.device.field('name')!,
+                        name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -520,11 +531,11 @@ class _DeviceCardState extends State<DeviceCard> {
                     ),
                   ],
                 ),
-                if (widget.device.field('label')?.isNotEmpty == true)
+                if (label.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
-                      widget.device.field('label')!,
+                      label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(

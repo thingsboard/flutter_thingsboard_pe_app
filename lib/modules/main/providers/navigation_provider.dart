@@ -27,11 +27,12 @@ class Navigation extends _$Navigation {
   List<NavigationItemData> _allPages = [];
   late final StreamSubscription<NativeDeviceOrientation>
   _orientationSubscription;
-  late final ProviderSubscription<LoginState> _loginSub;
   @override
   NavigationState build() {
     final login = ref.read(loginProvider);
 
+    // `ref.listen` rather than `ref.watch`: rebuilding this provider on every
+    // login emission would tear down and re-create `_orientationSubscription`.
     ref.listen(loginProvider, (prev, next) {
       onLoggedIn();
     });
@@ -45,12 +46,21 @@ class Navigation extends _$Navigation {
         });
     ref.onDispose(() {
       _orientationSubscription.cancel();
-      _loginSub.close();
     });
     if (!login.isUserLoaded || login.mobileLoginInfo == null) {
       return const NavigationState(bottomBarPages: [], morePages: []);
     }
-    return _getPages(_pagesLayout);
+    return _getPages(login);
+  }
+
+  /// Primes the page layout from the current login state and returns the path
+  /// of the first bottom bar page, or null when there is nothing to open yet.
+  /// [build] does not prime the layout, so callers that navigate right after a
+  /// login must go through here instead of reading [state] directly.
+  String? resolveHomePath() {
+    onLoggedIn();
+
+    return state.bottomBarPages.firstOrNull?.path;
   }
 
   void onLoggedIn() {
@@ -96,9 +106,21 @@ class Navigation extends _$Navigation {
     }
   }
 
-  NavigationState _getPages(List<PageLayout> layouts) {
+  NavigationState _getPages(LoginState login) {
+    final visibleLayouts = <PageLayout>[];
+    final hiddenPageIds = <String?>[];
+    for (final pageLayout in _pagesLayout) {
+      if (NavigationHelper.isPageVisible(pageLayout, login)) {
+        visibleLayouts.add(pageLayout);
+      } else {
+        hiddenPageIds.add(pageLayout.id?.name ?? pageLayout.label);
+      }
+    }
+    if (hiddenPageIds.isNotEmpty) {
+      _logger.debug('Navigation pages hidden by RBAC: $hiddenPageIds');
+    }
     _allPages =
-        layouts
+        visibleLayouts
             .map(
               (pageLayout) => NavigationItemData(
                 title: NavigationHelper.getLabel(pageLayout),
@@ -170,7 +192,7 @@ class Navigation extends _$Navigation {
   }
 
   void updatePages() {
-    state = _getPages(_pagesLayout);
+    state = _getPages(ref.read(loginProvider));
   }
 
   List<NavigationItemData> _getMorePages(List<NavigationItemData> elements) {
