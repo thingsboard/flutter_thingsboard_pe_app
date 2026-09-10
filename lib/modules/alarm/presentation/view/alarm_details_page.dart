@@ -13,6 +13,7 @@ import 'package:thingsboard_app/modules/alarm/presentation/widgets/details/alarm
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/details/alarm_details_widget.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/tb_error_widget.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
@@ -63,7 +64,9 @@ class _AlarmDetailsPageState extends State<AlarmDetailsPage> {
               return Scaffold(
                 appBar: TbAppBar(
                   title: Text(
-                    state.alarmInfo.type,
+                    getIt<ICustomTranslationService>().translate(
+                      state.alarmInfo.type,
+                    ),
                     style: TbTextStyles.titleXs.copyWith(
                       color: Colors.black.withValues(alpha: .87),
                     ),

@@ -5,6 +5,7 @@ import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarm_types/bloc.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/alarm_filter_widget.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/alarm_types/types_list_widget.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/ui/ui_utils.dart';
 
 class AlarmTypesWidget extends StatelessWidget {
@@ -18,6 +19,7 @@ class AlarmTypesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customTranslationService = getIt<ICustomTranslationService>();
     return AlarmFilterWidget(
       filterTitle: S.of(context).alarmTypeList,
       child: Container(
@@ -93,7 +95,9 @@ class AlarmTypesWidget extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Text(
-                                  state.selectedTypes.elementAt(index),
+                                  customTranslationService.translate(
+                                    state.selectedTypes.elementAt(index),
+                                  ),
                                   style: TextStyle(
                                     color: Colors.black.withValues(alpha: 0.87),
                                     fontWeight: FontWeight.w400,
