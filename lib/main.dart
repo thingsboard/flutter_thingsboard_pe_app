@@ -39,7 +39,7 @@ Future<void> main() async {
   }
 
   try {
-    getIt<IFirebaseService>().initializeApp(
+    await getIt<IFirebaseService>().initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
