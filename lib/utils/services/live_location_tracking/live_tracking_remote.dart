@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:thingsboard_app/constants/app_constants.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_tracking_remote.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/model/live_tracking_config.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
+import 'package:thingsboard_app/utils/silent_request.dart';
 
 class LiveTrackingRemote implements ILiveTrackingRemote {
   LiveTrackingRemote({required ITbClientService clientService})
@@ -22,7 +22,7 @@ class LiveTrackingRemote implements ILiveTrackingRemote {
       entityId: target.id,
       scope: 'ANY',
       body: jsonEncode({'ts': ts, 'values': values}),
-      extra: ThingsboardAppConstants.backgroundRequest,
+      extra: silentRequestExtra(),
     );
   }
 
@@ -38,7 +38,7 @@ class LiveTrackingRemote implements ILiveTrackingRemote {
           entityId: target.id,
           scope: 'SERVER_SCOPE',
           body: jsonEncode(attributes),
-          extra: ThingsboardAppConstants.backgroundRequest,
+          extra: silentRequestExtra(),
         );
   }
 }

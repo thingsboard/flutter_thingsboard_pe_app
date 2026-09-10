@@ -14,13 +14,6 @@ abstract final class ThingsboardAppConstants {
     'thingsboardAndroidAppSecret',
   );
   static const ignoreRegionSelection = thingsBoardApiEndpoint != '';
-
-  /// Dio `extra` flags for requests that run behind the user's back (periodic
-  /// live-tracking saves): no global error dialog, no loading indicator.
-  static const backgroundRequest = {
-    'ignoreErrors': true,
-    'ignoreLoading': true,
-  };
   static final navigationType = TbNavigationType.fromString(
     const String.fromEnvironment('navigationType'),
   );
