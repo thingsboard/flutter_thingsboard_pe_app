@@ -1,4 +1,5 @@
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/utils.dart';
 
 /// Why the session is degraded, as a cause the UI layer can localize.
 /// Raw exception text (stack traces, URLs, Angular/Dio wording) must never
@@ -19,8 +20,7 @@ enum LiveTrackingError {
   /// server text is never passed through.
   static LiveTrackingError fromSaveException(Object e) {
     final error = toThingsboardError(e);
-    if (error.errorCode == ThingsBoardErrorCode.general &&
-        error.message == 'Unable to connect') {
+    if (Utils.isConnectionError(error)) {
       return noConnection;
     }
     // The interceptor reports a missing token as a bare 'Unauthorized!'

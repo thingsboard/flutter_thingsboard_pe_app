@@ -15,6 +15,12 @@ abstract interface class ILiveLocationTrackingService {
 
   Future<void> stop();
 
+  /// Ends any session and drops the persisted record, for the logout paths.
+  /// The `gpsActive=false` write it performs needs the still-valid token, so
+  /// this must complete before the client logs out; a teardown failure is
+  /// logged rather than thrown, because it must never keep the user signed in.
+  Future<void> teardownForLogout();
+
   /// Suspends position updates without discarding the session; writes
   /// `gpsActive=false` so the platform sees data flow honestly stopped.
   Future<void> pause();

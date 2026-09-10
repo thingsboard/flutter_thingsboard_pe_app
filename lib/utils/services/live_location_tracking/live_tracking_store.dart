@@ -21,9 +21,18 @@ class LiveTrackingStore implements ILiveTrackingStore {
       if (raw is! String) {
         return null;
       }
-      return LastTrackingRecord.fromJson(
+      final record = LastTrackingRecord.fromJson(
         Map<String, dynamic>.from(jsonDecode(raw) as Map),
       );
+      // The config is opaque to LastTrackingRecord.fromJson, so a record
+      // written by another app version survives the parse above and only
+      // fails when the config itself is read. Reject it here, where the
+      // caller already handles null, rather than from a widget build.
+      if (record.configOrNull == null) {
+        _log.error('LiveTrackingStore.read: stored config cannot be parsed');
+        return null;
+      }
+      return record;
     } catch (e, s) {
       _log.error('LiveTrackingStore.read failed', e, s);
       return null;

@@ -22,77 +22,99 @@ class LiveTrackingBar extends ConsumerWidget {
     final tracking = session.status == LiveTrackingStatus.tracking;
 
     if (viewState.hidden) {
-      return _CollapsedBar(tracking: tracking);
+      return SafeArea(bottom: false, child: _CollapsedBar(tracking: tracking));
     }
 
-    return Material(
-      color: colors.primaryContainer,
-      child: InkWell(
-        onTap: () => context.push(LocationTrackingRoutes.liveTracking),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          child: Row(
-            children: [
-              Icon(
-                tracking ? Icons.gps_fixed : Icons.gps_off,
-                color: colors.onPrimaryContainer,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      tracking
-                          ? S.of(context).liveTrackingActive
-                          : S.of(context).liveTrackingPaused,
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: colors.onPrimaryContainer,
-                      ),
-                    ),
-                    Text(
-                      '${S.of(context).liveTrackingFixes}: '
-                      '${session.fixCount} · '
-                      '${S.of(context).liveTrackingSaved}: '
-                      '${session.savedCount}'
-                      '${session.saveErrorCount > 0 ? ' · ${S.of(context).liveTrackingErrors}: ${session.saveErrorCount}' : ''}',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colors.onPrimaryContainer,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                tooltip:
-                    tracking
-                        ? S.of(context).liveTrackingPause
-                        : S.of(context).liveTrackingResume,
-                icon: Icon(
-                  tracking ? Icons.pause : Icons.play_arrow,
+    // The bar sits at the top of the shell, so it — not the pages under it —
+    // owns the status bar inset. NavigationPage removes that inset from the
+    // page subtree while the bar is visible, so it is never applied twice.
+    return SafeArea(
+      bottom: false,
+      child: Material(
+        color: colors.primaryContainer,
+        child: InkWell(
+          onTap: () => _openSessionPage(context),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: Row(
+              children: [
+                Icon(
+                  tracking ? Icons.gps_fixed : Icons.gps_off,
                   color: colors.onPrimaryContainer,
                 ),
-                onPressed: () {
-                  final notifier = ref.read(liveTrackingProvider.notifier);
-                  tracking ? notifier.pause() : notifier.resume();
-                },
-              ),
-              IconButton(
-                tooltip: S.of(context).liveTrackingStop,
-                icon: Icon(Icons.stop, color: colors.onPrimaryContainer),
-                onPressed: () => ref.read(liveTrackingProvider.notifier).stop(),
-              ),
-              IconButton(
-                tooltip: S.of(context).liveTrackingHide,
-                icon: Icon(Icons.expand_less, color: colors.onPrimaryContainer),
-                onPressed: () => ref.read(liveTrackingProvider.notifier).hide(),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tracking
+                            ? S.of(context).liveTrackingActive
+                            : S.of(context).liveTrackingPaused,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: colors.onPrimaryContainer,
+                        ),
+                      ),
+                      Text(
+                        '${S.of(context).liveTrackingFixes}: '
+                        '${session.fixCount} · '
+                        '${S.of(context).liveTrackingSaved}: '
+                        '${session.savedCount}'
+                        '${session.saveErrorCount > 0 ? ' · ${S.of(context).liveTrackingErrors}: ${session.saveErrorCount}' : ''}',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: colors.onPrimaryContainer,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  tooltip:
+                      tracking
+                          ? S.of(context).liveTrackingPause
+                          : S.of(context).liveTrackingResume,
+                  icon: Icon(
+                    tracking ? Icons.pause : Icons.play_arrow,
+                    color: colors.onPrimaryContainer,
+                  ),
+                  onPressed: () {
+                    final notifier = ref.read(liveTrackingProvider.notifier);
+                    tracking ? notifier.pause() : notifier.resume();
+                  },
+                ),
+                IconButton(
+                  tooltip: S.of(context).liveTrackingStop,
+                  icon: Icon(Icons.stop, color: colors.onPrimaryContainer),
+                  onPressed:
+                      () => ref.read(liveTrackingProvider.notifier).stop(),
+                ),
+                IconButton(
+                  tooltip: S.of(context).liveTrackingHide,
+                  icon: Icon(
+                    Icons.expand_less,
+                    color: colors.onPrimaryContainer,
+                  ),
+                  onPressed:
+                      () => ref.read(liveTrackingProvider.notifier).hide(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+/// The session page is registered in the same shell as this bar, so the bar
+/// stays visible while the page is open and an unguarded push would stack
+/// another copy of it on every tap.
+void _openSessionPage(BuildContext context) {
+  if (GoRouterState.of(context).uri.path ==
+      LocationTrackingRoutes.liveTracking) {
+    return;
+  }
+  context.push(LocationTrackingRoutes.liveTracking);
 }
 
 class _CollapsedBar extends HookConsumerWidget {

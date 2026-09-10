@@ -62,6 +62,20 @@ class LastTrackingRecord {
 
   LiveTrackingConfig get config => LiveTrackingConfig.fromJson(configJson);
 
+  /// [config] as far as it can be parsed. The config travels as an opaque
+  /// map, so a record written by another app version may carry one this
+  /// version cannot read; callers that cannot afford a throw (a widget build)
+  /// must go through here.
+  LiveTrackingConfig? get configOrNull {
+    try {
+      return config;
+    } catch (_) {
+      // A stored map can fail on a missing field (FormatException) just as
+      // easily as on a wrong type (a failed cast), and neither is recoverable.
+      return null;
+    }
+  }
+
   Map<String, dynamic> toJson() => {
     'configJson': configJson,
     'targetName': targetName,

@@ -16,7 +16,6 @@ import 'package:thingsboard_app/utils/services/device_info/i_device_info_service
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_location_tracking_service.dart';
-import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_tracking_store.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/wl_provider.dart';
@@ -293,8 +292,7 @@ class TbContext implements PopEntry {
       await getIt<NotificationService>().init();
     }
 
-    await getIt<ILiveLocationTrackingService>().stop();
-    await getIt<ILiveTrackingStore>().clear();
+    await getIt<ILiveLocationTrackingService>().teardownForLogout();
 
     await tbClient.logout(requestConfig: requestConfig, notifyUser: notifyUser);
   }

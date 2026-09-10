@@ -49,6 +49,7 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
   LiveTrackingSession? _session;
   StreamSubscription<LocationFix>? _subscription;
   Timer? _maxDurationTimer;
+  Future<void> _storeWrites = Future<void>.value();
 
   @override
   LiveTrackingSession? get session => _session;
@@ -67,11 +68,10 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
         startedAt: startedAt,
       ),
     );
-    // Persist the recoverable "interrupted" record and subscribe to GPS
-    // before doing anything network-bound: a force-kill or a race with
-    // stop()/logout must never leave this critical path gated on the
+    // Persist the recoverable "interrupted" record before doing anything
+    // network-bound: a force-kill must never leave the record gated on the
     // (possibly slow or offline) entity-name lookup below.
-    await _store.write(
+    await _writeRecord(
       LastTrackingRecord(
         configJson: config.toJson(),
         targetName: config.targetName,
@@ -80,9 +80,17 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
       ),
     );
     await _writeTrackingStatus(active: true, includeTrackedBy: true);
+    // The writes above include a network round trip, so stop(), a
+    // stopLiveLocation action or logout may have torn this session down
+    // meanwhile. Subscribing now would leave a GPS stream — and on Android
+    // the foreground service with its "active" notification — running with no
+    // session to cancel it, invisible to the UI even after logout.
+    if (!_isCurrent(startedAt)) {
+      return;
+    }
     _subscribe(config);
     final maxDuration = config.maxDurationSeconds;
-    if (maxDuration != null) {
+    if (maxDuration != null && maxDuration > 0) {
       _maxDurationTimer = Timer(
         Duration(seconds: maxDuration),
         () => _finish(TrackingEndReason.maxDuration),
@@ -90,6 +98,12 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
     }
     unawaited(_resolveAndPatchTargetName(config, startedAt));
   }
+
+  /// A session is identified by its [LiveTrackingSession.startedAt]. Every
+  /// step that resumes after an `await` re-checks it, because a stop, a pause
+  /// or a newer `start()` may have replaced the session while the await was in
+  /// flight.
+  bool _isCurrent(DateTime startedAt) => _session?.startedAt == startedAt;
 
   /// Resolves the human-readable target name off the critical path and
   /// patches it into the persisted record once known. Guarded against the
@@ -107,24 +121,30 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
     if (name == null) {
       return;
     }
-    if (_session?.startedAt != startedAt) {
-      return;
-    }
-    final existing = await _store.read();
-    if (existing == null) {
-      return;
-    }
-    // Re-check after the read() await: stop()/logout may have finished (and
-    // cleared the store) while we were reading, and we must not resurrect a
-    // stopped session's record with a late write.
-    if (_session?.startedAt != startedAt) {
-      return;
-    }
-    await _store.write(existing.copyWith(targetName: name));
+    await _mutateRecord((existing) {
+      // The record may already belong to a later session by the time this
+      // patch runs; only the one this lookup was started for may be touched.
+      if (existing.startedAt != startedAt) {
+        return null;
+      }
+      return existing.copyWith(targetName: name);
+    });
   }
 
   @override
   Future<void> stop() => _finish(TrackingEndReason.manual);
+
+  @override
+  Future<void> teardownForLogout() async {
+    try {
+      await stop();
+      await _queueStoreWrite(_store.clear);
+    } catch (e, s) {
+      // The user asked to log out: a teardown failure is worth a log, never a
+      // blocked logout.
+      _log.error('LiveLocationTrackingService: logout teardown failed', e, s);
+    }
+  }
 
   Future<void> _finish(TrackingEndReason reason) async {
     _maxDurationTimer?.cancel();
@@ -142,24 +162,47 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
   Future<void> _updateRecordOnEnd(
     LiveTrackingSession session,
     TrackingEndReason reason,
-  ) async {
+  ) => _mutateRecord(
+    (existing) => existing.copyWith(
+      endedAt: DateTime.now(),
+      fixCount: session.fixCount,
+      savedCount: session.savedCount,
+      saveErrorCount: session.saveErrorCount,
+      lastLat: session.lastFix?.latitude,
+      lastLng: session.lastFix?.longitude,
+      lastError: session.lastError?.name,
+      endReason: reason,
+    ),
+  );
+
+  /// Record updates are read-modify-write on a single storage key, and
+  /// [ILiveTrackingStore] serializes nothing, so they are queued here: a late
+  /// `targetName` patch must not write a pre-end snapshot back over the
+  /// finalized record, nor resurrect a record that logout has cleared.
+  Future<void> _queueStoreWrite(Future<void> Function() write) {
+    final queued = _storeWrites.then((_) => write());
+    // Keep the queue usable: a failure must not reject every write after it.
+    _storeWrites = queued.catchError((_) {});
+    return queued;
+  }
+
+  Future<void> _writeRecord(LastTrackingRecord record) =>
+      _queueStoreWrite(() => _store.write(record));
+
+  /// Applies [mutate] to the stored record. Returning `null` from [mutate]
+  /// leaves the record untouched.
+  Future<void> _mutateRecord(
+    LastTrackingRecord? Function(LastTrackingRecord existing) mutate,
+  ) => _queueStoreWrite(() async {
     final existing = await _store.read();
     if (existing == null) {
       return;
     }
-    await _store.write(
-      existing.copyWith(
-        endedAt: DateTime.now(),
-        fixCount: session.fixCount,
-        savedCount: session.savedCount,
-        saveErrorCount: session.saveErrorCount,
-        lastLat: session.lastFix?.latitude,
-        lastLng: session.lastFix?.longitude,
-        lastError: session.lastError?.name,
-        endReason: reason,
-      ),
-    );
-  }
+    final updated = mutate(existing);
+    if (updated != null) {
+      await _store.write(updated);
+    }
+  });
 
   @override
   Future<void> pause() async {
@@ -184,6 +227,12 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
     );
     await _notifications.clear();
     await _writeTrackingStatus(active: true, includeTrackedBy: true);
+    // Same window as in start(): a stop or a re-pause during the network
+    // write above must not be followed by a subscription nothing owns.
+    if (!_isCurrent(current.startedAt) ||
+        _session?.status != LiveTrackingStatus.tracking) {
+      return;
+    }
     _subscribe(current.config);
   }
 
@@ -200,7 +249,22 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
             background: backgroundConfig,
           ),
         )
-        .listen(_onFix);
+        .listen(
+          _onFix,
+          onError: (Object e, StackTrace s) {
+            _log.error(
+              'LiveLocationTrackingService: location stream failed',
+              e,
+              s,
+            );
+            unawaited(_pauseWithError(LiveTrackingError.locationError));
+          },
+          // A completed stream delivers no further fixes. Without this the
+          // session would sit at "tracking" forever with a dead stream. A
+          // terminal failure fix arrives before the completion and has
+          // already paused with its own cause, which pause() leaves intact.
+          onDone: () => unawaited(pause()),
+        );
   }
 
   Future<void> _onFix(LocationFix fix) async {
@@ -229,6 +293,9 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
           LiveTrackingError.locationPermissionDeniedForever,
         );
       case LocationFixError():
+        // Individual fixes fail transiently (a tunnel, a cold GPS start), so
+        // the cause is recorded for the session screen and the stream is left
+        // to recover on the next fix.
         _setSession(
           _session?.copyWith(lastError: LiveTrackingError.locationError),
         );
@@ -236,18 +303,17 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
   }
 
   Future<void> _saveFix(LiveTrackingConfig config, GeoPosition position) async {
-    final ts = (position.timestamp ?? DateTime.now()).millisecondsSinceEpoch;
     try {
-      await _save(config, {
-        LiveTrackingKeyType.latitude: position.latitude,
-        LiveTrackingKeyType.longitude: position.longitude,
-        LiveTrackingKeyType.accuracy: position.accuracy,
-        LiveTrackingKeyType.altitude: position.altitude,
-        LiveTrackingKeyType.speed: position.speed,
-        LiveTrackingKeyType.heading: position.heading,
-      }, ts: ts);
+      final saved = await _save(
+        config,
+        _fixValues(position),
+        ts: position.timestamp.millisecondsSinceEpoch,
+      );
       final current = _session;
-      if (current != null) {
+      // A config mapping no position key issues no request at all; counting
+      // that as saved would report "Saved: N" for a session that wrote
+      // nothing.
+      if (saved && current != null) {
         _setSession(current.copyWith(savedCount: current.savedCount + 1));
       }
     } catch (e, s) {
@@ -263,6 +329,25 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
       }
     }
   }
+
+  /// The value each key takes from a fix, built through an exhaustive switch:
+  /// the enum mirrors the web-side `LocationKey` and will grow, and a
+  /// hand-maintained map would let a new key be configurable on the dashboard
+  /// yet silently never written. The two session status keys belong to
+  /// [_writeTrackingStatus], not to a fix.
+  Map<LiveTrackingKeyType, Object?> _fixValues(GeoPosition position) => {
+    for (final key in LiveTrackingKeyType.values)
+      key: switch (key) {
+        LiveTrackingKeyType.latitude => position.latitude,
+        LiveTrackingKeyType.longitude => position.longitude,
+        LiveTrackingKeyType.accuracy => position.accuracy,
+        LiveTrackingKeyType.altitude => position.altitude,
+        LiveTrackingKeyType.speed => position.speed,
+        LiveTrackingKeyType.heading => position.heading,
+        LiveTrackingKeyType.gpsActive ||
+        LiveTrackingKeyType.gpsTrackedBy => null,
+      },
+  };
 
   Future<void> _pauseWithError(LiveTrackingError error) async {
     final current = _session;
@@ -305,11 +390,12 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
   }
 
   /// Routes each configured key to attributes or time series under the label
-  /// the dashboard resolved for it. Values the dashboard did not ask for — and
-  /// values the device could not provide — are skipped.
-  Future<void> _save(
+  /// the dashboard resolved for it. Keys this write does not carry — the
+  /// status keys on a fix, an unset `trackedBy` — are skipped. Returns
+  /// whether a request was actually issued.
+  Future<bool> _save(
     LiveTrackingConfig config,
-    Map<LiveTrackingKeyType, dynamic> values, {
+    Map<LiveTrackingKeyType, Object?> values, {
     int? ts,
   }) async {
     final attributes = <String, dynamic>{};
@@ -336,6 +422,7 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
     if (attributes.isNotEmpty) {
       await _remote.saveAttributes(config.target, attributes);
     }
+    return telemetry.isNotEmpty || attributes.isNotEmpty;
   }
 
   void _setSession(LiveTrackingSession? session) {

@@ -36,6 +36,14 @@ enum LiveTrackingKeyType {
 
   final String wireValue;
 
+  /// Whether the key is filled from a GPS fix. The two session status keys are
+  /// written when tracking starts and stops instead, so a config made only of
+  /// those would stream GPS and save nothing.
+  bool get isPositionValue => switch (this) {
+    latitude || longitude || accuracy || altitude || speed || heading => true,
+    gpsActive || gpsTrackedBy => false,
+  };
+
   static LiveTrackingKeyType? fromWireValue(String? value) {
     for (final type in LiveTrackingKeyType.values) {
       if (type.wireValue == value) {
@@ -69,13 +77,16 @@ class LiveTrackingKey {
     required this.valueType,
   });
 
-  factory LiveTrackingKey.fromJson(Map<String, dynamic> json) {
+  /// Returns `null` for an entry this app version cannot use — an unknown
+  /// `key` wire value or a missing label. The enum mirrors the web-side
+  /// `LocationKey`, so a newer platform adding a key must degrade to "save
+  /// the keys I understand" rather than reject the whole config and break
+  /// live tracking for every already-installed app.
+  static LiveTrackingKey? tryFromJson(Map<String, dynamic> json) {
     final key = LiveTrackingKeyType.fromWireValue(json['key'] as String?);
     final label = json['label'];
     if (key == null || label is! String || label.isEmpty) {
-      throw const FormatException(
-        'Live tracking key must contain a known key and a non-empty label',
-      );
+      return null;
     }
     return LiveTrackingKey(
       key: key,
@@ -141,6 +152,22 @@ class LiveTrackingConfig {
     if (keysJson is! List || keysJson.isEmpty) {
       throw const FormatException('Live tracking config is missing keys');
     }
+    final keys = <LiveTrackingKey>[
+      for (final entry in keysJson)
+        if (entry is Map)
+          if (LiveTrackingKey.tryFromJson(Map<String, dynamic>.from(entry))
+              case final key?)
+            key,
+    ];
+    // Without a position key every fix would resolve to an empty write: the
+    // app would stream GPS (and hold the background service) for the whole
+    // session and save nothing, so the config is rejected here instead.
+    if (!keys.any((key) => key.key.isPositionValue)) {
+      throw const FormatException(
+        'Live tracking config must contain at least one known position key '
+        'with a non-empty label',
+      );
+    }
     final dashboardJson = json['dashboard'];
     final dashboard =
         dashboardJson is Map
@@ -152,18 +179,13 @@ class LiveTrackingConfig {
       target: LiveTrackingTarget.fromJson(
         Map<String, dynamic>.from(targetJson),
       ),
-      keys: keysJson
-          .map(
-            (key) =>
-                LiveTrackingKey.fromJson(Map<String, dynamic>.from(key as Map)),
-          )
-          .toList(growable: false),
+      keys: List.unmodifiable(keys),
       targetName: json['targetName'] as String?,
       dashboard: dashboard == null || dashboard.isEmpty ? null : dashboard,
       accuracy: _accuracyFromString(json['accuracy'] as String?),
-      distanceFilterMeters: (json['distanceFilterMeters'] as num?)?.toInt(),
-      intervalSeconds: (json['intervalSeconds'] as num?)?.toInt(),
-      maxDurationSeconds: (json['maxDurationSeconds'] as num?)?.toInt(),
+      distanceFilterMeters: _positiveOrNull(json['distanceFilterMeters']),
+      intervalSeconds: _positiveOrNull(json['intervalSeconds']),
+      maxDurationSeconds: _positiveOrNull(json['maxDurationSeconds']),
       trackedBy: json['trackedBy'] as String?,
     );
   }
@@ -177,6 +199,15 @@ class LiveTrackingConfig {
   final int? intervalSeconds;
   final int? maxDurationSeconds;
   final String? trackedBy;
+
+  /// A dashboard may encode "no limit" / "not set" as `0`, and the platform
+  /// rejects negative distance filters and intervals, so a non-positive value
+  /// is normalised to "unset" here rather than reaching `Timer` (which would
+  /// fire on the next event-loop turn) or `AndroidSettings`.
+  static int? _positiveOrNull(Object? value) {
+    final parsed = (value as num?)?.toInt();
+    return parsed != null && parsed > 0 ? parsed : null;
+  }
 
   static LocationAccuracyLevel _accuracyFromString(String? value) =>
       switch (value) {

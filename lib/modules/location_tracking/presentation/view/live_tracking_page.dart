@@ -9,17 +9,14 @@ import 'package:thingsboard_app/config/themes/app_colors.dart';
 import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
-import 'package:thingsboard_app/modules/dashboard/domain/entites/dashboard_arguments.dart';
+import 'package:thingsboard_app/modules/device/device_dashboard_navigation.dart';
 import 'package:thingsboard_app/modules/location_tracking/presentation/provider/live_tracking_provider.dart';
-import 'package:thingsboard_app/utils/services/device_profile/device_profile_cache.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/live_tracking_display.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/model/last_tracking_record.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/model/live_tracking_config.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/model/live_tracking_error.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/model/live_tracking_session.dart';
-import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
-import 'package:thingsboard_app/utils/utils.dart';
 
 class LiveTrackingPage extends ConsumerWidget {
   const LiveTrackingPage({super.key});
@@ -68,71 +65,43 @@ String _errorLabel(
   LiveTrackingError.locationError => S.of(context).liveTrackingErrorLocation,
 };
 
-bool _targetHasDetailsPage(String entityType) => switch (entityType) {
-  'DEVICE' || 'ASSET' || 'CUSTOMER' => true,
-  _ => false,
+/// How to open a tracking target, or `null` when its entity type has no
+/// details page in the app. Linkability and navigation come from this one
+/// function so a newly supported target type cannot end up link-styled with
+/// no handler, or handled while still rendering as plain text.
+VoidCallback? _targetTapHandler(
+  BuildContext context,
+  WidgetRef ref,
+  LiveTrackingTarget target,
+) => switch (target.entityType) {
+  'ASSET' => () => context.push('${AssetRoutes.asset}/${target.id}'),
+  'CUSTOMER' =>
+    () => context.push(
+      '${CustomerRoutes.customers}${CustomerRoutes.customer}/${target.id}',
+    ),
+  'DEVICE' => () => _openDeviceTarget(ref, target.id),
+  _ => null,
 };
 
-Future<void> _openTargetEntity(
-  BuildContext context,
-  LiveTrackingTarget target,
-) async {
-  switch (target.entityType) {
-    case 'ASSET':
-      context.push('${AssetRoutes.asset}/${target.id}');
-    case 'CUSTOMER':
-      context.push(
-        '${CustomerRoutes.customers}${CustomerRoutes.customer}/${target.id}',
-      );
-    case 'DEVICE':
-      await _openDeviceTarget(context, target.id);
-  }
-}
-
-/// Mirrors the devices-list tap behavior: opens the dashboard configured in
-/// the device profile, or warns a tenant admin that none is configured.
-Future<void> _openDeviceTarget(BuildContext context, String deviceId) async {
-  final tbClient = getIt<ITbClientService>().client;
+/// Opens the target device the way the devices list does. The shared helper
+/// owns the profile lookup and the permission gate; the only extra step here
+/// is resolving the id the tracking config carries into a device.
+Future<void> _openDeviceTarget(WidgetRef ref, String deviceId) async {
   try {
     final device =
-        (await tbClient.getDeviceControllerApi().getDeviceById(
-          deviceId: deviceId,
-        )).data;
+        (await getIt<ITbClientService>().client
+            .getDeviceControllerApi()
+            .getDeviceById(deviceId: deviceId)).data;
     if (device == null) {
       return;
     }
-    final profile = await DeviceProfileCache.getDeviceProfileInfo(
-      tbClient,
-      device.type ?? '',
-      deviceId,
+    await openDeviceProfileDashboard(
+      ref,
+      deviceId: device.id,
+      deviceType: device.type ?? '',
+      deviceName: device.name,
+      deviceLabel: device.label,
     );
-    final dashboardId = profile.info.defaultDashboardId?.id;
-    if (dashboardId == null) {
-      if (tbClient.isTenantAdmin()) {
-        getIt<IOverlayService>().showWarnNotification(
-          (context) =>
-              S.of(context).mobileDashboardShouldBeConfiguredInDeviceProfile,
-        );
-      }
-      return;
-    }
-    final state = Utils.createDashboardEntityState(
-      device.id,
-      entityName: device.name,
-      entityLabel: device.label,
-    );
-    if (context.mounted) {
-      context.push(
-        DashboardRoutes.dashboard,
-        extra: DashboardArgumentsEntity(
-          id: dashboardId,
-          title: device.name,
-          state: state,
-          hideToolbar: false,
-          animate: false,
-        ),
-      );
-    }
   } catch (e, s) {
     getIt<TbLogger>().error('LiveTrackingPage: failed to open device', e, s);
   }
@@ -143,11 +112,11 @@ Future<void> _openDeviceTarget(BuildContext context, String deviceId) async {
 /// (a link when its id is known).
 List<Widget> _saveConfigTiles(
   BuildContext context,
+  WidgetRef ref,
   LiveTrackingConfig config,
   String targetName,
 ) {
-  final target = config.target;
-  final targetLinkable = _targetHasDetailsPage(target.entityType);
+  final onTargetTap = _targetTapHandler(context, ref, config.target);
   final dashboard = config.dashboard;
   final dashboardId = dashboard?.id;
   return [
@@ -155,9 +124,9 @@ List<Widget> _saveConfigTiles(
       title: Text(S.of(context).liveTrackingTarget),
       subtitle: Text(
         targetName,
-        style: targetLinkable ? _linkStyle(context) : null,
+        style: onTargetTap != null ? _linkStyle(context) : null,
       ),
-      onTap: targetLinkable ? () => _openTargetEntity(context, target) : null,
+      onTap: onTargetTap,
     ),
     if (dashboard != null)
       ListTile(
@@ -198,7 +167,7 @@ class _ActiveSession extends ConsumerWidget {
             : AppColors.notificationWarning;
     return ListView(
       children: [
-        ..._saveConfigTiles(context, session.config, name),
+        ..._saveConfigTiles(context, ref, session.config, name),
         ListTile(
           title: Text(S.of(context).liveTrackingStatus),
           subtitle: Row(
@@ -340,7 +309,7 @@ class _LastSession extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        ..._saveConfigTiles(context, config, name),
+        ..._saveConfigTiles(context, ref, config, name),
         ListTile(
           title: Text(S.of(context).liveTrackingStarted),
           subtitle: Text(_formatSessionTime(record.startedAt)),

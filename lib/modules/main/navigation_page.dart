@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:thingsboard_app/constants/app_constants.dart';
 import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/modules/location_tracking/presentation/provider/live_tracking_provider.dart';
 import 'package:thingsboard_app/modules/location_tracking/presentation/widgets/live_tracking_bar.dart';
 import 'package:thingsboard_app/modules/main/model/main_navigation_item.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_type.dart';
@@ -22,6 +23,7 @@ class NavigationPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ValueNotifier<int?> currentIndex = useState(0);
     final items = ref.watch(navigationProvider).bottomBarPages;
+    final trackingBarVisible = ref.watch(liveTrackingProvider).session != null;
     // Handle app lifecycle for notifications
     useOnAppLifecycleStateChange((prev, next) {
       if (next == AppLifecycleState.resumed) {
@@ -60,65 +62,79 @@ class NavigationPage extends HookConsumerWidget {
         }
       },
       canPop: false,
-      child: SafeArea(
-        child: Scaffold(
-          body: Column(
-            children: [const LiveTrackingBar(), Expanded(child: child)],
-          ),
-          bottomNavigationBar:
-              currentIndex.value == null
-                  ? null
-                  : TbNavigationBarWidget(
-                    currentIndex: currentIndex.value!,
-                    onTap: (index) {
-                      if (index == currentIndex.value) {
+      child: Scaffold(
+        body: Column(
+          children: [
+            const LiveTrackingBar(),
+            Expanded(
+              // The bar owns the status bar inset while it is visible, so the
+              // page below must not add it again. With no bar the pages keep
+              // the padding they have always had, and the Scaffold stays at
+              // the root so it still paints behind the status bar.
+              child:
+                  trackingBarVisible
+                      ? MediaQuery.removePadding(
+                        context: context,
+                        removeTop: true,
+                        child: child,
+                      )
+                      : child,
+            ),
+          ],
+        ),
+        bottomNavigationBar:
+            currentIndex.value == null
+                ? null
+                : TbNavigationBarWidget(
+                  currentIndex: currentIndex.value!,
+                  onTap: (index) {
+                    if (index == currentIndex.value) {
+                      return;
+                    }
+                    if (index < items.length) {
+                      final path = items[index].path;
+                      currentIndex.value = index;
+                      if (ThingsboardAppConstants.navigationType ==
+                          TbNavigationType.push) {
+                        context.push(path);
                         return;
                       }
-                      if (index < items.length) {
-                        final path = items[index].path;
-                        currentIndex.value = index;
-                        if (ThingsboardAppConstants.navigationType ==
-                            TbNavigationType.push) {
-                          context.push(path);
-                          return;
-                        }
-                        if (path.contains('/home') || path.contains('/url')) {
-                          return context.go(path);
-                        }
-                        context.push(path);
+                      if (path.contains('/home') || path.contains('/url')) {
+                        return context.go(path);
                       }
-                    },
-                    customBottomBarItems:
-                        items
-                            .map(
-                              (item) => TbMainNavigationItem(
-                                title: NavigationHelper.getLocalizedTitle(
-                                  context,
-                                  item.id,
-                                  item.path,
-                                  item.title,
-                                ),
-                                icon: item.icon,
-                                path: item.path,
-                                id: item.id,
-                                showAdditionalIcon: item.showNotificationBadge,
-                                additionalIconLarge:
-                                    item.showNotificationBadge
-                                        ? const NavigationBadgeWidget(
-                                          isLarge: false,
-                                        )
-                                        : null,
-                                additionalIconSmall:
-                                    item.showNotificationBadge
-                                        ? const NavigationBadgeWidget(
-                                          isLarge: false,
-                                        )
-                                        : null,
+                      context.push(path);
+                    }
+                  },
+                  customBottomBarItems:
+                      items
+                          .map(
+                            (item) => TbMainNavigationItem(
+                              title: NavigationHelper.getLocalizedTitle(
+                                context,
+                                item.id,
+                                item.path,
+                                item.title,
                               ),
-                            )
-                            .toList(),
-                  ),
-        ),
+                              icon: item.icon,
+                              path: item.path,
+                              id: item.id,
+                              showAdditionalIcon: item.showNotificationBadge,
+                              additionalIconLarge:
+                                  item.showNotificationBadge
+                                      ? const NavigationBadgeWidget(
+                                        isLarge: false,
+                                      )
+                                      : null,
+                              additionalIconSmall:
+                                  item.showNotificationBadge
+                                      ? const NavigationBadgeWidget(
+                                        isLarge: false,
+                                      )
+                                      : null,
+                            ),
+                          )
+                          .toList(),
+                ),
       ),
     );
   }

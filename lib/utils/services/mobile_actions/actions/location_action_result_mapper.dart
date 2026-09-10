@@ -14,7 +14,7 @@ mixin LocationActionResultMapper {
             position.latitude,
             position.longitude,
             accuracy: position.accuracy,
-            ts: position.timestamp?.millisecondsSinceEpoch,
+            ts: position.timestamp.millisecondsSinceEpoch,
           ),
         ),
       LocationServicesDisabled() => WidgetMobileActionResult.errorResult(

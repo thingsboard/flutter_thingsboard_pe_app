@@ -4,15 +4,20 @@ part 'geo_position.freezed.dart';
 
 /// Plugin-agnostic GPS position. Keeps `package:geolocator`'s `Position`
 /// type from leaking past the location service boundary.
+///
+/// Every field is always present: geolocator substitutes `0.0` for a reading
+/// the device cannot provide (no altitude or heading sensor) and falls back to
+/// the current time for a missing timestamp, so an unavailable value is
+/// indistinguishable from a real zero and is reported as one.
 @freezed
 abstract class GeoPosition with _$GeoPosition {
   const factory GeoPosition({
     required double latitude,
     required double longitude,
     required double accuracy,
-    DateTime? timestamp,
-    double? altitude,
-    double? speed,
-    double? heading,
+    required DateTime timestamp,
+    required double altitude,
+    required double speed,
+    required double heading,
   }) = _GeoPosition;
 }

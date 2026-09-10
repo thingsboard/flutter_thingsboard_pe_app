@@ -2,17 +2,14 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
-import 'package:thingsboard_app/config/routes/v2/router_2.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
-import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/core/entity/entities_base.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
-import 'package:thingsboard_app/modules/dashboard/domain/entites/dashboard_arguments.dart';
+import 'package:thingsboard_app/modules/device/device_dashboard_navigation.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/thingsboard_client_extensions.dart';
 import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
@@ -20,12 +17,10 @@ import 'package:thingsboard_app/utils/services/device_profile/device_profile_cac
 import 'package:thingsboard_app/utils/services/device_profile/model/cached_device_profile.dart';
 import 'package:thingsboard_app/utils/services/entity_query_api.dart';
 import 'package:thingsboard_app/utils/services/new_client_page_data.dart';
-import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 
 mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
-  final IOverlayService overlayService = getIt();
   @override
   String title(BuildContext context) => S.of(context).devices(2);
 
@@ -45,54 +40,15 @@ mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
   }
 
   @override
-  Future<void> onEntityTap(EntityData device, WidgetRef ref) async {
-    final profile = await DeviceProfileCache.getDeviceProfileInfo(
-      tbClient,
-      device.field('type')!,
-      device.entityId?.id ?? '',
-    );
-    final loginInfo = ref.read(loginProvider);
-    if (profile.info.defaultDashboardId != null &&
-        loginInfo.isFullyAuthenticated()) {
-      if (loginInfo.hasGenericPermission(
-            Resource.WIDGETS_BUNDLE,
-            Operation.READ,
-          ) &&
-          loginInfo.hasGenericPermission(
-            Resource.WIDGET_TYPE,
-            Operation.READ,
-          )) {
-        final dashboardId = profile.info.defaultDashboardId?.id ?? '';
-        final state = Utils.createDashboardEntityState(
-          device.entityId,
-          entityName: device.field('name'),
-          entityLabel: device.field('label'),
-        );
-        globalNavigatorKey.currentContext?.pushReplacement(
-          '/dashboard',
-          extra: DashboardArgumentsEntity(
-            id: dashboardId,
-            title: device.field('name'),
-            state: state,
-            hideToolbar: false,
-            animate: false,
-          ),
-        );
-      } else {
-        getIt<IOverlayService>().showErrorNotification(
-          (context) =>
-              S.of(context).youDontHavePermissionsToPerformThisOperation,
-        );
-      }
-    } else {
-      if (tbClient.isTenantAdmin()) {
-        overlayService.showWarnNotification(
-          (context) =>
-              S.of(context).mobileDashboardShouldBeConfiguredInDeviceProfile,
-        );
-      }
-    }
-  }
+  Future<void> onEntityTap(EntityData device, WidgetRef ref) =>
+      openDeviceProfileDashboard(
+        ref,
+        deviceId: device.entityId,
+        deviceType: device.field('type')!,
+        deviceName: device.field('name'),
+        deviceLabel: device.field('label'),
+        replace: true,
+      );
 
   @override
   Widget buildEntityListCard(BuildContext context, EntityData device) {

@@ -40,15 +40,26 @@ class LocationService implements ILocationService {
   Stream<LocationFix> positionStream({
     LocationStreamSettings settings = const LocationStreamSettings(),
   }) async* {
-    final unavailable = await _ensureAvailable();
-    if (unavailable != null) {
-      yield unavailable;
+    final Stream<Position> raw;
+    try {
+      final unavailable = await _ensureAvailable();
+      if (unavailable != null) {
+        yield unavailable;
+        return;
+      }
+      raw = _geolocator.getPositionStream(
+        locationSettings: _toLocationSettings(settings),
+      );
+    } catch (e, s) {
+      // The availability pre-check goes through platform channels, which
+      // throw in their own right (a permission dialog already in flight, no
+      // foreground activity). Without this the throw would leave the
+      // generator as a stream error instead of the terminal LocationFix the
+      // interface promises, and subscribers would never learn why.
+      _log.error('LocationService.positionStream failed to start', e, s);
+      yield _fixFromPlatformError(e);
       return;
     }
-
-    final raw = _geolocator.getPositionStream(
-      locationSettings: _toLocationSettings(settings),
-    );
 
     yield* raw.transform(
       StreamTransformer<Position, LocationFix>.fromHandlers(
