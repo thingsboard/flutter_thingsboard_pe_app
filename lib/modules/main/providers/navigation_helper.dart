@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_item_data.dart';
 import 'package:thingsboard_app/modules/notification/widgets/notification_icon.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/thingsboard_client_extensions.dart';
 import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 
 class NavigationHelper {
@@ -86,31 +88,65 @@ class NavigationHelper {
     }
   }
 
-  static Set<Resource> getRecource(PageLayout pageLayout) {
+  /// Mirrors the web UI's `menuFilters` (PE ui-ngx
+  /// `src/app/core/services/menu.models.ts`): a page is visible only if the
+  /// user can read its underlying resource, either generically or via group
+  /// roles.
+  ///
+  /// `userPermissions` is only null before `loadUser()` has completed (it is
+  /// published together with `mobileLoginInfo`), so the null branch fails open
+  /// on purpose: a permissions hiccup must not lock the user out of navigation.
+  /// This differs from `LoginState.hasGenericPermission`, which fails closed
+  /// because it guards actions rather than menu entries.
+  static bool isPageVisible(PageLayout pageLayout, LoginState login) {
+    // Sysadmins have no RBAC roles: their pages come from the system-tenant
+    // bundle (or the sysadmin default layout) and are shown as configured.
+    if (login.userScope == Authority.SYS_ADMIN) {
+      return true;
+    }
+    final permissions = login.userPermissions;
+    if (permissions == null) {
+      return true;
+    }
     switch (pageLayout.id) {
-      case Pages.home:
-        return {};
       case Pages.alarms:
-        return {Resource.ALARM};
+        return permissions.hasReadGenericPermission(Resource.ALARM);
       case Pages.devices:
-        return {Resource.DEVICE_PROFILE};
-      case Pages.customers:
-        return {Resource.CUSTOMER};
-      case Pages.assets:
-        return {Resource.ASSET, Resource.ASSET_PROFILE};
-      case Pages.audit_logs:
-        return {Resource.AUDIT_LOG};
-      case Pages.notifications:
-        return {};
+        // The Devices grid is backed by `/api/deviceProfileInfos`, which the
+        // server gates on generic DEVICE_PROFILE read even for customer users,
+        // so DEVICE permissions alone would only lead to a 403 here.
+        return permissions.hasReadGenericPermission(Resource.DEVICE_PROFILE);
       case Pages.device_list:
-        return {Resource.DEVICE_GROUP, Resource.DEVICE};
+        return permissions.hasReadGenericOrSharedGroupsPermission(
+          Resource.DEVICE,
+          EntityType.DEVICE,
+        );
+      case Pages.assets:
+        return permissions.hasReadGenericOrSharedGroupsPermission(
+          Resource.ASSET,
+          EntityType.ASSET,
+        );
+      case Pages.customers:
+        return permissions.hasReadGenericOrSharedGroupsPermission(
+          Resource.CUSTOMER,
+          EntityType.CUSTOMER,
+        );
       case Pages.dashboards:
-        return {Resource.DASHBOARD, Resource.DASHBOARD_GROUP};
+        return permissions.hasReadGenericOrSharedGroupsPermission(
+          Resource.DASHBOARD,
+          EntityType.DASHBOARD,
+        );
+      case Pages.audit_logs:
+        return permissions.hasReadGenericPermission(Resource.AUDIT_LOG);
+      case Pages.home:
+      case Pages.notifications:
+      // The live tracking page only reports the device's own tracking session,
+      // so there is no server resource to gate it on; the entity write it
+      // performs is authorized per fix by the save call itself.
       case Pages.live_location_tracking:
-        return {};
       case Pages.undefined:
       case null:
-        return {};
+        return true;
     }
   }
 

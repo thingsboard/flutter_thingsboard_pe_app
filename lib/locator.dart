@@ -14,8 +14,6 @@ import 'package:thingsboard_app/utils/services/endpoint/endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/firebase_service.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
-import 'package:thingsboard_app/utils/services/layouts/i_layout_service.dart';
-import 'package:thingsboard_app/utils/services/layouts/layout_service.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/entity_name_resolver.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/i_entity_name_resolver.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_location_tracking_service.dart';
@@ -116,10 +114,7 @@ Future<void> setUpRootDependencies() async {
       () => CommunicationService(EventBus()),
     )
     ..registerSingleton<IUserService>(UserService())
-    ..registerLazySingleton<IPermissionService>(
-      () => PermissionService(),
-    )
-    ..registerLazySingleton<ILayoutService>(() => LayoutService(getIt()))
+    ..registerLazySingleton<IPermissionService>(() => PermissionService())
     ..registerLazySingleton<ICustomTranslationService>(
       () => TbCustomTranslationService(),
     )

@@ -3,7 +3,6 @@ import 'package:thingsboard_app/core/auth/login/models/mobile_basic_info.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/thingsboard_client_extensions.dart';
 
-
 part 'login_state.freezed.dart';
 
 @freezed
@@ -18,23 +17,17 @@ abstract class LoginState with _$LoginState {
   const LoginState._();
   bool isFullyAuthenticated() {
     return ![
-      Authority.MFA_CONFIGURATION_TOKEN,
-      Authority.PRE_VERIFICATION_TOKEN
-     
-    ].contains(userScope) && userScope != null;
+          Authority.MFA_CONFIGURATION_TOKEN,
+          Authority.PRE_VERIFICATION_TOKEN,
+        ].contains(userScope) &&
+        userScope != null;
   }
-    bool hasGenericPermission(Resource resource, Operation operation) {
+
+  bool hasGenericPermission(Resource resource, Operation operation) {
     if (userPermissions != null) {
       return userPermissions!.hasGenericPermission(resource, operation);
     } else {
       return false;
     }
-  }
-    bool haveViewDashboardPermission() {
-    return 
-     hasGenericPermission(
-      Resource.DASHBOARD,
-      Operation.READ,
-    );
   }
 }

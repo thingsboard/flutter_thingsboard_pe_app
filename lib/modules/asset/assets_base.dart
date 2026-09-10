@@ -20,15 +20,9 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
     PageLink pageLink, {
     bool refresh = false,
   }) async {
-    if (tbClient.isTenantAdmin()) {
-      final r = await tbClient.getAssetControllerApi().getTenantAssets(
-        pageSize: pageLink.pageSize,
-        page: pageLink.page,
-        textSearch: pageLink.textSearch,
-      );
-      final p = r.data!;
-      return toPageData(p.data, p.totalPages, p.totalElements, p.hasNext);
-    }
+    // `/api/user/assets` honours RBAC for every authority; `/api/assets` is
+    // tenant-only and requires generic ASSET read, so a tenant admin with
+    // group-scoped roles would get a 403 there.
     final r = await tbClient.getAssetControllerApi().getUserAssets(
       pageSize: pageLink.pageSize.toString(),
       page: pageLink.page.toString(),
@@ -57,10 +51,12 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
 
   @override
   Widget buildEntityGridCard(BuildContext context, Asset asset) {
-    return Text(asset.name ?? '');
+    return Text(customTranslationService.translate(asset.name));
   }
 
   Widget _buildCard(BuildContext context, Asset asset) {
+    final name = customTranslationService.translate(asset.name);
+    final label = customTranslationService.translate(asset.label);
     return Row(
       children: [
         Flexible(
@@ -80,7 +76,7 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                         children: [
                           Flexible(
                             child: Text(
-                              asset.name ?? '',
+                              name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -106,11 +102,11 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                           ),
                         ],
                       ),
-                      if (asset.label?.isNotEmpty == true)
+                      if (label.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
                           child: Text(
-                            asset.label!,
+                            label,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -147,6 +143,8 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
   }
 
   Widget _buildListWidgetCard(BuildContext context, Asset asset) {
+    final name = customTranslationService.translate(asset.name);
+    final label = customTranslationService.translate(asset.label);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -161,7 +159,7 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        asset.name,
+                        name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -171,11 +169,11 @@ mixin AssetsBase on EntitiesBase<Asset, PageLink> {
                           height: 1.7,
                         ),
                       ),
-                      if (asset.label?.isNotEmpty == true)
+                      if (label.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
                           child: Text(
-                            asset.label!,
+                            label,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(

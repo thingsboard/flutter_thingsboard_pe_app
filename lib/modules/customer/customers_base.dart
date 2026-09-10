@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/entity/entities_base.dart';
@@ -22,9 +21,12 @@ mixin CustomersBase on EntitiesBase<Customer, PageLink> {
     PageLink pageLink, {
     bool refresh = false,
   }) async {
-    final r = await tbClient.getCustomerControllerApi().getCustomers(
-      pageSize: pageLink.pageSize,
-      page: pageLink.page,
+    // `/api/user/customers` is the only list endpoint that honours RBAC for
+    // every authority: `/api/customers` is tenant-only and requires generic
+    // CUSTOMER read, so a tenant admin with group-scoped roles gets a 403.
+    final r = await tbClient.getCustomerControllerApi().getUserCustomers(
+      pageSize: pageLink.pageSize.toString(),
+      page: pageLink.page.toString(),
       textSearch: pageLink.textSearch,
     );
     final p = r.data!;
