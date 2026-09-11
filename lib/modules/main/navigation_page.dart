@@ -71,12 +71,20 @@ class NavigationPage extends HookConsumerWidget {
               // page below must not add it again. With no bar the pages keep
               // the padding they have always had, and the Scaffold stays at
               // the root so it still paints behind the status bar.
+              //
+              // The Builder is what keeps this to the top inset: Scaffold
+              // hands its body slot a MediaQuery that already has the bottom
+              // padding and the keyboard inset removed, and re-providing the
+              // data from this method's context would put both back.
               child:
                   trackingBarVisible
-                      ? MediaQuery.removePadding(
-                        context: context,
-                        removeTop: true,
-                        child: child,
+                      ? Builder(
+                        builder:
+                            (bodyContext) => MediaQuery.removePadding(
+                              context: bodyContext,
+                              removeTop: true,
+                              child: child,
+                            ),
                       )
                       : child,
             ),
