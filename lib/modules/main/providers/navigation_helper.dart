@@ -35,6 +35,8 @@ class NavigationHelper {
         return s.deviceList;
       case 'dashboards':
         return s.dashboards(2);
+      case 'live_location_tracking':
+        return s.liveTrackingMenuTitle;
     }
     if (path == '/more') return s.more;
     if (path.contains('/profile')) return s.profile;
@@ -78,6 +80,8 @@ class NavigationHelper {
         return 'Device List';
       case Pages.dashboards:
         return 'Dashboards';
+      case Pages.live_location_tracking:
+        return 'Live location tracking';
       case Pages.undefined:
       case null:
         return pageLayout.label ?? '-';
@@ -136,6 +140,10 @@ class NavigationHelper {
         return permissions.hasReadGenericPermission(Resource.AUDIT_LOG);
       case Pages.home:
       case Pages.notifications:
+      // The live tracking page only reports the device's own tracking session,
+      // so there is no server resource to gate it on; the entity write it
+      // performs is authorized per fix by the save call itself.
+      case Pages.live_location_tracking:
       case Pages.undefined:
       case null:
         return true;
@@ -166,6 +174,8 @@ class NavigationHelper {
         return Icons.devices;
       case Pages.dashboards:
         return Icons.dashboard_outlined;
+      case Pages.live_location_tracking:
+        return Icons.my_location;
       case Pages.undefined:
       case null:
         return getIconFromString(pageLayout.icon);
@@ -192,6 +202,8 @@ class NavigationHelper {
         return '/deviceList';
       case Pages.dashboards:
         return '/dashboards';
+      case Pages.live_location_tracking:
+        return '/liveTracking';
       case Pages.undefined:
       case null:
         if (pageLayout.url != null) {

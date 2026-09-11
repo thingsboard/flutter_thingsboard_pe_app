@@ -15,6 +15,7 @@ import 'package:thingsboard_app/utils/services/communication/events/user_loaded_
 import 'package:thingsboard_app/utils/services/communication/i_communication_service.dart';
 import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_location_tracking_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
@@ -54,6 +55,9 @@ class Login extends _$Login {
   }
 
   Future<void> logout() async {
+    // Must run before the client logout: the teardown's gpsActive=false write
+    // needs the still-valid token.
+    await getIt<ILiveLocationTrackingService>().teardownForLogout();
     if (state.isFullyAuthenticated()) {
       await getIt<NotificationService>().logout();
     }

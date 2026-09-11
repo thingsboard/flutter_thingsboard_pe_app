@@ -125,6 +125,35 @@ abstract class EntityQueryApi {
     return response.data ?? 0;
   }
 
+  static EntityDataQuery createEntityNameQuery(String entityType, String id) {
+    return EntityDataQuery(
+      (b) =>
+          b
+            ..entityFilter = SingleEntityFilter(
+              (b) =>
+                  b
+                    ..type = 'singleEntity'
+                    ..singleEntity =
+                        AliasEntityId(
+                          (b) =>
+                              b
+                                ..entityType = EntityType.valueOf(entityType)
+                                ..id = id,
+                        ).toBuilder(),
+            )
+            ..entityFields =
+                BuiltList<EntityKey>([
+                  EntityKey(
+                    (b) =>
+                        b
+                          ..type = EntityKeyType.ENTITY_FIELD
+                          ..key = 'name',
+                  ),
+                ]).toBuilder()
+            ..pageLink = EntityDataPageLink((b) => b..pageSize = 1).toBuilder(),
+    );
+  }
+
   static EntityDataQuery createDefaultDeviceQuery({
     int pageSize = 20,
     String? searchText,
