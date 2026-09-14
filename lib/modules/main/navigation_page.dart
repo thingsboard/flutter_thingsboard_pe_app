@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:thingsboard_app/constants/app_constants.dart';
 import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/modules/location_tracking/presentation/provider/live_tracking_provider.dart';
+import 'package:thingsboard_app/modules/location_tracking/presentation/widgets/live_tracking_bar.dart';
 import 'package:thingsboard_app/modules/main/model/main_navigation_item.dart';
-import 'package:thingsboard_app/modules/main/model/navigation_item_data.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_type.dart';
 import 'package:thingsboard_app/modules/main/providers/navigation_helper.dart';
 import 'package:thingsboard_app/modules/main/providers/navigation_provider.dart';
@@ -22,6 +23,7 @@ class NavigationPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ValueNotifier<int?> currentIndex = useState(0);
     final items = ref.watch(navigationProvider).bottomBarPages;
+    final trackingBarVisible = ref.watch(liveTrackingProvider).session != null;
     // Handle app lifecycle for notifications
     useOnAppLifecycleStateChange((prev, next) {
       if (next == AppLifecycleState.resumed) {
@@ -61,7 +63,33 @@ class NavigationPage extends HookConsumerWidget {
       },
       canPop: false,
       child: Scaffold(
-        body: child,
+        body: Column(
+          children: [
+            const LiveTrackingBar(),
+            Expanded(
+              // The bar owns the status bar inset while it is visible, so the
+              // page below must not add it again. With no bar the pages keep
+              // the padding they have always had, and the Scaffold stays at
+              // the root so it still paints behind the status bar.
+              //
+              // The Builder is what keeps this to the top inset: Scaffold
+              // hands its body slot a MediaQuery that already has the bottom
+              // padding and the keyboard inset removed, and re-providing the
+              // data from this method's context would put both back.
+              child:
+                  trackingBarVisible
+                      ? Builder(
+                        builder:
+                            (bodyContext) => MediaQuery.removePadding(
+                              context: bodyContext,
+                              removeTop: true,
+                              child: child,
+                            ),
+                      )
+                      : child,
+            ),
+          ],
+        ),
         bottomNavigationBar:
             currentIndex.value == null
                 ? null

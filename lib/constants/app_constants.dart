@@ -14,8 +14,7 @@ abstract final class ThingsboardAppConstants {
     'thingsboardAndroidAppSecret',
   );
   static const ignoreRegionSelection = thingsBoardApiEndpoint != '';
-  static final navigationType =
-  TbNavigationType.fromString(
-  const String.fromEnvironment('navigationType'),
+  static final navigationType = TbNavigationType.fromString(
+    const String.fromEnvironment('navigationType'),
   );
 }
