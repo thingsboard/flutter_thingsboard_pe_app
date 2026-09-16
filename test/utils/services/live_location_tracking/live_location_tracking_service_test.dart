@@ -106,12 +106,18 @@ void main() {
   /// While set, every save fails immediately.
   late bool failSaves;
 
+  /// While set, every save fails immediately with this error instead.
+  Object? failSavesWith;
+
   setUpAll(() {
     registerFallbackValue(const LocationStreamSettings());
     registerFallbackValue(target);
   });
 
   Future<void> nextSave() {
+    if (failSavesWith != null) {
+      return Future<void>.error(failSavesWith!);
+    }
     if (failSaves) {
       return Future<void>.error(StateError('save failed'));
     }
@@ -135,6 +141,7 @@ void main() {
     heldSaves = [];
     holdSaves = false;
     failSaves = false;
+    failSavesWith = null;
 
     when(() => notifications.clear()).thenAnswer((_) async {});
     when(
@@ -314,6 +321,23 @@ void main() {
       expect(service.session!.savedCount, 0);
       expect(service.session!.saveErrorCount, 0);
       expect(service.session!.lastError, isNull);
+    });
+
+    test('a save that hit its deadline is reported as offline', () async {
+      final service = await startedService();
+      failSavesWith = TimeoutException('deadline', const Duration(seconds: 30));
+
+      streams.last.add(fixAt(1, 1));
+      await pumpEventQueue();
+
+      expect(service.session!.saveErrorCount, 1);
+      expect(
+        service.session!.lastError,
+        LiveTrackingError.noConnection,
+        reason:
+            'a save that got no answer within its deadline is offline, not a '
+            'server rejection',
+      );
     });
 
     test('a save cause is not cleared by the next fix', () async {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 
@@ -34,6 +36,11 @@ enum LiveTrackingError {
   /// message (`[404: ]`), so causes are derived from status/error code —
   /// server text is never passed through.
   static LiveTrackingError fromSaveException(Object e) {
+    // A save that got no answer within its deadline carries no status or
+    // error code to classify, and "you are offline" is the actionable read.
+    if (e is TimeoutException) {
+      return noConnection;
+    }
     final error = toThingsboardError(e);
     if (Utils.isConnectionError(error)) {
       return noConnection;

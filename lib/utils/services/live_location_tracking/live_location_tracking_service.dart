@@ -471,6 +471,8 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
           telemetry[key.label] = value;
       }
     }
+    // Each request carries its own deadline in the remote, which aborts it
+    // rather than only giving up on waiting.
     if (telemetry.isNotEmpty) {
       await _remote.saveTelemetry(
         config.target,
