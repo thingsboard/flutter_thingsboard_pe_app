@@ -15,6 +15,21 @@ enum LiveTrackingError {
   locationPermissionDeniedForever,
   locationError;
 
+  /// Whether the cause comes from saving to the server rather than from the
+  /// GPS stream. A fix proves only that location works again, so it may clear
+  /// a location cause but must leave a save cause standing.
+  bool get isSaveError => switch (this) {
+    targetNotFound ||
+    noConnection ||
+    unauthorized ||
+    savePermissionDenied ||
+    saveFailed => true,
+    locationServicesDisabled ||
+    locationPermissionDenied ||
+    locationPermissionDeniedForever ||
+    locationError => false,
+  };
+
   /// Classifies a failed save. A deleted target arrives with an empty server
   /// message (`[404: ]`), so causes are derived from status/error code —
   /// server text is never passed through.

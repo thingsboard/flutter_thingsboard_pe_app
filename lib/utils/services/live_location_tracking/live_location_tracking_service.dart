@@ -73,6 +73,12 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
   /// awaits, so a stop landing in that window would still look current.
   int _subscriptionGeneration = 0;
 
+  /// Number of saves that have succeeded. A save captures it before its
+  /// request and compares on failure: a higher value means a later save has
+  /// since proven the link works, so this failure is stale and must not
+  /// re-raise an error the user has already seen resolved.
+  int _saveSuccessCount = 0;
+
   @override
   LiveTrackingSession? get session => _session;
 
@@ -292,13 +298,18 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
     }
     switch (fix) {
       case LocationSuccess(:final position):
-        // A successful fix means the previously reported problem is over;
-        // a still-failing save below re-raises its own error.
+        // A fix proves the location side recovered, so it clears a location
+        // cause. It says nothing about the link to the server: clearing a
+        // save cause here would blink the message off on every fix and back
+        // on when that fix's own save fails. Only a successful save clears it.
         _setSession(
           current.copyWith(
             fixCount: current.fixCount + 1,
             lastFix: position,
-            lastError: null,
+            lastError:
+                current.lastError?.isSaveError ?? false
+                    ? current.lastError
+                    : null,
           ),
         );
         await _saveFix(current.config, position);
@@ -321,6 +332,7 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
   }
 
   Future<void> _saveFix(LiveTrackingConfig config, GeoPosition position) async {
+    final successesBefore = _saveSuccessCount;
     try {
       final saved = await _save(
         config,
@@ -332,16 +344,35 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
       // that as saved would report "Saved: N" for a session that wrote
       // nothing.
       if (saved && current != null) {
-        _setSession(current.copyWith(savedCount: current.savedCount + 1));
+        _saveSuccessCount++;
+        // The counterpart of the fix path: a save proves the link works, so
+        // it clears a save cause and leaves a location cause to the next fix.
+        _setSession(
+          current.copyWith(
+            savedCount: current.savedCount + 1,
+            lastError:
+                current.lastError?.isSaveError ?? false
+                    ? null
+                    : current.lastError,
+          ),
+        );
       }
     } catch (e, s) {
       _log.error('LiveLocationTrackingService: save failed', e, s);
       final current = _session;
       if (current != null) {
+        // The fix really was not saved, so it counts either way. The cause is
+        // shown only while it still describes the present: a save that
+        // started before a later one succeeded is stale, and surfacing it
+        // would resurrect "no connection" on a link that demonstrably works.
+        final stale = successesBefore != _saveSuccessCount;
         _setSession(
           current.copyWith(
             saveErrorCount: current.saveErrorCount + 1,
-            lastError: LiveTrackingError.fromSaveException(e),
+            lastError:
+                stale
+                    ? current.lastError
+                    : LiveTrackingError.fromSaveException(e),
           ),
         );
       }
