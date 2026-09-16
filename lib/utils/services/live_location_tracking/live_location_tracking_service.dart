@@ -332,6 +332,7 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
   }
 
   Future<void> _saveFix(LiveTrackingConfig config, GeoPosition position) async {
+    final startedAt = _session?.startedAt;
     final successesBefore = _saveSuccessCount;
     try {
       final saved = await _save(
@@ -339,12 +340,15 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
         _fixValues(position),
         ts: position.timestamp.millisecondsSinceEpoch,
       );
-      final current = _session;
       // A config mapping no position key issues no request at all; counting
       // that as saved would report "Saved: N" for a session that wrote
-      // nothing.
-      if (saved && current != null) {
+      // nothing. The link is proven either way, so the counter that decides
+      // staleness is bumped regardless of which session is current.
+      if (saved) {
         _saveSuccessCount++;
+      }
+      final current = _sessionStartedAt(startedAt);
+      if (saved && current != null) {
         // The counterpart of the fix path: a save proves the link works, so
         // it clears a save cause and leaves a location cause to the next fix.
         _setSession(
@@ -359,24 +363,36 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
       }
     } catch (e, s) {
       _log.error('LiveLocationTrackingService: save failed', e, s);
-      final current = _session;
+      final current = _sessionStartedAt(startedAt);
       if (current != null) {
         // The fix really was not saved, so it counts either way. The cause is
         // shown only while it still describes the present: a save that
-        // started before a later one succeeded is stale, and surfacing it
-        // would resurrect "no connection" on a link that demonstrably works.
+        // started before a later one succeeded is stale, and a location cause
+        // outranks a save one — it is why the session paused, and with the
+        // stream gone no fix will come along to replace it.
         final stale = successesBefore != _saveSuccessCount;
+        final keepCurrent = stale || current.lastError?.isSaveError == false;
         _setSession(
           current.copyWith(
             saveErrorCount: current.saveErrorCount + 1,
             lastError:
-                stale
+                keepCurrent
                     ? current.lastError
                     : LiveTrackingError.fromSaveException(e),
           ),
         );
       }
     }
+  }
+
+  /// The session a save was issued for, or `null` once it has been stopped or
+  /// replaced. The stream does not await [_onFix], so a save can outlive its
+  /// session and land while the next one is running — reporting a failure, or
+  /// a save, against a session that never made the request. [startedAt] is the
+  /// same session identity [_mutateRecord] matches on.
+  LiveTrackingSession? _sessionStartedAt(DateTime? startedAt) {
+    final current = _session;
+    return current != null && current.startedAt == startedAt ? current : null;
   }
 
   /// The value each key takes from a fix, built through an exhaustive switch:
@@ -471,8 +487,6 @@ class LiveLocationTrackingService implements ILiveLocationTrackingService {
           telemetry[key.label] = value;
       }
     }
-    // Each request carries its own deadline in the remote, which aborts it
-    // rather than only giving up on waiting.
     if (telemetry.isNotEmpty) {
       await _remote.saveTelemetry(
         config.target,

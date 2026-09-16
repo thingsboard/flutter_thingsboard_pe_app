@@ -103,10 +103,7 @@ void main() {
   /// is the window a stop/pause/resume has to race.
   late bool holdSaves;
 
-  /// While set, every save fails immediately.
-  late bool failSaves;
-
-  /// While set, every save fails immediately with this error instead.
+  /// While set, every save fails immediately with this error.
   Object? failSavesWith;
 
   setUpAll(() {
@@ -117,9 +114,6 @@ void main() {
   Future<void> nextSave() {
     if (failSavesWith != null) {
       return Future<void>.error(failSavesWith!);
-    }
-    if (failSaves) {
-      return Future<void>.error(StateError('save failed'));
     }
     if (!holdSaves) {
       return Future<void>.value();
@@ -140,7 +134,6 @@ void main() {
     attributeSaves = [];
     heldSaves = [];
     holdSaves = false;
-    failSaves = false;
     failSavesWith = null;
 
     when(() => notifications.clear()).thenAnswer((_) async {});
@@ -342,7 +335,7 @@ void main() {
 
     test('a save cause is not cleared by the next fix', () async {
       final service = await startedService();
-      failSaves = true;
+      failSavesWith = StateError('save failed');
 
       streams.last.add(fixAt(1, 1));
       await pumpEventQueue();
@@ -351,7 +344,7 @@ void main() {
       // The next fix arrives while its own save is still in flight: nothing
       // has proven the link works, so the message must stay put instead of
       // blinking off on every fix.
-      failSaves = false;
+      failSavesWith = null;
       holdSaves = true;
       streams.last.add(fixAt(2, 2));
       await pumpEventQueue();
@@ -366,6 +359,60 @@ void main() {
         reason: 'a successful save clears the save cause',
       );
     });
+
+    test('a save failure does not overwrite a location cause', () async {
+      final service = await startedService();
+      holdSaves = true;
+
+      streams.last.add(fixAt(1, 1));
+      await pumpEventQueue();
+
+      streams.last.add(const LocationServicesDisabled());
+      await pumpEventQueue();
+      expect(service.session!.status, LiveTrackingStatus.paused);
+      expect(
+        service.session!.lastError,
+        LiveTrackingError.locationServicesDisabled,
+      );
+
+      heldSaves.removeAt(0).completeError(StateError('save failed'));
+      await pumpEventQueue();
+
+      expect(service.session!.saveErrorCount, 1);
+      expect(
+        service.session!.lastError,
+        LiveTrackingError.locationServicesDisabled,
+        reason:
+            'the reason tracking paused must stand: the stream is gone, so no '
+            'fix can put it back',
+      );
+    });
+
+    test(
+      'a save that outlives its session leaves the next one alone',
+      () async {
+        final service = await startedService();
+        holdSaves = true;
+
+        streams.last.add(fixAt(1, 1));
+        await pumpEventQueue();
+        expect(heldSaves.length, 1);
+
+        holdSaves = false;
+        await service.stop();
+        await service.start(trackingConfig());
+
+        heldSaves.removeAt(0).completeError(StateError('from the old session'));
+        await pumpEventQueue();
+
+        expect(
+          service.session!.saveErrorCount,
+          0,
+          reason: 'the new session never made that request',
+        );
+        expect(service.session!.lastError, isNull);
+      },
+    );
 
     test('a failure older than a later success does not re-raise', () async {
       final service = await startedService();
