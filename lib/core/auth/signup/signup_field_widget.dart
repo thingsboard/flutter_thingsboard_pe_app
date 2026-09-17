@@ -5,7 +5,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:thingsboard_app/core/auth/login/widgets/text_field.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/thingsboard_client.dart'
-    show SignUpField, SignUpFieldsId, SignUpFieldsIdToString;
+    show SignUpField, SignUpFieldId;
 
 class SingUpFieldWidget extends StatelessWidget {
   const SingUpFieldWidget({
@@ -21,71 +21,72 @@ class SingUpFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (field.id == SignUpFieldsId.undefined) {
+    if (field.id == SignUpFieldId.unknownDefaultOpenApi) {
       return const SizedBox.shrink();
     }
 
     return TbTextField(
       autoFillHints: getHintsFromId(),
       obscureText: obscureText,
-      formControlName: field.id.toShortString(),
+      formControlName: field.id.name,
       type: keyboardTypeFromId(),
       suffixIcon: suffixIcon,
-     // validator: validator(context),
-     label: labelText(context),
-     hint: labelText(context),
-
+      // validator: validator(context),
+      label: labelText(context),
+      hint: labelText(context),
     );
   }
-List<String>? getHintsFromId() {
+
+  List<String>? getHintsFromId() {
     switch (field.id) {
-      case SignUpFieldsId.email:
+      case SignUpFieldId.EMAIL:
         return [AutofillHints.email];
-      case SignUpFieldsId.first_name:
+      case SignUpFieldId.FIRST_NAME:
         return [AutofillHints.givenName];
-      case SignUpFieldsId.last_name:
+      case SignUpFieldId.LAST_NAME:
         return [AutofillHints.familyName];
-      case SignUpFieldsId.phone:
+      case SignUpFieldId.PHONE:
         return [AutofillHints.telephoneNumber];
-      case SignUpFieldsId.address:
+      case SignUpFieldId.ADDRESS:
         return [AutofillHints.streetAddressLine1];
-      case SignUpFieldsId.address2:
+      case SignUpFieldId.aDDRESS2:
         return [AutofillHints.streetAddressLine2];
-      case SignUpFieldsId.country:
+      case SignUpFieldId.COUNTRY:
         return [AutofillHints.countryName];
-      case SignUpFieldsId.city:
+      case SignUpFieldId.CITY:
         return [AutofillHints.addressCity];
-      case SignUpFieldsId.state:
+      case SignUpFieldId.STATE:
         return [AutofillHints.addressState];
-      case SignUpFieldsId.zip:
+      case SignUpFieldId.ZIP:
         return [AutofillHints.postalCode];
-      case SignUpFieldsId.repeat_password:
-      case SignUpFieldsId.password:
+      case SignUpFieldId.REPEAT_PASSWORD:
+      case SignUpFieldId.PASSWORD:
         return [AutofillHints.newPassword, AutofillHints.password];
       default:
         return null;
     }
-}
+  }
+
   TextInputType? keyboardTypeFromId() {
     switch (field.id) {
-      case SignUpFieldsId.email:
+      case SignUpFieldId.EMAIL:
         return TextInputType.emailAddress;
-      case SignUpFieldsId.first_name:
-      case SignUpFieldsId.last_name:
+      case SignUpFieldId.FIRST_NAME:
+      case SignUpFieldId.LAST_NAME:
         return TextInputType.name;
-      case SignUpFieldsId.phone:
+      case SignUpFieldId.PHONE:
         return TextInputType.phone;
-      case SignUpFieldsId.address:
+      case SignUpFieldId.ADDRESS:
         return TextInputType.streetAddress;
-      case SignUpFieldsId.address2:
+      case SignUpFieldId.aDDRESS2:
         return TextInputType.streetAddress;
-      case SignUpFieldsId.undefined:
-      case SignUpFieldsId.country:
-      case SignUpFieldsId.city:
-      case SignUpFieldsId.state:
-      case SignUpFieldsId.zip:
-      case SignUpFieldsId.repeat_password:
-      case SignUpFieldsId.password:
+      case SignUpFieldId.unknownDefaultOpenApi:
+      case SignUpFieldId.COUNTRY:
+      case SignUpFieldId.CITY:
+      case SignUpFieldId.STATE:
+      case SignUpFieldId.ZIP:
+      case SignUpFieldId.REPEAT_PASSWORD:
+      case SignUpFieldId.PASSWORD:
         return null;
     }
   }
@@ -94,28 +95,26 @@ List<String>? getHintsFromId() {
     return '${field.label} ${S.of(context).isRequiredText}';
   }
 
-   FormFieldValidator<String>? validator(BuildContext context) {
+  FormFieldValidator<String>? validator(BuildContext context) {
     final validators = <FormFieldValidator>[];
-    if (field.required) {
+    if (field.required_ ?? false) {
       validators.add(
-        FormBuilderValidators.required(
-          errorText: fieldIsRequiredText(context),
-        ),
+        FormBuilderValidators.required(errorText: fieldIsRequiredText(context)),
       );
     }
 
     return validators.isNotEmpty
         ? FormBuilderValidators.compose([
-            ...validators,
-            if (field.id == SignUpFieldsId.email)
-              FormBuilderValidators.email(
-                errorText: S.of(context).emailInvalidText,
-              ),
-          ])
+          ...validators,
+          if (field.id == SignUpFieldId.EMAIL)
+            FormBuilderValidators.email(
+              errorText: S.of(context).emailInvalidText,
+            ),
+        ])
         : null;
   }
 
   String labelText(BuildContext context) {
-    return  field.label;
+    return field.label;
   }
 }
