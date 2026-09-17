@@ -9,6 +9,7 @@ import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_tra
 import 'package:thingsboard_app/utils/services/live_location_tracking/live_location_tracking_service.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/model/last_tracking_record.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/model/live_tracking_config.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/model/live_tracking_error.dart';
 import 'package:thingsboard_app/utils/services/live_location_tracking/model/live_tracking_session.dart';
 import 'package:thingsboard_app/utils/services/location/i_location_service.dart';
 import 'package:thingsboard_app/utils/services/location/model/geo_position.dart';
@@ -102,12 +103,18 @@ void main() {
   /// is the window a stop/pause/resume has to race.
   late bool holdSaves;
 
+  /// While set, every save fails immediately with this error.
+  Object? failSavesWith;
+
   setUpAll(() {
     registerFallbackValue(const LocationStreamSettings());
     registerFallbackValue(target);
   });
 
   Future<void> nextSave() {
+    if (failSavesWith != null) {
+      return Future<void>.error(failSavesWith!);
+    }
     if (!holdSaves) {
       return Future<void>.value();
     }
@@ -127,6 +134,7 @@ void main() {
     attributeSaves = [];
     heldSaves = [];
     holdSaves = false;
+    failSavesWith = null;
 
     when(() => notifications.clear()).thenAnswer((_) async {});
     when(
@@ -291,6 +299,175 @@ void main() {
       expect(service.session, isNull);
       expect(store.record, isNull);
       expect(streams.single.hasListener, isFalse);
+    });
+  });
+
+  group('LiveLocationTrackingService save failures', () {
+    test('a save left in flight is neither saved nor failed yet', () async {
+      final service = await startedService();
+      holdSaves = true;
+
+      streams.last.add(fixAt(1, 1));
+      await pumpEventQueue();
+
+      expect(service.session!.fixCount, 1);
+      expect(service.session!.savedCount, 0);
+      expect(service.session!.saveErrorCount, 0);
+      expect(service.session!.lastError, isNull);
+    });
+
+    test('a save that hit its deadline is reported as offline', () async {
+      final service = await startedService();
+      failSavesWith = TimeoutException('deadline', const Duration(seconds: 30));
+
+      streams.last.add(fixAt(1, 1));
+      await pumpEventQueue();
+
+      expect(service.session!.saveErrorCount, 1);
+      expect(
+        service.session!.lastError,
+        LiveTrackingError.noConnection,
+        reason:
+            'a save that got no answer within its deadline is offline, not a '
+            'server rejection',
+      );
+    });
+
+    test('a save cause is not cleared by the next fix', () async {
+      final service = await startedService();
+      failSavesWith = StateError('save failed');
+
+      streams.last.add(fixAt(1, 1));
+      await pumpEventQueue();
+      expect(service.session!.lastError, LiveTrackingError.saveFailed);
+
+      // The next fix arrives while its own save is still in flight: nothing
+      // has proven the link works, so the message must stay put instead of
+      // blinking off on every fix.
+      failSavesWith = null;
+      holdSaves = true;
+      streams.last.add(fixAt(2, 2));
+      await pumpEventQueue();
+
+      expect(service.session!.lastError, LiveTrackingError.saveFailed);
+
+      await releaseSaves();
+
+      expect(
+        service.session!.lastError,
+        isNull,
+        reason: 'a successful save clears the save cause',
+      );
+    });
+
+    test('a save failure does not overwrite a location cause', () async {
+      final service = await startedService();
+      holdSaves = true;
+
+      streams.last.add(fixAt(1, 1));
+      await pumpEventQueue();
+
+      streams.last.add(const LocationServicesDisabled());
+      await pumpEventQueue();
+      expect(service.session!.status, LiveTrackingStatus.paused);
+      expect(
+        service.session!.lastError,
+        LiveTrackingError.locationServicesDisabled,
+      );
+
+      heldSaves.removeAt(0).completeError(StateError('save failed'));
+      await pumpEventQueue();
+
+      expect(service.session!.saveErrorCount, 1);
+      expect(
+        service.session!.lastError,
+        LiveTrackingError.locationServicesDisabled,
+        reason:
+            'the reason tracking paused must stand: the stream is gone, so no '
+            'fix can put it back',
+      );
+    });
+
+    test(
+      'a save that outlives its session leaves the next one alone',
+      () async {
+        final service = await startedService();
+        holdSaves = true;
+
+        streams.last.add(fixAt(1, 1));
+        await pumpEventQueue();
+        expect(heldSaves.length, 1);
+
+        holdSaves = false;
+        await service.stop();
+        await service.start(trackingConfig());
+
+        heldSaves.removeAt(0).completeError(StateError('from the old session'));
+        await pumpEventQueue();
+
+        expect(
+          service.session!.saveErrorCount,
+          0,
+          reason: 'the new session never made that request',
+        );
+        expect(service.session!.lastError, isNull);
+      },
+    );
+
+    test(
+      'a save that outlives its session is not credited to the next one',
+      () async {
+        final service = await startedService();
+        holdSaves = true;
+
+        streams.last.add(fixAt(1, 1));
+        await pumpEventQueue();
+        expect(heldSaves.length, 1);
+
+        holdSaves = false;
+        await service.stop();
+        await service.start(trackingConfig());
+
+        heldSaves.removeAt(0).complete();
+        await pumpEventQueue();
+
+        expect(
+          service.session!.savedCount,
+          0,
+          reason: 'the new session never made that request',
+        );
+      },
+    );
+
+    test('a failure older than a later success does not re-raise', () async {
+      final service = await startedService();
+      holdSaves = true;
+
+      streams.last.add(fixAt(1, 1));
+      await pumpEventQueue();
+      streams.last.add(fixAt(2, 2));
+      await pumpEventQueue();
+      expect(heldSaves.length, 2);
+
+      // The newer save lands first, the way a fix sent after the link came
+      // back beats a request left over from the outage.
+      heldSaves.removeAt(1).complete();
+      await pumpEventQueue();
+      expect(service.session!.savedCount, 1);
+
+      heldSaves.removeAt(0).completeError(StateError('stale'));
+      await pumpEventQueue();
+
+      expect(
+        service.session!.saveErrorCount,
+        1,
+        reason: 'the fix really was not saved',
+      );
+      expect(
+        service.session!.lastError,
+        isNull,
+        reason: 'a stale failure must not resurrect a resolved error',
+      );
     });
   });
 
