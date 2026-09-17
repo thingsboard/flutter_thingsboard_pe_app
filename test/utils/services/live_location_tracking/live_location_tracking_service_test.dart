@@ -414,6 +414,31 @@ void main() {
       },
     );
 
+    test(
+      'a save that outlives its session is not credited to the next one',
+      () async {
+        final service = await startedService();
+        holdSaves = true;
+
+        streams.last.add(fixAt(1, 1));
+        await pumpEventQueue();
+        expect(heldSaves.length, 1);
+
+        holdSaves = false;
+        await service.stop();
+        await service.start(trackingConfig());
+
+        heldSaves.removeAt(0).complete();
+        await pumpEventQueue();
+
+        expect(
+          service.session!.savedCount,
+          0,
+          reason: 'the new session never made that request',
+        );
+      },
+    );
+
     test('a failure older than a later success does not re-raise', () async {
       final service = await startedService();
       holdSaves = true;
