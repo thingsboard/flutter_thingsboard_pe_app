@@ -74,6 +74,7 @@ class _SignUpPageContent extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selfRegistrationParams = loginMobileInfo.selfRegistrationParams;
+    final signUpFields = selfRegistrationParams?.fields?.toList() ?? [];
     final form = useMemoized(
       () => FormGroup(
         {
@@ -87,30 +88,26 @@ class _SignUpPageContent extends HookConsumerWidget {
             ),
           "recaptcha": FormControl<bool>(validators: [Validators.requiredTrue]),
           ...Map<String, AbstractControl>.fromEntries(
-            selfRegistrationParams?.fields.map((e) {
-                  return MapEntry(
-                    e.id.toShortString(),
-                    FormControl(
-                      validators: [
-                        if (e.required) Validators.required,
-                        if (e.id == SignUpFieldsId.password ||
-                            e.id == SignUpFieldsId.repeat_password)
-                          Validators.minLength(6),
-                      ],
-                    ),
-                  );
-                }) ??
-                [],
+            signUpFields.map((e) {
+              return MapEntry(
+                e.id.name,
+                FormControl(
+                  validators: [
+                    if (e.required_ ?? false) Validators.required,
+                    if (e.id == SignUpFieldId.PASSWORD ||
+                        e.id == SignUpFieldId.REPEAT_PASSWORD)
+                      Validators.minLength(6),
+                  ],
+                ),
+              );
+            }),
           ),
         },
         validators: [
-          if (selfRegistrationParams?.fields.any(
-                (f) => f.id == SignUpFieldsId.repeat_password,
-              ) ??
-              false)
+          if (signUpFields.any((f) => f.id == SignUpFieldId.REPEAT_PASSWORD))
             Validators.mustMatch(
-              SignUpFieldsId.password.toShortString(),
-              SignUpFieldsId.repeat_password.toShortString(),
+              SignUpFieldId.PASSWORD.name,
+              SignUpFieldId.REPEAT_PASSWORD.name,
             ),
         ],
       ),
@@ -178,31 +175,22 @@ class _SignUpPageContent extends HookConsumerWidget {
                                             const NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
                                         itemBuilder: (context, index) {
-                                          final field =
-                                              selfRegistrationParams
-                                                  .fields[index];
+                                          final field = signUpFields[index];
                                           final passwordFiled =
                                               field.id ==
-                                                  SignUpFieldsId.password ||
+                                                  SignUpFieldId.PASSWORD ||
                                               field.id ==
-                                                  SignUpFieldsId
-                                                      .repeat_password;
+                                                  SignUpFieldId.REPEAT_PASSWORD;
 
                                           return SingUpFieldWidget(
-                                            field:
-                                                selfRegistrationParams
-                                                    .fields[index],
-
+                                            field: signUpFields[index],
                                             obscureText: passwordFiled,
                                           );
                                         },
                                         separatorBuilder:
                                             (_, _) =>
                                                 const SizedBox(height: 12),
-                                        itemCount:
-                                            selfRegistrationParams
-                                                .fields
-                                                .length,
+                                        itemCount: signUpFields.length,
                                       ),
                                       ReactiveCheckboxListTile(
                                         onChanged: (control) {
@@ -215,7 +203,6 @@ class _SignUpPageContent extends HookConsumerWidget {
                                             _openRecaptcha(
                                               context,
                                               selfRegistrationParams,
-                                              loginMobileInfo,
                                               recaptchaResponse,
                                             );
                                           }
@@ -242,7 +229,6 @@ class _SignUpPageContent extends HookConsumerWidget {
                                                   _openRecaptcha(
                                                     context,
                                                     selfRegistrationParams,
-                                                    loginMobileInfo,
                                                     recaptchaResponse,
                                                   );
                                                 }
@@ -259,7 +245,8 @@ class _SignUpPageContent extends HookConsumerWidget {
                                         ),
                                       ),
                                       if (selfRegistrationParams
-                                          .showPrivacyPolicy)
+                                              .showPrivacyPolicy ??
+                                          false)
                                         ReactiveCheckboxListTile(
                                           contentPadding:
                                               const EdgeInsets.symmetric(
@@ -302,7 +289,9 @@ class _SignUpPageContent extends HookConsumerWidget {
                                             ],
                                           ),
                                         ),
-                                      if (selfRegistrationParams.showTermsOfUse)
+                                      if (selfRegistrationParams
+                                              .showTermsOfUse ??
+                                          false)
                                         ReactiveCheckboxListTile(
                                           contentPadding:
                                               const EdgeInsets.symmetric(
@@ -370,6 +359,7 @@ class _SignUpPageContent extends HookConsumerWidget {
                                                 ref,
                                                 form,
                                                 selfRegistrationParams,
+                                                signUpFields,
                                                 recaptchaResponse,
                                                 log,
                                               );
@@ -439,22 +429,23 @@ class _SignUpPageContent extends HookConsumerWidget {
 
 Future<void> _openRecaptcha(
   BuildContext context,
-  MobileSelfRegistrationParams signUpParams,
-  LoginMobileInfo loginMobileInfo,
+  SignUpSelfRegistrationParams signUpParams,
   ValueNotifier<String?> recaptchaResponseNotifier,
 ) async {
   try {
-    if (signUpParams.recaptcha.version == 'enterprise') {
+    final captcha = signUpParams.captcha;
+    if (captcha == null) return;
+    if (captcha.version == 'enterprise') {
       // Get recaptcha client for enterprise version
       RecaptchaClient? client;
       final deviceService = getIt<IDeviceInfoService>();
+      final enterpriseCaptcha =
+          captcha is EnterpriseCaptchaParams ? captcha : null;
       if (deviceService.getPlatformType() == PlatformType.IOS) {
-        client = await Recaptcha.fetchClient(
-          signUpParams.recaptcha.iosSiteKey!,
-        );
+        client = await Recaptcha.fetchClient(enterpriseCaptcha?.iosKey ?? '');
       } else if (deviceService.getPlatformType() == PlatformType.ANDROID) {
         client = await Recaptcha.fetchClient(
-          signUpParams.recaptcha.androidSiteKey!,
+          enterpriseCaptcha?.androidKey ?? '',
         );
       }
 
@@ -463,11 +454,12 @@ Future<void> _openRecaptcha(
         timeout: 10000,
       );
     } else {
+      final v3Captcha = captcha is V3CaptchaParams ? captcha : null;
       final String? recaptchaResponse = await getIt<ThingsboardAppRouter>()
           .navigateTo(
-            '/tbRecaptcha?siteKey=${signUpParams.recaptcha.siteKey}'
-            '&version=${signUpParams.recaptcha.version}'
-            '&logActionName=${signUpParams.recaptcha.logActionName}',
+            '/tbRecaptcha?siteKey=${v3Captcha?.siteKey ?? ''}'
+            '&version=${captcha.version}'
+            '&logActionName=${v3Captcha?.logActionName ?? ''}',
             transition: TransitionType.nativeModal,
           );
 
@@ -502,17 +494,18 @@ Future<void> _signUp(
   BuildContext context,
   WidgetRef ref,
   FormGroup form,
-  MobileSelfRegistrationParams signUpParams,
+  SignUpSelfRegistrationParams signUpParams,
+  List<SignUpField> signUpFields,
   ValueNotifier<String?> recaptchaResponseNotifier,
   TbLogger log,
 ) async {
   FocusScope.of(context).unfocus();
   if (form.valid) {
     final formValue = form.value;
-    final fields = Map<SignUpFieldsId, String>.fromEntries(
-      signUpParams.fields
-          .where((e) => e.id != SignUpFieldsId.undefined)
-          .map((e) => MapEntry(e.id, '${formValue[e.id.toShortString()]}'))
+    final fields = Map<SignUpFieldId, String>.fromEntries(
+      signUpFields
+          .where((e) => e.id != SignUpFieldId.unknownDefaultOpenApi)
+          .map((e) => MapEntry(e.id, '${formValue[e.id.name]}'))
           .where((e) => e.value != 'null'),
     );
 
@@ -534,12 +527,12 @@ Future<void> _signUp(
           _promptToResendEmailVerification(
             context,
             ref,
-            formValue[SignUpFieldsId.email.toShortString()].toString(),
+            formValue[SignUpFieldId.EMAIL.name].toString(),
           );
         }
       } else {
         final encoded = Uri.encodeQueryComponent(
-          formValue[SignUpFieldsId.email.toShortString()].toString(),
+          formValue[SignUpFieldId.EMAIL.name].toString(),
         );
 
         log.info('Sign up success!');
@@ -558,19 +551,16 @@ Future<void> _signUp(
 bool _validateSignUpRequest(
   BuildContext context,
   Map<String, dynamic> formValue,
-  MobileSelfRegistrationParams signUpParams,
+  SignUpSelfRegistrationParams signUpParams,
   String? recaptchaResponse,
 ) {
-  if (formValue[SignUpFieldsId.password.toShortString()] !=
-      formValue[SignUpFieldsId.repeat_password.toShortString()]) {
+  if (formValue[SignUpFieldId.PASSWORD.name] !=
+      formValue[SignUpFieldId.REPEAT_PASSWORD.name]) {
     getIt<IOverlayService>().showErrorNotification(
       (_) => S.of(context).passwordErrorNotification,
     );
     return false;
-  } else if (formValue[SignUpFieldsId.password.toShortString()]
-          .toString()
-          .length <
-      6) {
+  } else if (formValue[SignUpFieldId.PASSWORD.name].toString().length < 6) {
     getIt<IOverlayService>().showErrorNotification(
       (_) => S.of(context).invalidPasswordLengthMessage,
     );
@@ -583,7 +573,7 @@ bool _validateSignUpRequest(
     );
     return false;
   }
-  if (signUpParams.showPrivacyPolicy &&
+  if ((signUpParams.showPrivacyPolicy ?? false) &&
       formValue['acceptPrivacyPolicy'] != true) {
     getIt<IOverlayService>().showErrorNotification(
       (_) => S.of(context).acceptPrivacyPolicyMessage,
@@ -591,7 +581,8 @@ bool _validateSignUpRequest(
     return false;
   }
 
-  if (signUpParams.showTermsOfUse && formValue['acceptTermsOfUse'] != true) {
+  if ((signUpParams.showTermsOfUse ?? false) &&
+      formValue['acceptTermsOfUse'] != true) {
     getIt<IOverlayService>().showErrorNotification(
       (_) => S.of(context).acceptTermsOfUseMessage,
     );

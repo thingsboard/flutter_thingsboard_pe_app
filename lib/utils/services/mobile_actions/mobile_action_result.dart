@@ -3,7 +3,8 @@ import 'package:thingsboard_app/utils/services/mobile_actions/results/image_resu
 import 'package:thingsboard_app/utils/services/mobile_actions/results/launch_result.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/results/location_result.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/results/qr_code_result.dart';
-abstract  class MobileActionResult {
+
+abstract class MobileActionResult {
   MobileActionResult();
 
   factory MobileActionResult.launched(bool launched) {
@@ -18,8 +19,13 @@ abstract  class MobileActionResult {
     return QrCodeResult(code, format);
   }
 
-  factory MobileActionResult.location(num latitude, num longitude) {
-    return LocationResult(latitude, longitude);
+  factory MobileActionResult.location(
+    num latitude,
+    num longitude, {
+    num? accuracy,
+    int? ts,
+  }) {
+    return LocationResult(latitude, longitude, accuracy: accuracy, ts: ts);
   }
 
   factory MobileActionResult.provisioning(String deviceName) {

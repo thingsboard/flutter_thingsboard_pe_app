@@ -45,15 +45,22 @@ class TbCustomTranslationService implements ICustomTranslationService {
     _translations = const {};
   }
 
+  /// Accumulates dotted segments on a miss, like ngx-translate's `getValue`:
+  /// PATCH `/translation/custom` expands `a.b` into nested maps, while the
+  /// advanced editor and file upload store the dotted key verbatim.
   String? _lookup(String key) {
     dynamic current = _translations;
-    for (final part in key.split('.')) {
-      if (current is Map<String, dynamic> && current.containsKey(part)) {
-        current = current[part];
-      } else {
-        return null;
+    String? pending;
+    final parts = key.split('.');
+    for (var i = 0; i < parts.length; i++) {
+      pending = pending == null ? parts[i] : '$pending.${parts[i]}';
+      final isLast = i == parts.length - 1;
+      final next = current is Map<String, dynamic> ? current[pending] : null;
+      if (next is Map<String, dynamic> || (isLast && next != null)) {
+        current = next;
+        pending = null;
       }
     }
-    return current is String ? current : null;
+    return pending == null && current is String ? current : null;
   }
 }

@@ -275,9 +275,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "applyChanges": MessageLookupByLibrary.simpleMessage("تطبيق التغييرات"),
     "areYouSure": MessageLookupByLibrary.simpleMessage("هل أنت متأكد؟"),
     "areYouSureYouWantToDeactivate": m3,
-    "areYouSureYouWantToExit": MessageLookupByLibrary.simpleMessage(
-      "هل أنت متأكد أنك تريد الخروج؟",
-    ),
     "asset": MessageLookupByLibrary.simpleMessage("الأصل"),
     "assetName": MessageLookupByLibrary.simpleMessage("اسم الأصل"),
     "assetProfile": MessageLookupByLibrary.simpleMessage("ملف تعريف الأصل"),
@@ -328,9 +325,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "confirmNotRobotMessage": MessageLookupByLibrary.simpleMessage(
       "يجب أن تؤكد أنك لست روبوت",
-    ),
-    "confirmToCloseTheApp": MessageLookupByLibrary.simpleMessage(
-      "تأكيد لإغلاق التطبيق",
     ),
     "confirmation": MessageLookupByLibrary.simpleMessage("التأكيد"),
     "confirmingWifiConnection": MessageLookupByLibrary.simpleMessage(

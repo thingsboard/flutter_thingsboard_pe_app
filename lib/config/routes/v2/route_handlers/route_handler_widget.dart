@@ -9,8 +9,6 @@ import 'package:thingsboard_app/config/routes/v2/route_handlers/route_handlers.d
 import 'package:thingsboard_app/config/themes/wl_preload_widget.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
-import 'package:thingsboard_app/locator.dart';
-import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 
 class RouteHanlderWidget extends HookConsumerWidget {
   const RouteHanlderWidget({super.key, required this.child});
@@ -25,19 +23,9 @@ class RouteHanlderWidget extends HookConsumerWidget {
       return () => disposeHandlers();
     }, []);
     return PopScope(
-      onPopInvokedWithResult: (didPop, res) async {
+      onPopInvokedWithResult: (didPop, res) {
         if (!context.canPop()) {
-          final confirm = await getIt<IOverlayService>().showConfirmDialog(
-            content:
-                (_) => DialogContent(
-                  title: S.of(context).areYouSureYouWantToExit,
-                  message: S.of(context).confirmToCloseTheApp,
-                  cancel: S.of(context).cancel,
-                ),
-          );
-          if (confirm == true && context.mounted) {
-            SystemNavigator.pop();
-          }
+          SystemNavigator.pop();
         }
       },
       canPop: false,

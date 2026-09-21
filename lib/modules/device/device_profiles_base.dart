@@ -41,7 +41,7 @@ mixin DeviceProfilesBase on EntitiesBase<DeviceProfileInfo, PageLink> {
   @override
   void onEntityTap(DeviceProfileInfo deviceProfile, WidgetRef ref) {
     getIt<ThingsboardAppRouter>().navigateTo(
-      '/devices/deviceList?deviceType=${Uri.encodeComponent(deviceProfile.name)}',
+      '/devices/deviceList?deviceType=${Uri.encodeComponent(deviceProfile.name ?? '')}',
     );
   }
 
@@ -309,7 +309,7 @@ class _DeviceProfileCardState extends State<DeviceProfileCard> {
   void _countDevices() {
     countedProfile = DeviceProfileCache.getDevicesCount(
       tbClient,
-      widget.deviceProfile.name,
+      widget.deviceProfile.name ?? '',
     );
   }
 
@@ -347,7 +347,7 @@ class _DeviceProfileCardState extends State<DeviceProfileCard> {
               padding: const EdgeInsets.symmetric(horizontal: 6),
               child: Center(
                 child: AutoSizeText(
-                  entity.name,
+                  entity.name ?? '',
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -393,7 +393,7 @@ class _DeviceProfileCardState extends State<DeviceProfileCard> {
             onTap: () {
               getIt<ThingsboardAppRouter>().navigateTo(
                 // translate-me-ignore-next-line
-                '/devices/deviceList?active=true&deviceType=${Uri.encodeComponent(entity.name)}',
+                '/devices/deviceList?active=true&deviceType=${Uri.encodeComponent(entity.name ?? '')}',
               );
             },
           ),
@@ -430,7 +430,7 @@ class _DeviceProfileCardState extends State<DeviceProfileCard> {
             onTap: () {
               getIt<ThingsboardAppRouter>().navigateTo(
                 // translate-me-ignore-next-line
-                '/devices/deviceList?active=false&deviceType=${Uri.encodeComponent(entity.name)}',
+                '/devices/deviceList?active=false&deviceType=${Uri.encodeComponent(entity.name ?? '')}',
               );
             },
           ),

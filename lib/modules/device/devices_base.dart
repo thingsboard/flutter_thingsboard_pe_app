@@ -2,91 +2,53 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
-import 'package:thingsboard_app/config/routes/v2/router_2.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
-import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/core/entity/entities_base.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
-import 'package:thingsboard_app/modules/dashboard/domain/entites/dashboard_arguments.dart';
+import 'package:thingsboard_app/modules/device/device_dashboard_navigation.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/thingsboard_client_extensions.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/device_profile/device_profile_cache.dart';
 import 'package:thingsboard_app/utils/services/device_profile/model/cached_device_profile.dart';
 import 'package:thingsboard_app/utils/services/entity_query_api.dart';
-import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
+import 'package:thingsboard_app/utils/services/new_client_page_data.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 
 mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
-  final IOverlayService overlayService = getIt();
   @override
   String title(BuildContext context) => S.of(context).devices(2);
 
   @override
-  String noItemsFoundText(BuildContext context) =>
-      S.of(context).noDevicesFound;
+  String noItemsFoundText(BuildContext context) => S.of(context).noDevicesFound;
   final tbClient = getIt<ITbClientService>().client;
   @override
   Future<PageData<EntityData>> fetchEntities(
     EntityDataQuery dataQuery, {
     bool refresh = false,
-  }) {
-    return tbClient.getEntityQueryService().findEntityDataByQuery(dataQuery);
+  }) async {
+    final response = await tbClient
+        .getEntityQueryControllerApi()
+        .findEntityDataByQuery(entityDataQuery: dataQuery);
+    final pd = response.data!;
+    return toPageData(pd.data, pd.totalPages, pd.totalElements, pd.hasNext);
   }
 
   @override
-  Future<void> onEntityTap(EntityData device, WidgetRef ref) async {
-    final profile = await DeviceProfileCache.getDeviceProfileInfo(
-      tbClient,
-      device.field('type')!,
-      device.entityId.id!,
-    );
-    final loginInfo = ref.read(loginProvider);
-    if (profile.info.defaultDashboardId != null &&
-        loginInfo.isFullyAuthenticated()) {
-      if (loginInfo.hasGenericPermission(
-            Resource.WIDGETS_BUNDLE,
-            Operation.READ,
-          ) &&
-          loginInfo.hasGenericPermission(
-            Resource.WIDGET_TYPE,
-            Operation.READ,
-          )) {
-        final dashboardId = profile.info.defaultDashboardId!.id!;
-        final state = Utils.createDashboardEntityState(
-          device.entityId,
-          entityName: device.field('name'),
-          entityLabel: device.field('label'),
-        );
-        globalNavigatorKey.currentContext?.pushReplacement(
-          '/dashboard',
-          extra: DashboardArgumentsEntity(
-            id: dashboardId,
-            title: device.field('name'),
-            state: state,
-            hideToolbar: false,
-            animate: false,
-          ),
-        );
-      } else {
-        getIt<IOverlayService>().showErrorNotification(
-          (context) =>
-              S.of(context).youDontHavePermissionsToPerformThisOperation,
-        );
-      }
-    } else {
-      if (tbClient.isTenantAdmin()) {
-        overlayService.showWarnNotification(
-          (context) =>
-              S.of(context).mobileDashboardShouldBeConfiguredInDeviceProfile,
-        );
-      }
-    }
-  }
+  Future<void> onEntityTap(EntityData device, WidgetRef ref) =>
+      openDeviceProfileDashboard(
+        ref,
+        deviceId: device.entityId,
+        deviceType: device.field('type')!,
+        deviceName: device.field('name'),
+        deviceLabel: device.field('label'),
+        replace: true,
+      );
 
   @override
   Widget buildEntityListCard(BuildContext context, EntityData device) {
@@ -100,7 +62,7 @@ mixin DevicesBase on EntitiesBase<EntityData, EntityDataQuery> {
 
   @override
   Widget buildEntityGridCard(BuildContext context, EntityData device) {
-    return Text(device.field('name')!);
+    return Text(customTranslationService.translate(device.field('name')));
   }
 
   bool displayCardImage(bool listWidgetCard) => listWidgetCard;
@@ -134,11 +96,24 @@ class DeviceQueryController extends PageKeyController<EntityDataQuery> {
        );
 
   @override
-  EntityDataQuery nextPageKey(EntityDataQuery pageKey) => pageKey.next();
+  EntityDataQuery nextPageKey(EntityDataQuery pageKey) {
+    final currentPage = pageKey.pageLink?.page ?? 0;
+    return pageKey.rebuild(
+      (b) => b.pageLink.update((pl) => pl..page = currentPage + 1),
+    );
+  }
 
   void onSearchText(String searchText) {
-    value.pageKey.pageLink.page = 0;
-    value.pageKey.pageLink.textSearch = searchText;
+    value = PageKeyValue(
+      value.pageKey.rebuild(
+        (b) => b.pageLink.update(
+          (pl) =>
+              pl
+                ..page = 0
+                ..textSearch = searchText,
+        ),
+      ),
+    );
     notifyListeners();
   }
 }
@@ -163,6 +138,7 @@ class _DeviceCardState extends State<DeviceCard> {
 
   late Future<CachedDeviceProfileInfo> deviceProfileFuture;
   final tbClient = getIt<ITbClientService>().client;
+  final ICustomTranslationService customTranslationService = getIt();
   @override
   void initState() {
     super.initState();
@@ -170,7 +146,7 @@ class _DeviceCardState extends State<DeviceCard> {
       deviceProfileFuture = DeviceProfileCache.getDeviceProfileInfo(
         tbClient,
         widget.device.field('type')!,
-        widget.device.entityId.id!,
+        widget.device.entityId?.id ?? '',
       );
     }
   }
@@ -185,7 +161,7 @@ class _DeviceCardState extends State<DeviceCard> {
         deviceProfileFuture = DeviceProfileCache.getDeviceProfileInfo(
           tbClient,
           widget.device.field('type')!,
-          widget.device.entityId.id!,
+          widget.device.entityId?.id ?? '',
         );
       }
     }
@@ -201,6 +177,12 @@ class _DeviceCardState extends State<DeviceCard> {
   }
 
   Widget buildCard(BuildContext context) {
+    final name = customTranslationService.translate(
+      widget.device.field('name'),
+    );
+    final label = customTranslationService.translate(
+      widget.device.field('label'),
+    );
     return Stack(
       children: [
         Positioned.fill(
@@ -294,7 +276,7 @@ class _DeviceCardState extends State<DeviceCard> {
                                       Flexible(
                                         fit: FlexFit.tight,
                                         child: Text(
-                                          widget.device.field('name')!,
+                                          name,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -309,7 +291,13 @@ class _DeviceCardState extends State<DeviceCard> {
                                       Text(
                                         entityDateFormat.format(
                                           DateTime.fromMillisecondsSinceEpoch(
-                                            widget.device.createdTime!,
+                                            int.tryParse(
+                                                  widget.device.field(
+                                                        'createdTime',
+                                                      ) ??
+                                                      '0',
+                                                ) ??
+                                                0,
                                           ),
                                         ),
                                         style: const TextStyle(
@@ -321,11 +309,11 @@ class _DeviceCardState extends State<DeviceCard> {
                                       ),
                                     ],
                                   ),
-                                  if (widget.device.field('label')?.isNotEmpty == true)
+                                  if (label.isNotEmpty)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 2),
                                       child: Text(
-                                        widget.device.field('label')!,
+                                        label,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
@@ -408,6 +396,12 @@ class _DeviceCardState extends State<DeviceCard> {
   }
 
   Widget buildListWidgetCard(BuildContext context) {
+    final name = customTranslationService.translate(
+      widget.device.field('name'),
+    );
+    final label = customTranslationService.translate(
+      widget.device.field('label'),
+    );
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -480,7 +474,7 @@ class _DeviceCardState extends State<DeviceCard> {
                   children: [
                     Flexible(
                       child: Text(
-                        widget.device.field('name')!,
+                        name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -493,11 +487,11 @@ class _DeviceCardState extends State<DeviceCard> {
                     ),
                   ],
                 ),
-                if (widget.device.field('label')?.isNotEmpty == true)
+                if (label.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
-                      widget.device.field('label')!,
+                      label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
