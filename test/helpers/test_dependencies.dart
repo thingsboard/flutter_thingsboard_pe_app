@@ -19,8 +19,9 @@ class MockFirebaseService extends Mock implements IFirebaseService {}
 
 /// Registers the locator dependencies that services resolve in their field
 /// initializers, so a test can construct them without booting the real app.
-/// The locator is reset automatically when the current test finishes.
-void registerTestDependencies({
+/// The locator is reset automatically when the current test finishes. Returns
+/// the client service mock so a test can swap the client it hands out.
+MockTbClientService registerTestDependencies({
   required ThingsboardClient tbClient,
   required ILocalDatabaseService localDatabase,
   required IFirebaseService firebaseService,
@@ -34,4 +35,5 @@ void registerTestDependencies({
     ..registerLazySingleton<ILocalDatabaseService>(() => localDatabase)
     ..registerLazySingleton<IFirebaseService>(() => firebaseService);
   addTearDown(getIt.reset);
+  return clientService;
 }
