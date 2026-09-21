@@ -92,12 +92,14 @@ WhiteLabelingParams _loginToWlParams(LoginWhiteLabelingParams p) =>
 
 @riverpod
 class Wl extends _$Wl {
-  late final ThingsboardClient _tbClient;
+  // Read the live client on every access: a QR-code login re-creates the
+  // client (ITbClientService.reInit), so an instance captured at build time
+  // would keep the pre-login token state and fail with 'Unauthorized!'
+  // (PROD-8879).
+  ThingsboardClient get _tbClient => getIt<ITbClientService>().client;
   late ProviderSubscription<LoginState> _subscription;
   @override
   WlState build() {
-    _tbClient = getIt<ITbClientService>().client;
-
     _subscription = ref.listen(loginProvider, (prev, next) {
       print('wl update');
       updateWhiteLabeling();
