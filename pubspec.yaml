@@ -12,8 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  thingsboard_pe_client:
-    path: ../thingsboard-dart-client/pe
+  thingsboard_pe_client: ^4.4.0
   dio: ^5.7.0
   intl: ^0.19.0
   flutter_secure_storage: ^9.0.0
