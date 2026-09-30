@@ -24,10 +24,22 @@ mixin AuditLogsBase on EntitiesBase<AuditLog, TimePageLink> {
   Future<PageData<AuditLog>> fetchEntities(
     TimePageLink pageLink, {
     bool refresh = false,
-  }) async  {
+  }) async {
     try {
-      final res =  await tbClient.getAuditLogService().getAuditLogs(pageLink);
-      return res;
+      final r = await tbClient.getAuditLogControllerApi().getAuditLogs(
+        pageSize: pageLink.pageSize,
+        page: pageLink.page,
+        textSearch: pageLink.textSearch,
+        startTime: pageLink.startTime,
+        endTime: pageLink.endTime,
+      );
+      final p = r.data!;
+      return PageData<AuditLog>(
+        p.data?.toList() ?? [],
+        p.totalPages ?? 0,
+        p.totalElements ?? 0,
+        p.hasNext ?? false,
+      );
     } catch (e) {
       print(e);
       rethrow;
@@ -142,8 +154,9 @@ class _AuditLogCardState extends State<AuditLogCard> {
                                 Flexible(
                                   fit: FlexFit.tight,
                                   child: Text(
-                                    widget.auditLog.entityId.entityType
-                                        .getTranslatedEntityType(context),
+                                    widget.auditLog.entityId?.entityType
+                                            .getTranslatedEntityType(context) ??
+                                        '',
                                     style: const TextStyle(
                                       color: Color(0xFFAFAFAF),
                                       fontWeight: FontWeight.normal,
@@ -154,7 +167,10 @@ class _AuditLogCardState extends State<AuditLogCard> {
                                 ),
                                 Text(
                                   widget.auditLog.actionStatus
-                                      .getTranslatedActionStatus(context),
+                                          ?.getTranslatedActionStatus(
+                                            context,
+                                          ) ??
+                                      '',
                                   style: TextStyle(
                                     color:
                                         widget.auditLog.actionStatus ==
@@ -182,9 +198,10 @@ class _AuditLogCardState extends State<AuditLogCard> {
                       Flexible(
                         fit: FlexFit.tight,
                         child: Text(
-                          widget.auditLog.actionType.getTranslatedActionType(
-                            context,
-                          ),
+                          widget.auditLog.actionType?.getTranslatedActionType(
+                                context,
+                              ) ??
+                              '',
                           style: const TextStyle(
                             color: Color(0xFF282828),
                             fontWeight: FontWeight.normal,

@@ -61,8 +61,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m14(error) => "Error sending code: ${error}";
 
+  static String m30(host) => "Failed to connect to ${host}";
+
+  static String m31(host) =>
+      "Failed to obtain a login token from ${host}. Please scan a new QR code.";
+
   static String m15(count) =>
       "${Intl.plural(count, one: '1 operation failed', other: '${count} operations failed')}";
+
+  static String m32(host) => "Getting data from your host ${host}";
+
+  static String m33(host) => "Logging you into the host ${host}";
 
   static String m16(count) =>
       "${Intl.plural(count, one: 'Mark 1 notification as read?', other: 'Mark ${count} notifications as read?')}";
@@ -91,6 +100,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m25(contact) =>
       "A security code has been sent to your phone at ${contact}.";
+
+  static String m34(host) => "Switching you to the new host ${host}";
 
   static String m26(name) =>
       "Unable connect to Wi-Fi because networks wasn\'t found by device ${name}";
@@ -274,9 +285,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "applyChanges": MessageLookupByLibrary.simpleMessage("Apply changes"),
     "areYouSure": MessageLookupByLibrary.simpleMessage("Are you sure?"),
     "areYouSureYouWantToDeactivate": m3,
-    "areYouSureYouWantToExit": MessageLookupByLibrary.simpleMessage(
-      "Are you sure you want to exit?",
-    ),
     "asset": MessageLookupByLibrary.simpleMessage("Asset"),
     "assetName": MessageLookupByLibrary.simpleMessage("Asset name"),
     "assetProfile": MessageLookupByLibrary.simpleMessage("Asset profile"),
@@ -329,9 +337,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "confirmNotRobotMessage": MessageLookupByLibrary.simpleMessage(
       "You must confirm that you are not a robot",
-    ),
-    "confirmToCloseTheApp": MessageLookupByLibrary.simpleMessage(
-      "Confirm to close the app",
     ),
     "confirmation": MessageLookupByLibrary.simpleMessage("Confirmation"),
     "confirmingWifiConnection": MessageLookupByLibrary.simpleMessage(
@@ -443,6 +448,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "exitDeviceProvisioning": MessageLookupByLibrary.simpleMessage(
       "Exit device provisioning",
     ),
+    "failedToConnectToHost": m30,
     "failedToConnectToServer": MessageLookupByLibrary.simpleMessage(
       "Failed to connect to server",
     ),
@@ -452,6 +458,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToLoadTheList": MessageLookupByLibrary.simpleMessage(
       "Failed to load the list",
     ),
+    "failedToObtainLoginTokenFromHost": m31,
     "failedToPerformOperation": m15,
     "failedToSaveImage": MessageLookupByLibrary.simpleMessage(
       "Failed to save image",
@@ -471,6 +478,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "First name is required.",
     ),
     "firstNameUpper": MessageLookupByLibrary.simpleMessage("First Name"),
+    "gettingDataFromHost": m32,
     "goBack": MessageLookupByLibrary.simpleMessage("Go back"),
     "groupPermission": MessageLookupByLibrary.simpleMessage("Group Permission"),
     "hideHomeDashboardToolbar": MessageLookupByLibrary.simpleMessage(
@@ -513,6 +521,82 @@ class MessageLookup extends MessageLookupByLibrary {
     "listIsEmptyText": MessageLookupByLibrary.simpleMessage(
       "The list is currently empty.",
     ),
+    "liveTrackingActive": MessageLookupByLibrary.simpleMessage(
+      "Live location tracking",
+    ),
+    "liveTrackingDashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
+    "liveTrackingEndReason": MessageLookupByLibrary.simpleMessage("End reason"),
+    "liveTrackingEndReasonInterrupted": MessageLookupByLibrary.simpleMessage(
+      "Interrupted",
+    ),
+    "liveTrackingEndReasonManual": MessageLookupByLibrary.simpleMessage(
+      "Stopped manually",
+    ),
+    "liveTrackingEndReasonMaxDuration": MessageLookupByLibrary.simpleMessage(
+      "Reached max duration",
+    ),
+    "liveTrackingEnded": MessageLookupByLibrary.simpleMessage("End time"),
+    "liveTrackingErrorLocation": MessageLookupByLibrary.simpleMessage(
+      "Couldn\'t get a location fix.",
+    ),
+    "liveTrackingErrorNoConnection": MessageLookupByLibrary.simpleMessage(
+      "No connection to the server. These fixes weren\'t saved — saving resumes when you\'re back online.",
+    ),
+    "liveTrackingErrorPermissionDenied": MessageLookupByLibrary.simpleMessage(
+      "Location permission was denied.",
+    ),
+    "liveTrackingErrorPermissionDeniedForever":
+        MessageLookupByLibrary.simpleMessage(
+          "Location permission is permanently denied. Enable it in the app settings.",
+        ),
+    "liveTrackingErrorSaveFailed": MessageLookupByLibrary.simpleMessage(
+      "Couldn\'t save this fix to the server. Saving retries with the next fix.",
+    ),
+    "liveTrackingErrorSavePermissionDenied": MessageLookupByLibrary.simpleMessage(
+      "Can\'t save to this entity — you don\'t have permission. Tracking continues; ask your administrator to grant access.",
+    ),
+    "liveTrackingErrorServicesDisabled": MessageLookupByLibrary.simpleMessage(
+      "Location services are turned off on this device.",
+    ),
+    "liveTrackingErrorTargetNotFound": MessageLookupByLibrary.simpleMessage(
+      "Can\'t save to this entity — it no longer exists. Tracking continues; update the target in the dashboard action.",
+    ),
+    "liveTrackingErrorUnauthorized": MessageLookupByLibrary.simpleMessage(
+      "Your session ended. Sign in again to keep saving location.",
+    ),
+    "liveTrackingErrors": MessageLookupByLibrary.simpleMessage("Errors"),
+    "liveTrackingFixes": MessageLookupByLibrary.simpleMessage("Fixes"),
+    "liveTrackingHide": MessageLookupByLibrary.simpleMessage("Hide"),
+    "liveTrackingLastError": MessageLookupByLibrary.simpleMessage("Last error"),
+    "liveTrackingLastFix": MessageLookupByLibrary.simpleMessage("Last fix"),
+    "liveTrackingLastSession": MessageLookupByLibrary.simpleMessage(
+      "Last session",
+    ),
+    "liveTrackingMenuTitle": MessageLookupByLibrary.simpleMessage(
+      "Live location tracking",
+    ),
+    "liveTrackingNoRecord": MessageLookupByLibrary.simpleMessage(
+      "No active tracking and no recent session.",
+    ),
+    "liveTrackingPause": MessageLookupByLibrary.simpleMessage("Pause"),
+    "liveTrackingPaused": MessageLookupByLibrary.simpleMessage(
+      "Live tracking paused",
+    ),
+    "liveTrackingResume": MessageLookupByLibrary.simpleMessage("Resume"),
+    "liveTrackingSaved": MessageLookupByLibrary.simpleMessage("Saved"),
+    "liveTrackingSessionTitle": MessageLookupByLibrary.simpleMessage(
+      "Live location tracking",
+    ),
+    "liveTrackingStartAgain": MessageLookupByLibrary.simpleMessage(
+      "Start again",
+    ),
+    "liveTrackingStarted": MessageLookupByLibrary.simpleMessage("Start time"),
+    "liveTrackingStatus": MessageLookupByLibrary.simpleMessage("Status"),
+    "liveTrackingStop": MessageLookupByLibrary.simpleMessage("Stop"),
+    "liveTrackingTarget": MessageLookupByLibrary.simpleMessage(
+      "Save location to entity",
+    ),
+    "loggingYouIntoHost": m33,
     "login": MessageLookupByLibrary.simpleMessage("Log In"),
     "loginToApp": MessageLookupByLibrary.simpleMessage("Login to app"),
     "loginToYourAccount": MessageLookupByLibrary.simpleMessage(
@@ -676,6 +760,9 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Push notifications are not configured.\nPlease contact your system administrator.",
         ),
+    "qrCodeSessionIsNoLongerValid": MessageLookupByLibrary.simpleMessage(
+      "The QR code session is no longer valid. Please refresh the QR code and scan again.",
+    ),
     "queue": MessageLookupByLibrary.simpleMessage("Queue"),
     "queueStats": MessageLookupByLibrary.simpleMessage("Queue stats"),
     "ready": MessageLookupByLibrary.simpleMessage("Ready"),
@@ -751,6 +838,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "startTime": MessageLookupByLibrary.simpleMessage("Start time"),
     "stateOrProvince": MessageLookupByLibrary.simpleMessage("State / Province"),
     "status": MessageLookupByLibrary.simpleMessage("Status"),
+    "switchingToNewHost": m34,
     "systemAdministrator": MessageLookupByLibrary.simpleMessage(
       "System Administrator",
     ),

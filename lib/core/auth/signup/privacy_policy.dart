@@ -4,7 +4,6 @@ import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
-import 'package:thingsboard_app/thingsboard_client.dart' show MobileInfoQuery;
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/utils/utils.dart';
@@ -12,7 +11,7 @@ import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class PrivacyPolicy extends StatefulWidget {
- const  PrivacyPolicy( {super.key});
+  const PrivacyPolicy({super.key});
 
   @override
   State<StatefulWidget> createState() => _PrivacyPolicyState();
@@ -25,21 +24,19 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
   void initState() {
     super.initState();
     privacyPolicyFuture = getIt<ITbClientService>().client
-       .getSelfRegistrationService().getPrivacyPolicy(
-              query: MobileInfoQuery(
-                packageName: getIt<IDeviceInfoService>().getApplicationId(),
-                platformType: getIt<IDeviceInfoService>().getPlatformType(),
-              ),
-            );
+        .getSelfRegistrationControllerApi()
+        .getPrivacyPolicy(
+          pkgName: getIt<IDeviceInfoService>().getApplicationId(),
+          platform: getIt<IDeviceInfoService>().getPlatformType(),
+        )
+        .then((r) => r.data);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: TbAppBar(
-        title: Text(S.of(context).privacyPolicy),
-      ),
+      appBar: TbAppBar(title: Text(S.of(context).privacyPolicy)),
       body: SafeArea(
         child: Column(
           children: [
@@ -58,13 +55,11 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
 
                         return HtmlWidget(
                           snapshot.data ?? '',
-                          onTapUrl: (link)  => Utils.onWebViewLinkPressed(link)
+                          onTapUrl: (link) => Utils.onWebViewLinkPressed(link),
                         );
                       } else {
                         return const Center(
-                          child: TbProgressIndicator(
-                            size: 50.0,
-                          ),
+                          child: TbProgressIndicator(size: 50.0),
                         );
                       }
                     },
@@ -78,13 +73,13 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                    onPressed: () =>
-                        getIt<ThingsboardAppRouter>().pop(false, context),
+                    onPressed:
+                        () => getIt<ThingsboardAppRouter>().pop(false, context),
                     child: Text(S.of(context).cancel),
                   ),
                   ElevatedButton(
-                    onPressed: () =>
-                        getIt<ThingsboardAppRouter>().pop(true, context),
+                    onPressed:
+                        () => getIt<ThingsboardAppRouter>().pop(true, context),
                     child: Text(S.of(context).accept),
                   ),
                 ],
@@ -95,6 +90,4 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
       ),
     );
   }
-
- 
 }

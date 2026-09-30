@@ -122,8 +122,8 @@ class AssigneeListWidget extends StatelessWidget {
                       Widget? userInfoWidget;
 
                       if (state is AssigneeSelectedState) {
-                        final selectedId = state.assignee.userInfo.id.id;
-                        if (selectedId == item.userInfo.id.id) {
+                        final selectedId = state.assignee.userInfo.id?.id;
+                        if (selectedId == item.userInfo.id?.id) {
                           userInfoWidget = const SizedBox.shrink();
                         }
                       }
@@ -186,7 +186,7 @@ class AssigneeListWidget extends StatelessWidget {
 
                                   onChanged();
                                 },
-                                id: item.userInfo.id.id!,
+                                id: item.userInfo.id?.id ?? '',
                               ),
                         ],
                       );
@@ -203,13 +203,13 @@ class AssigneeListWidget extends StatelessWidget {
                     final state = getIt<AssigneeBloc>().state;
 
                     if (state is AssigneeSelectedState) {
-                      final selectedId = state.assignee.userInfo.id.id;
+                      final selectedId = state.assignee.userInfo.id?.id;
                       final userId =
                           getIt<AssigneeBloc>()
                               .paginationRepository
                               .pagingController
                               .itemList?[index];
-                      if (selectedId == userId?.userInfo.id.id) {
+                      if (selectedId == userId?.userInfo.id?.id) {
                         return const SizedBox.shrink();
                       }
                     }

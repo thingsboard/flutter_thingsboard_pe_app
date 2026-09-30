@@ -430,8 +430,6 @@
   "phoneIsRequired": "手機號碼為必填項目",
   "phoneIsInvalid": "手機號碼無效",
   "addVerificationMethod": "新增驗證方式",
-  "areYouSureYouWantToExit": "您確定要退出嗎？",
-  "confirmToCloseTheApp": "確認關閉應用程式",
   "actionTypeAddedToEntityGroup": "已新增至實體群組",
   "actionTypeChangeOwner": "擁有者已變更",
   "actionTypeMadePrivate": "已設為私有",

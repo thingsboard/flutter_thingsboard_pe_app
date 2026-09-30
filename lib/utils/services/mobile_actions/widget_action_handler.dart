@@ -1,4 +1,3 @@
-
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/device_provisioning_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/get_location_action.dart';
@@ -6,14 +5,17 @@ import 'package:thingsboard_app/utils/services/mobile_actions/actions/make_phone
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/scan_qr_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/show_map_location_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/show_map_with_directions_action.dart';
+import 'package:thingsboard_app/utils/services/mobile_actions/actions/start_live_location_action.dart';
+import 'package:thingsboard_app/utils/services/mobile_actions/actions/stop_live_location_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/take_photo_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/take_picture_from_gallery_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/take_screenshot_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/actions/unknown_action.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/widget_mobile_action_result.dart';
 import 'package:thingsboard_app/utils/services/mobile_actions/widget_mobile_action_type.dart';
+
 class WidgetActionHandler {
-  static final  actions = [
+  static final actions = [
     DeviceProvisioningAction(),
     UnknownAction(),
     ShowMapLocationAction(),
@@ -23,6 +25,8 @@ class WidgetActionHandler {
     ScanQrAction(),
     MakePhoneCallAction(),
     GetLocationAction(),
+    StartLiveLocationAction(),
+    StopLiveLocationAction(),
     TakeScreenshotAction(),
   ];
   Future<Map<String, dynamic>> handleWidgetMobileAction(
@@ -43,19 +47,11 @@ class WidgetActionHandler {
         (action) => action.type == actionType,
         orElse: () => UnknownAction(),
       );
-      return await actionToCall.execute(
-        args,
-        controller,
-      );
+      return await actionToCall.execute(args, controller);
     } else {
       return WidgetMobileActionResult.errorResult(
         'actionType is not provided.',
       );
     }
   }
-
-
-
-
- 
 }

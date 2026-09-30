@@ -6,14 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/oauth2/i_oauth2_client.dart';
+import 'package:thingsboard_app/core/auth/user_authority_bridge.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
+import 'package:thingsboard_app/core/auth/login/models/mobile_basic_info.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/communication/events/user_loaded_event.dart';
 import 'package:thingsboard_app/utils/services/communication/i_communication_service.dart';
 import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
-import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
+import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_location_tracking_service.dart';
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
@@ -22,7 +24,10 @@ part 'login_provider.g.dart';
 
 @riverpod
 class Login extends _$Login {
-  final _tbClient = getIt<ITbClientService>().client;
+  // Read the live client on every access: a QR-code endpoint switch re-creates
+  // the client (ITbClientService.reInit), so a reference captured at build time
+  // would keep pointing at the old host and fail with 401 (PROD-8200).
+  ThingsboardClient get _tbClient => getIt<ITbClientService>().client;
   final _deviceInfoService = getIt<IDeviceInfoService>();
   late final StreamSubscription<UserLoadedEvent> _listener;
   final _overlayService = getIt<IOverlayService>();
@@ -31,16 +36,29 @@ class Login extends _$Login {
     _listener = getIt<ICommunicationService>().on<UserLoadedEvent>().listen((
       _,
     ) async {
-      await handleUserLoaded();
+      await _safeHandleUserLoaded();
     });
     ref.onDispose(() => _listener.cancel());
-    Future(() => handleUserLoaded());
+    Future(_safeHandleUserLoaded);
     return const LoginState(isUserLoaded: false);
   }
 
+  /// handleUserLoaded runs from fire-and-forget contexts (event bus, build):
+  /// a failure there (e.g. the session was invalidated while loading the
+  /// user) must not escape as an unhandled zone error (PROD-8200).
+  Future<void> _safeHandleUserLoaded() async {
+    try {
+      await handleUserLoaded();
+    } catch (e) {
+      log('handle user loaded failed: $e');
+    }
+  }
+
   Future<void> logout() async {
-    if (getIt<IFirebaseService>().apps.isNotEmpty &&
-        state.isFullyAuthenticated()) {
+    // Must run before the client logout: the teardown's gpsActive=false write
+    // needs the still-valid token.
+    await getIt<ILiveLocationTrackingService>().teardownForLogout();
+    if (state.isFullyAuthenticated()) {
       await getIt<NotificationService>().logout();
     }
     getIt<ICustomTranslationService>().clear();
@@ -52,6 +70,12 @@ class Login extends _$Login {
 
     if (!_tbClient.isAuthenticated()) {
       state = const LoginState(isUserLoaded: false);
+      // Fire-and-forget: the cleanup swallows its own errors, and the
+      // registration flag is deleted last, so an interrupted attempt is
+      // retried on the next launch without delaying the login screen.
+      // NotificationService.init() waits for it, so a fast auto-login
+      // (QR code, OAuth2) cannot register a token while it is being deleted.
+      unawaited(getIt<NotificationService>().cleanUpStalePushRegistration());
       return;
     }
     if (_tbClient.isPreVerificationToken() ||
@@ -68,7 +92,9 @@ class Login extends _$Login {
 
   Future<bool> login(String email, String password) async {
     try {
-      final res = await _tbClient.login(LoginRequest(email, password));
+      final res = await _tbClient.login(
+        LoginRequest(userName: email, password: password),
+      );
       final user = _tbClient.getAuthUser();
       if (user != null &&
           (user.isMfaConfigurationToken() || user.isPreVerificationToken())) {
@@ -81,15 +107,19 @@ class Login extends _$Login {
   }
 
   Future<void> loadUser() async {
-    final mobileInfo = await _tbClient.getMobileService().getUserMobileInfo(
-      MobileInfoQuery(
-        platformType: _deviceInfoService.getPlatformType(),
-        packageName: _deviceInfoService.getApplicationId(),
-      ),
-    );
+    final mobileResp = await _tbClient
+        .getMobileAppControllerApi()
+        .getUserMobileInfo(
+          pkgName: _deviceInfoService.getApplicationId(),
+          platform: _deviceInfoService.getPlatformType().name,
+        );
+    final mobileInfo = MobileBasicInfo.fromUserMobileInfo(mobileResp.data!);
 
-    final userInfo = await _tbClient.getUserService().getUser();
-    final lang = userInfo.additionalInfo?['lang'];
+    final userInfo = (await _tbClient.getAuthControllerApi().getUser()).data!;
+    final lang =
+        userInfo.additionalInfo?.isMap == true
+            ? userInfo.additionalInfo?.asMap['lang']
+            : null;
     final langStr = lang?.toString();
     final locale = S.delegate.supportedLocales.firstWhereOrNull(
       (l) => l.toString() == langStr || l.languageCode == langStr,
@@ -100,11 +130,14 @@ class Login extends _$Login {
       localeCode: (langStr != null && langStr.isNotEmpty) ? langStr : 'en_US',
     );
     final userPermissions =
-        await _tbClient.getUserPermissionsService().getAllowedPermissions();
+        (await _tbClient
+                .getUserPermissionsControllerApi()
+                .getAllowedPermissions())
+            .data!;
     state = state.copyWith(
       isUserLoaded: true,
       user: userInfo,
-      userScope: userInfo.authority,
+      userScope: userInfo.appAuthority,
       mobileLoginInfo: mobileInfo,
       userPermissions: userPermissions,
     );
@@ -112,9 +145,7 @@ class Login extends _$Login {
 
   Future<void> _onFullyLoggedIn() async {
     await loadUser();
-    if (getIt<IFirebaseService>().apps.isNotEmpty) {
-      await getIt<NotificationService>().init();
-    }
+    await getIt<NotificationService>().init();
   }
 
   Future<void> twoFaConfirmed(LoginResponse response) async {

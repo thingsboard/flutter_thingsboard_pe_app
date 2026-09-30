@@ -10,6 +10,7 @@ import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/alarm/alarms_base.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/widgets/details/alarm_details_content_widget.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/translation_utils.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 
@@ -88,7 +89,9 @@ class _AlarmDetailsWidgetState extends State<AlarmDetailsWidget>
                   ),
                   AlarmDetailsContentWidget(
                     title: S.of(context).type,
-                    details: widget.alarmInfo.type,
+                    details: getIt<ICustomTranslationService>().translate(
+                      widget.alarmInfo.type,
+                    ),
                   ),
                   AlarmDetailsContentWidget(
                     title: S.of(context).severity,
@@ -100,7 +103,9 @@ class _AlarmDetailsWidgetState extends State<AlarmDetailsWidget>
                   ),
                   AlarmDetailsContentWidget(
                     title: S.of(context).originator,
-                    details: widget.alarmInfo.originatorName ?? '',
+                    details: getIt<ICustomTranslationService>().translate(
+                      widget.alarmInfo.originatorName,
+                    ),
                   ),
                   AlarmDetailsContentWidget(
                     title: S.of(context).startTime,

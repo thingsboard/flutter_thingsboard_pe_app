@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/core/auth/oauth2/app_secret_provider.dart';
 import 'package:thingsboard_app/locator.dart';
@@ -14,10 +15,7 @@ class Signup extends _$Signup {
 
   @override
   SignupState build() {
-    return const SignupState(
-      isSigningUp: false,
-      recaptchaResponse: null,
-    );
+    return const SignupState(isSigningUp: false, recaptchaResponse: null);
   }
 
   void setRecaptchaResponse(String? response) {
@@ -28,14 +26,14 @@ class Signup extends _$Signup {
     state = state.copyWith(recaptchaResponse: null);
   }
 
-  Future<SignUpResult> signup(
-    SignUpRequest request,
-  ) async {
+  Future<SignUpResult> signup(SignUpRequest request) async {
     state = state.copyWith(isSigningUp: true);
     try {
-      final result = await _tbClient.getSignupService().signup(request);
+      final result = await _tbClient.getSignUpControllerApi().signUp(
+        signUpRequest: request,
+      );
       state = state.copyWith(isSigningUp: false);
-      return result;
+      return result.data!;
     } catch (e) {
       state = state.copyWith(isSigningUp: false);
       rethrow;
@@ -43,7 +41,7 @@ class Signup extends _$Signup {
   }
 
   Future<SignUpRequest> createSignUpRequest({
-    required Map<SignUpFieldsId, String> fields,
+    required Map<SignUpFieldId, String> fields,
     required String recaptchaResponse,
   }) async {
     final appSecret = await AppSecretProvider.local().getAppSecret(
@@ -51,20 +49,24 @@ class Signup extends _$Signup {
     );
 
     return SignUpRequest(
-      fields: fields,
-      recaptchaResponse: recaptchaResponse,
-      pkgName: _deviceInfoService.getApplicationId(),
-      appSecret: appSecret,
-      platform: _deviceInfoService.getPlatformType(),
+      (b) =>
+          b
+            ..fields = MapBuilder<String, String>(
+              fields.map((k, v) => MapEntry(k.name, v)),
+            )
+            ..recaptchaResponse = recaptchaResponse
+            ..pkgName = _deviceInfoService.getApplicationId()
+            ..appSecret = appSecret
+            ..platform = _deviceInfoService.getPlatformType(),
     );
   }
 
   Future<void> resendEmailActivation(String email) async {
-    await _tbClient.getSignupService().resendEmailActivation(
-          email,
-          pkgName: _deviceInfoService.getApplicationId(),
-          platform: _deviceInfoService.getPlatformType(),
-        );
+    await _tbClient.getSignUpControllerApi().resendEmailActivation(
+      email: email,
+      pkgName: _deviceInfoService.getApplicationId(),
+      platform: _deviceInfoService.getPlatformType()?.name,
+    );
   }
 }
 
@@ -77,10 +79,7 @@ class SignupState {
   final bool isSigningUp;
   final String? recaptchaResponse;
 
-  SignupState copyWith({
-    bool? isSigningUp,
-    String? recaptchaResponse,
-  }) {
+  SignupState copyWith({bool? isSigningUp, String? recaptchaResponse}) {
     return SignupState(
       isSigningUp: isSigningUp ?? this.isSigningUp,
       recaptchaResponse: recaptchaResponse ?? this.recaptchaResponse,

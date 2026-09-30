@@ -41,7 +41,10 @@ abstract class Utils {
     final List<Map<String, dynamic>> stateObj = [{}];
     final params = <String, dynamic>{};
     if (entityId != null) {
-      params['entityId'] = entityId.toJson();
+      params['entityId'] = {
+        'entityType': entityId.entityType.name,
+        'id': entityId.id,
+      };
     }
     if (entityName != null) {
       params['entityName'] = entityName;
@@ -60,24 +63,6 @@ abstract class Utils {
       return String.fromCharCode(int.parse(p1, radix: 16));
     });
     return Uri.encodeComponent(base64.encode(utf8.encode(encodedUri)));
-  }
-
-  static String? contactToShortAddress(ContactBased contact) {
-    final addressParts = <String>[];
-    if (contact.country != null) {
-      addressParts.add(contact.country!);
-    }
-    if (contact.city != null) {
-      addressParts.add(contact.city!);
-    }
-    if (contact.address != null) {
-      addressParts.add(contact.address!);
-    }
-    if (addressParts.isNotEmpty) {
-      return addressParts.join(', ');
-    } else {
-      return null;
-    }
   }
 
   static Widget imageFromTbImage(
@@ -101,9 +86,9 @@ abstract class Utils {
         onError: onError,
       );
     } else {
-       final newImageUrl = _removeTbImagePrefix(imageUrl);
-      if (_isImageResourceUrl(imageUrl)) {
-        final parts = newImageUrl.split('/');
+      final resolvedImageUrl = _removeTbImagePrefix(imageUrl);
+      if (_isImageResourceUrl(resolvedImageUrl)) {
+        final parts = resolvedImageUrl.split('/');
         final key = Uri.encodeComponent(parts[parts.length - 1]);
         String imageLink;
         Map<String, String>? headers;
@@ -139,20 +124,10 @@ abstract class Utils {
           semanticLabel: semanticLabel,
           onError: onError,
         );
-      } else if (_isBase64DataImageUrl(imageUrl)) {
+      } else if (_isBase64DataImageUrl(resolvedImageUrl)) {
         return _imageFromBase64(
           context,
-          imageUrl,
-          color: color,
-          width: width,
-          height: height,
-          semanticLabel: semanticLabel,
-          onError: onError,
-        );
-      } else if (_isValidUrl(imageUrl)) {
-        return _networkImage(
-          context,
-          imageUrl,
+          resolvedImageUrl,
           color: color,
           width: width,
           height: height,
@@ -160,8 +135,20 @@ abstract class Utils {
           onError: onError,
         );
       } else {
-        return _onErrorImage(
+        final imageLink = _resolveNetworkImageLink(resolvedImageUrl);
+        if (imageLink == null) {
+          return _onErrorImage(
+            context,
+            color: color,
+            width: width,
+            height: height,
+            semanticLabel: semanticLabel,
+            onError: onError,
+          );
+        }
+        return _networkImage(
           context,
+          imageLink,
           color: color,
           width: width,
           height: height,
@@ -311,15 +298,30 @@ abstract class Utils {
   }
 
   static String _removeTbImagePrefix(String url) {
-    return url.replaceFirst(_tbImagePrefix, '');
+    return url.startsWith(_tbImagePrefix)
+        ? url.substring(_tbImagePrefix.length)
+        : url;
   }
 
   static bool _isImageResourceUrl(String url) {
     return _imagesUrlRegexp.hasMatch(url);
   }
 
-  static bool _isValidUrl(String url) {
-    return Uri.tryParse(url) != null;
+  /// HTTP(S) links are fetched as they are. Root-relative links, such as an
+  /// image public link, are resolved against the active endpoint. Anything
+  /// else has no meaningful target and is rendered as a missing image.
+  static String? _resolveNetworkImageLink(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      return null;
+    }
+    if (uri.scheme == 'http' || uri.scheme == 'https') {
+      return url;
+    }
+    if (!uri.hasScheme && url.startsWith('/')) {
+      return getIt<IEndpointService>().getCachedEndpoint() + url;
+    }
+    return null;
   }
 
   static double degreesToRadians(double degrees) {

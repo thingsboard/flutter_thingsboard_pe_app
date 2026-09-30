@@ -12,9 +12,8 @@ import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_ser
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
 class EmailVerificationPage extends StatefulWidget {
-
- const EmailVerificationPage({super.key, required String email})
-      : _email = email;
+  const EmailVerificationPage({super.key, required String email})
+    : _email = email;
   final String _email;
 
   @override
@@ -132,23 +131,22 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   }
 
   Future<void> _resendEmail() async {
-    getIt<ITbClientService>().client
-    .getSignupService().resendEmailActivation(
-          widget._email,
+    await getIt<ITbClientService>().client
+        .getSignUpControllerApi()
+        .resendEmailActivation(
+          email: widget._email,
           pkgName: getIt<IDeviceInfoService>().getApplicationId(),
-          platform: getIt<IDeviceInfoService>().getPlatformType(),
+          platform: getIt<IDeviceInfoService>().getPlatformType().name,
         );
 
-   getIt<ThingsboardAppRouter>().navigateTo(
+    getIt<ThingsboardAppRouter>().navigateTo(
       '/emailVerification?email=${Uri.encodeComponent(widget._email)}',
       replace: true,
     );
-    if(mounted) {
-getIt<IOverlayService>().showSuccessNotification(
-  (_) => 
-      S.of(context).emailVersificationSuccessfullySentNotification,
-    );
+    if (mounted) {
+      getIt<IOverlayService>().showSuccessNotification(
+        (_) => S.of(context).emailVersificationSuccessfullySentNotification,
+      );
     }
-   
   }
 }

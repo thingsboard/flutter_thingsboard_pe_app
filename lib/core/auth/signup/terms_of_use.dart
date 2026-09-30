@@ -4,7 +4,6 @@ import 'package:thingsboard_app/config/routes/router.dart';
 import 'package:thingsboard_app/core/context/tb_context_widget.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
-import 'package:thingsboard_app/thingsboard_client.dart' show MobileInfoQuery;
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/utils/utils.dart';
@@ -25,13 +24,12 @@ class _TermsOfUseState extends State<TermsOfUse> {
   void initState() {
     super.initState();
     termsOfUseFuture = getIt<ITbClientService>().client
-        .getSelfRegistrationService()
+        .getSelfRegistrationControllerApi()
         .getTermsOfUse(
-          query: MobileInfoQuery(
-            packageName: getIt<IDeviceInfoService>().getApplicationId(),
-            platformType: getIt<IDeviceInfoService>().getPlatformType(),
-          ),
-        );
+          pkgName: getIt<IDeviceInfoService>().getApplicationId(),
+          platform: getIt<IDeviceInfoService>().getPlatformType(),
+        )
+        .then((r) => r.data);
   }
 
   @override

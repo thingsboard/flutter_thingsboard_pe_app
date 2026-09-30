@@ -4,6 +4,7 @@ import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/alarm/presentation/bloc/alarm_types/bloc.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
+import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/widgets/tb_progress_indicator.dart';
 
 class TypesListWidget extends StatelessWidget {
@@ -13,6 +14,7 @@ class TypesListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customTranslationService = getIt<ICustomTranslationService>();
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.7,
@@ -49,7 +51,7 @@ class TypesListWidget extends StatelessWidget {
               ),
             ),
             Flexible(
-              child: PagedListView<PageLink, AlarmType>.separated(
+              child: PagedListView<PageLink, EntitySubtype>.separated(
                 pagingController:
                     getIt<AlarmTypesBloc>()
                         .paginationRepository
@@ -66,7 +68,7 @@ class TypesListWidget extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).pop();
                         getIt<AlarmTypesBloc>().add(
-                          AlarmTypesSelectedEvent(type: item.type),
+                          AlarmTypesSelectedEvent(type: item.type ?? ''),
                         );
                         onChanged();
                       },
@@ -74,7 +76,7 @@ class TypesListWidget extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              item.type,
+                              customTranslationService.translate(item.type),
                               style: const TextStyle(fontSize: 16, height: 1.5),
                             ),
                           ),
