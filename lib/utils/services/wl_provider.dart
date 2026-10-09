@@ -63,7 +63,13 @@ abstract class WlState with _$WlState {
           : loginWhiteLabelingParams.platformVersion) ??
       '';
 
-  String get platformNameAndVersion => '$platformName v.$platformVersion';
+  // A version left at the web UI's default is stored as null ("the running
+  // server version"); before login, or when the lookup fails, it is unknown,
+  // so only the name is shown rather than a made-up version.
+  String get platformNameAndVersion =>
+      platformVersion.isEmpty
+          ? platformName
+          : '$platformName v.$platformVersion';
 
   bool get isCustomLogo =>
       isUserWlMode
@@ -156,8 +162,7 @@ class Wl extends _$Wl {
           ..helpLinkBaseUrl = 'https://thingsboard.io'
           ..enableHelpLinks = true
           ..showNameVersion = false
-          ..platformName = 'ThingsBoard'
-          ..platformVersion = '3.4.1PE',
+          ..platformName = 'ThingsBoard',
   );
 
   static LoginWhiteLabelingParams _createDefaultLoginWlParams() {
@@ -181,7 +186,6 @@ class Wl extends _$Wl {
             ..enableHelpLinks = true
             ..showNameVersion = false
             ..platformName = 'ThingsBoard'
-            ..platformVersion = '3.4.1PE'
             ..pageBackgroundColor = '#eee'
             ..darkForeground = false,
     );

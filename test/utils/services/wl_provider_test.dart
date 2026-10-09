@@ -205,18 +205,19 @@ void main() {
       await wl.updateWhiteLabeling();
 
       expect(container.read(wlProvider).isUserWlMode, isTrue);
-      expect(container.read(wlProvider).platformVersion, '3.4.1PE');
+      expect(container.read(wlProvider).platformNameAndVersion, 'ThingsBoard');
     });
 
-    testWidgets('falls back to the default when the server reports no '
-        'version', (tester) async {
+    testWidgets('shows only the name when the server reports no version', (
+      tester,
+    ) async {
       stubSystemInfo(null);
       final container = makeContainer();
       final wl = await pumpWlProvider(tester, container);
 
       await wl.updateWhiteLabeling();
 
-      expect(container.read(wlProvider).platformVersion, '3.4.1PE');
+      expect(container.read(wlProvider).platformNameAndVersion, 'ThingsBoard');
     });
 
     testWidgets('is taken from the running server when the white-label '
