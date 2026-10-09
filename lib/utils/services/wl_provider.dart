@@ -1,6 +1,7 @@
 // ignore_for_file: parameter_assignments
 
 import 'package:built_collection/built_collection.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -20,6 +21,7 @@ import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
+import 'package:thingsboard_app/utils/silent_request.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 part 'wl_provider.g.dart';
 part 'wl_provider.freezed.dart';
@@ -296,8 +298,6 @@ class Wl extends _$Wl {
             .getWhiteLabelingControllerApi()
             .getLoginWhiteLabelParams();
     var loginWlParams = response.data;
-    // platformVersion is always on the server side in the new client; no
-    // getPlatformVersion() helper.
     var merged = _mergeLoginDefaults(loginWlParams, _defaultLoginWlParams);
     final loginThemeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final loginLogo = await _updateImages(
@@ -318,7 +318,7 @@ class Wl extends _$Wl {
   Future<void> _loadUserWhiteLabelingParams() async {
     final response =
         await _tbClient.getWhiteLabelingControllerApi().getWhiteLabelParams();
-    var userWlParams = response.data;
+    final userWlParams = await _withServerVersion(response.data);
     var merged = _mergeDefaults(userWlParams, _defaultWLParams);
     final themeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final logo = await _updateImages(
@@ -337,6 +337,49 @@ class Wl extends _$Wl {
     );
     state = state.copyWith(isUserWlMode: true);
   }
+
+  // A null platformVersion in the white-label response means "the running
+  // server version": the web UI fills it from its own bundle, which the app
+  // cannot do.
+  Future<WhiteLabelingParams?> _withServerVersion(
+    WhiteLabelingParams? params,
+  ) async {
+    if (params?.platformVersion != null) {
+      return params;
+    }
+    final serverVersion = await _fetchServerVersion();
+    if (serverVersion == null) {
+      return params;
+    }
+    return (params ?? WhiteLabelingParams((b) => b)).rebuild(
+      (b) => b..platformVersion = serverVersion,
+    );
+  }
+
+  // The endpoint that reports the server version is hidden from the OpenAPI
+  // spec, so the generated client has no accessor for it and it is requested
+  // by path.
+  Future<String?> _fetchServerVersion() async {
+    try {
+      final response = await _tbClient.get<Map<String, dynamic>>(
+        '/api/system/info',
+        options: Options(extra: silentRequestExtra()),
+      );
+      final version = response.data?['version'] as String?;
+      return version == null ? null : _withoutSnapshotSuffix(version);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // The web UI shows the package version, which never carries the Maven
+  // -SNAPSHOT suffix; the server strips it the same way for its API docs.
+  static const _snapshotSuffix = '-SNAPSHOT';
+
+  static String _withoutSnapshotSuffix(String version) =>
+      version.endsWith(_snapshotSuffix)
+          ? version.substring(0, version.length - _snapshotSuffix.length)
+          : version;
 
   Future<Widget> _updateImages(
     BuildContext context,

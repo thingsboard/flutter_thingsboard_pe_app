@@ -11,7 +11,7 @@ class MorePageFooter extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final wl = ref.read(wlProvider);
+    final wl = ref.watch(wlProvider);
     return SizedBox(
       width: double.infinity,
       child: Wrap(
