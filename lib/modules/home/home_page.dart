@@ -3,14 +3,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/locator.dart';
-import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/view/dashboard_permission_error_view.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/view/dashboards_page.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/view/home_dashboard_page.dart';
 import 'package:thingsboard_app/modules/tenant/tenants_widget.dart';
-import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
-import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -59,41 +56,18 @@ class _HomePageState extends ConsumerState<HomePage>
     return _buildDefaultHome(context);
   }
 
- 
-  Widget _buildDashboardHome(
-    BuildContext context,
-    HomeDashboardInfo dashboard,
-  ) {
-    final hasPermission =
-        getIt<IPermissionService>().haveViewDashboardPermission();
-
-    if (hasPermission) {
-      return HomeDashboardPage(dashboard);
-    } else {
-      return const DashboardPermissionErrorView(
-        fullScreen: true,
-        home: true,
-      );
-    }
-  }
-
   Widget _buildDefaultHome(BuildContext context) {
     if (getIt<ITbClientService>().client.isSystemAdmin()) {
       return _buildSysAdminHome(context);
     } else {
-      final hasPermission =
-          getIt<IPermissionService>().haveViewDashboardPermission(
-
+      final hasPermission = ref.watch(
+        loginProvider.select((s) => s.canReadDashboards),
       );
 
       if (hasPermission) {
         return const DashboardsPage();
       } else {
-        return const DashboardPermissionErrorView(
- 
-          fullScreen: true,
-          home: true,
-        );
+        return const DashboardPermissionErrorView(fullScreen: true, home: true);
       }
     }
   }

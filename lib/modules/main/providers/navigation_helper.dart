@@ -132,10 +132,7 @@ class NavigationHelper {
           EntityType.CUSTOMER,
         );
       case Pages.dashboards:
-        return permissions.hasReadGenericOrSharedGroupsPermission(
-          Resource.DASHBOARD,
-          EntityType.DASHBOARD,
-        );
+        return login.canReadDashboards;
       case Pages.audit_logs:
         return permissions.hasReadGenericPermission(Resource.AUDIT_LOG);
       case Pages.home:

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/di/dashboards_di.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashboard_controller.dart';
@@ -8,10 +10,9 @@ import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard_widget.dart';
 import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
-import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
-class SingleDashboardView extends StatefulWidget {
+class SingleDashboardView extends ConsumerStatefulWidget {
   const SingleDashboardView({
     required this.id,
     this.title,
@@ -26,10 +27,11 @@ class SingleDashboardView extends StatefulWidget {
   final bool? hideToolbar;
 
   @override
-  State<StatefulWidget> createState() => _SingleDashboardViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _SingleDashboardViewState();
 }
 
-class _SingleDashboardViewState extends State<SingleDashboardView>
+class _SingleDashboardViewState extends ConsumerState<SingleDashboardView>
     with TickerProviderStateMixin {
   final dashboardTitleValue = ValueNotifier<String>('Dashboard');
   final hasRightLayout = ValueNotifier(false);
@@ -134,8 +136,7 @@ class _SingleDashboardViewState extends State<SingleDashboardView>
   @override
   void initState() {
     super.initState();
-    havePermission = getIt<IPermissionService>()
-        .haveViewDashboardPermission();
+    havePermission = ref.read(loginProvider).canReadDashboards;
 
     diKey = UniqueKey().toString();
     DashboardsDi.init(diKey, tbClient: getIt<ITbClientService>().client);
