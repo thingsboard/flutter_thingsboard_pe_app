@@ -1,0 +1,34 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:thingsboard_app/core/auth/noauth/data/model/switch_endpoint_args.dart';
+import 'package:thingsboard_app/core/auth/noauth/provider/noauth_provider.dart';
+
+void main() {
+  group('resolveSwitchHost', () {
+    const previousEndpoint = 'https://previous';
+
+    test('normalizes the host given in the link', () {
+      final args = SwitchEndpointArgs(
+        host: 'https://h/',
+        uri: Uri.parse('https://other/qr'),
+      );
+
+      expect(resolveSwitchHost(args, previousEndpoint), 'https://h');
+    });
+
+    test('falls back to the origin of an http(s) link', () {
+      final args = SwitchEndpointArgs(
+        uri: Uri.parse('https://h:8080/api/noauth/qr?secret=s'),
+      );
+
+      expect(resolveSwitchHost(args, previousEndpoint), 'https://h:8080');
+    });
+
+    test('keeps the previous endpoint for a custom-scheme link', () {
+      final args = SwitchEndpointArgs(
+        uri: Uri.parse('thingsboard://login?secret=s'),
+      );
+
+      expect(resolveSwitchHost(args, previousEndpoint), previousEndpoint);
+    });
+  });
+}
