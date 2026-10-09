@@ -98,11 +98,11 @@ class NavigationHelper {
   /// on purpose: a permissions hiccup must not lock the user out of navigation.
   /// This differs from `LoginState.hasGenericPermission`, which fails closed
   /// because it guards actions rather than menu entries.
+  ///
+  /// SYS_ADMIN is decided by [_isAllowedForSysAdmin] before any of the above.
   static bool isPageVisible(PageLayout pageLayout, LoginState login) {
-    // Sysadmins have no RBAC roles: their pages come from the system-tenant
-    // bundle (or the sysadmin default layout) and are shown as configured.
     if (login.userScope == Authority.SYS_ADMIN) {
-      return true;
+      return _isAllowedForSysAdmin(pageLayout);
     }
     final permissions = login.userPermissions;
     if (permissions == null) {
@@ -147,6 +147,28 @@ class NavigationHelper {
       case Pages.undefined:
       case null:
         return true;
+    }
+  }
+
+  /// SYS_ADMIN's generic permissions don't reflect what the tenant endpoints
+  /// allow (they answer 403), so only the built-in pages served to sysadmins
+  /// are allowed, plus custom pages the sysadmin configured.
+  static bool _isAllowedForSysAdmin(PageLayout pageLayout) {
+    switch (pageLayout.id) {
+      case Pages.home:
+      case Pages.notifications:
+      case Pages.audit_logs:
+      case Pages.undefined:
+      case null:
+        return true;
+      case Pages.alarms:
+      case Pages.devices:
+      case Pages.customers:
+      case Pages.assets:
+      case Pages.device_list:
+      case Pages.dashboards:
+      case Pages.live_location_tracking:
+        return false;
     }
   }
 

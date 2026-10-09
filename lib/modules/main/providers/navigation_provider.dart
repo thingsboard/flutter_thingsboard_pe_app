@@ -86,8 +86,11 @@ class Navigation extends _$Navigation {
       ];
 
       if (authority == Authority.SYS_ADMIN) {
-        _pagesLayout.add(const PageLayout(id: Pages.notifications));
-        _pagesLayout.removeWhere((e) => e.id == Pages.alarms);
+        _pagesLayout = [
+          const PageLayout(id: Pages.home),
+          const PageLayout(id: Pages.notifications),
+          const PageLayout(id: Pages.audit_logs),
+        ];
       } else if (authority == Authority.TENANT_ADMIN) {
         _pagesLayout.addAll([
           const PageLayout(id: Pages.customers),
