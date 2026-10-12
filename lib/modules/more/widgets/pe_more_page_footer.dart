@@ -19,7 +19,9 @@ class MorePageFooter extends ConsumerWidget {
         direction: wl.showNameBottom ?? false ? Axis.horizontal : Axis.vertical,
         alignment: WrapAlignment.spaceBetween,
         children: [
-          if (wl.showNameVersion ?? false) Text(wl.platformNameAndVersion,  style: TbTextStyles.bodyMedium),
+          if ((wl.showNameVersion ?? false) &&
+              wl.platformNameAndVersion.isNotEmpty)
+            Text(wl.platformNameAndVersion,  style: TbTextStyles.bodyMedium),
           appVersionInfo(),
         ],
       ),

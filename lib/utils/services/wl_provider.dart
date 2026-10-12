@@ -65,11 +65,11 @@ abstract class WlState with _$WlState {
 
   // A version left at the web UI's default is stored as null ("the running
   // server version"); before login, or when the lookup fails, it is unknown,
-  // so only the name is shown rather than a made-up version.
-  String get platformNameAndVersion =>
-      platformVersion.isEmpty
-          ? platformName
-          : '$platformName v.$platformVersion';
+  // so it is left out rather than made up.
+  String get platformNameAndVersion => [
+    if (platformName.isNotEmpty) platformName,
+    if (platformVersion.isNotEmpty) 'v.$platformVersion',
+  ].join(' ');
 
   bool get isCustomLogo =>
       isUserWlMode
@@ -259,10 +259,12 @@ class Wl extends _$Wl {
             ..helpLinkBaseUrl = mergedBase.helpLinkBaseUrl
             ..enableHelpLinks = mergedBase.enableHelpLinks
             ..showNameVersion = mergedBase.showNameVersion
-            ..platformName = mergedBase.platformName
-            ..platformVersion = mergedBase.platformVersion
+            // Left unset, the web login fills these from its own bundle, which
+            // the app cannot; only values the admin typed in are shown.
+            ..platformName = wlParams!.platformName
+            ..platformVersion = wlParams.platformVersion
             ..pageBackgroundColor =
-                wlParams!.pageBackgroundColor ??
+                wlParams.pageBackgroundColor ??
                 defaultWlParams.pageBackgroundColor
             ..darkForeground =
                 wlParams.darkForeground ?? defaultWlParams.darkForeground
