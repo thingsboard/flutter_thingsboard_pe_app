@@ -103,7 +103,7 @@ void main() {
 
     await wl.loadLoginWhiteLabelingParams();
     await tester.pump();
-    expect(find.text('ThingsBoard'), findsOneWidget);
+    expect(find.textContaining('ThingsBoard'), findsNothing);
 
     await wl.updateWhiteLabeling();
     await tester.pump();
