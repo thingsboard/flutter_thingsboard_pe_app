@@ -345,7 +345,11 @@ class Wl extends _$Wl {
     ThemeData themeData,
     bool isLogin,
   ) async {
-    final double height = (wlParams.logoImageHeight ?? 36).toDouble() / 3 * 2;
+    final logoImageHeight = (wlParams.logoImageHeight ?? 36).toDouble();
+    // The login logo matches the web, where the height is set in px; the app
+    // bar logo keeps its smaller scale.
+    final double height =
+        isLogin ? logoImageHeight.clamp(1, 200) : logoImageHeight / 3 * 2;
     if (wlParams.logoImageUrl == defaultLogoUrl) {
       Region? region;
       return SvgPicture.asset(

@@ -144,7 +144,9 @@ class TbTextField extends HookWidget {
 
                   icon: Icon(
                     !isVisible.value ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.iconDisabled,
+                    color:
+                        Theme.of(context).inputDecorationTheme.suffixIconColor ??
+                        AppColors.iconDisabled,
                     size: 24,
                   ),
 

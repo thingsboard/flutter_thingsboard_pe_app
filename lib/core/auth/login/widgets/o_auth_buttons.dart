@@ -23,6 +23,10 @@ class OAuthButtons extends StatelessWidget {
             OAuthButton(
               logo: SvgPicture.asset(
                 ThingsboardImage.oauth2Logos['qr-code-logo']!,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primary,
+                  BlendMode.srcIn,
+                ),
               ),
               onTap: () => onButtonPressed(clients.first),
               title: S.of(context).scanQrCode,
