@@ -1,5 +1,7 @@
 // ignore_for_file: parameter_assignments
 
+import 'dart:async';
+
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,6 +17,7 @@ import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 
 import 'package:thingsboard_app/core/context/tb_context.dart';
+import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/core/select_region/model/region.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
@@ -25,6 +28,7 @@ part 'wl_provider.g.dart';
 part 'wl_provider.freezed.dart';
 
 const defaultLogoUrl = 'LOGO-PE';
+const wlPollInterval = Duration(seconds: 30);
 
 @freezed
 abstract class WlState with _$WlState {
@@ -98,13 +102,33 @@ class Wl extends _$Wl {
   // (PROD-8879).
   ThingsboardClient get _tbClient => getIt<ITbClientService>().client;
   late ProviderSubscription<LoginState> _subscription;
+  late AppLifecycleListener _lifecycleListener;
+  Timer? _pollTimer;
+  bool _isPolling = false;
+
+  // The last params turned into theme and logo, so a poll that returns the
+  // same params skips the rebuild of the whole MaterialApp. Login and user
+  // params are different types, so switching mode always re-applies.
+  Object? _appliedParams;
+
   @override
   WlState build() {
     _subscription = ref.listen(loginProvider, (prev, next) {
       print('wl update');
       updateWhiteLabeling();
     });
-    ref.onDispose(() => _subscription.close());
+    // The server has no push channel for white-labeling changes, so they are
+    // picked up by polling while the app is visible (PROD-8928).
+    _startPolling();
+    _lifecycleListener = AppLifecycleListener(
+      onShow: _startPolling,
+      onHide: _stopPolling,
+    );
+    ref.onDispose(() {
+      _subscription.close();
+      _stopPolling();
+      _lifecycleListener.dispose();
+    });
     return WlState(
       loginWhiteLabelingParams: _defaultLoginWlParams,
       userParams: _defaultWLParams,
@@ -269,6 +293,28 @@ class Wl extends _$Wl {
     );
   }
 
+  void _startPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(wlPollInterval, (_) => _poll());
+  }
+
+  void _stopPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
+  }
+
+  Future<void> _poll() async {
+    if (_isPolling) return;
+    _isPolling = true;
+    try {
+      await updateWhiteLabeling();
+    } catch (e, s) {
+      getIt<TbLogger>().debug('White-labeling poll failed', e, s);
+    } finally {
+      _isPolling = false;
+    }
+  }
+
   static bool _isEmpty(String? str) {
     return str == null || str.isEmpty;
   }
@@ -299,6 +345,7 @@ class Wl extends _$Wl {
     // platformVersion is always on the server side in the new client; no
     // getPlatformVersion() helper.
     var merged = _mergeLoginDefaults(loginWlParams, _defaultLoginWlParams);
+    if (merged == _appliedParams) return;
     final loginThemeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final loginLogo = await _updateImages(
       context ?? globalNavigatorKey.currentContext!,
@@ -313,6 +360,7 @@ class Wl extends _$Wl {
       logo: loginLogo,
       isUserWlMode: false,
     );
+    _appliedParams = merged;
   }
 
   Future<void> _loadUserWhiteLabelingParams() async {
@@ -320,6 +368,7 @@ class Wl extends _$Wl {
         await _tbClient.getWhiteLabelingControllerApi().getWhiteLabelParams();
     var userWlParams = response.data;
     var merged = _mergeDefaults(userWlParams, _defaultWLParams);
+    if (merged == _appliedParams) return;
     final themeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final logo = await _updateImages(
       globalNavigatorKey.currentContext!,
@@ -336,6 +385,7 @@ class Wl extends _$Wl {
       isUserWlMode: true,
     );
     state = state.copyWith(isUserWlMode: true);
+    _appliedParams = merged;
   }
 
   Future<Widget> _updateImages(
