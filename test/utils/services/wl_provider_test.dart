@@ -30,7 +30,24 @@ class FakeLogin extends Login {
   @override
   LoginState build() =>
       const LoginState(isUserLoaded: true, userScope: Authority.TENANT_ADMIN);
+
+  void logOut() => state = const LoginState(isUserLoaded: false);
 }
+
+Response<WhiteLabelingParams> wlResponse([
+  void Function(WhiteLabelingParamsBuilder b)? update,
+]) => Response(
+  data: WhiteLabelingParams((b) {
+    b.logoImageUrl = defaultLogoUrl;
+    update?.call(b);
+  }),
+  requestOptions: RequestOptions(),
+);
+
+Response<LoginWhiteLabelingParams> loginWlResponse() => Response(
+  data: LoginWhiteLabelingParams((b) => b..logoImageUrl = defaultLogoUrl),
+  requestOptions: RequestOptions(),
+);
 
 void main() {
   late MockTbClientService clientService;
@@ -52,12 +69,9 @@ void main() {
     when(
       () => staleApi.getWhiteLabelParams(),
     ).thenThrow(ThingsboardError(message: 'Unauthorized!'));
-    when(() => liveApi.getWhiteLabelParams()).thenAnswer(
-      (_) async => Response(
-        data: WhiteLabelingParams((b) => b..logoImageUrl = defaultLogoUrl),
-        requestOptions: RequestOptions(),
-      ),
-    );
+    when(
+      () => liveApi.getWhiteLabelParams(),
+    ).thenAnswer((_) async => wlResponse());
 
     final localDatabase = MockLocalDatabaseService();
     when(
@@ -124,16 +138,18 @@ void main() {
       when(() => clientService.client).thenReturn(liveClient);
     });
 
-    testWidgets('re-fetches white-labeling every 30 seconds', (tester) async {
+    testWidgets('re-fetches white-labeling every poll interval', (
+      tester,
+    ) async {
       final container = await pumpWlProvider(tester);
 
-      await tester.pump(const Duration(seconds: 29));
+      await tester.pump(wlPollInterval - const Duration(seconds: 1));
       verifyNever(() => liveApi.getWhiteLabelParams());
 
       await tester.pump(const Duration(seconds: 1));
       verify(() => liveApi.getWhiteLabelParams()).called(1);
 
-      await tester.pump(const Duration(seconds: 30));
+      await tester.pump(wlPollInterval);
       verify(() => liveApi.getWhiteLabelParams()).called(1);
       container.dispose();
     });
@@ -152,7 +168,7 @@ void main() {
       ]) {
         tester.binding.handleAppLifecycleStateChanged(state);
       }
-      await tester.pump(const Duration(minutes: 5));
+      await tester.pump(wlPollInterval * 10);
       verifyNever(() => liveApi.getWhiteLabelParams());
 
       for (final state in [
@@ -162,7 +178,10 @@ void main() {
       ]) {
         tester.binding.handleAppLifecycleStateChanged(state);
       }
-      await tester.pump(const Duration(seconds: 30));
+      // Coming back to the foreground fetches right away, then on schedule.
+      await tester.pump();
+      verify(() => liveApi.getWhiteLabelParams()).called(1);
+      await tester.pump(wlPollInterval);
       verify(() => liveApi.getWhiteLabelParams()).called(1);
       container.dispose();
     });
@@ -176,11 +195,11 @@ void main() {
         onState: (_) => emissions++,
       );
 
-      await tester.pump(const Duration(seconds: 30));
+      await tester.pump(wlPollInterval);
       final emissionsAfterFirstLoad = emissions;
-      expect(emissionsAfterFirstLoad, greaterThan(0));
+      expect(emissionsAfterFirstLoad, 1);
 
-      await tester.pump(const Duration(seconds: 30));
+      await tester.pump(wlPollInterval);
       verify(() => liveApi.getWhiteLabelParams()).called(2);
       expect(emissions, emissionsAfterFirstLoad);
       container.dispose();
@@ -188,20 +207,12 @@ void main() {
 
     testWidgets('a changed response is applied', (tester) async {
       final container = await pumpWlProvider(tester);
-      await tester.pump(const Duration(seconds: 30));
+      await tester.pump(wlPollInterval);
 
-      when(() => liveApi.getWhiteLabelParams()).thenAnswer(
-        (_) async => Response(
-          data: WhiteLabelingParams(
-            (b) =>
-                b
-                  ..logoImageUrl = defaultLogoUrl
-                  ..appTitle = 'Acme IoT',
-          ),
-          requestOptions: RequestOptions(),
-        ),
-      );
-      await tester.pump(const Duration(seconds: 30));
+      when(
+        () => liveApi.getWhiteLabelParams(),
+      ).thenAnswer((_) async => wlResponse((b) => b.appTitle = 'Acme IoT'));
+      await tester.pump(wlPollInterval);
 
       expect(container.read(wlProvider).wlParams.appTitle, 'Acme IoT');
       container.dispose();
@@ -215,8 +226,8 @@ void main() {
         () => liveApi.getWhiteLabelParams(),
       ).thenThrow(ThingsboardError(message: 'Network error'));
 
-      await tester.pump(const Duration(seconds: 30));
-      await tester.pump(const Duration(seconds: 30));
+      await tester.pump(wlPollInterval);
+      await tester.pump(wlPollInterval);
 
       verify(() => liveApi.getWhiteLabelParams()).called(2);
       container.dispose();
@@ -231,17 +242,66 @@ void main() {
       ).thenAnswer((_) => slowResponse.future);
       final container = await pumpWlProvider(tester);
 
-      await tester.pump(const Duration(seconds: 90));
+      await tester.pump(wlPollInterval + const Duration(seconds: 1));
       verify(() => liveApi.getWhiteLabelParams()).called(1);
 
-      slowResponse.complete(
-        Response(
-          data: WhiteLabelingParams((b) => b..logoImageUrl = defaultLogoUrl),
-          requestOptions: RequestOptions(),
-        ),
-      );
-      await tester.pump(const Duration(seconds: 30));
+      slowResponse.complete(wlResponse());
+      await tester.pump(wlPollInterval);
       verify(() => liveApi.getWhiteLabelParams()).called(1);
+      container.dispose();
+    });
+
+    testWidgets('a request that never completes does not stop polling', (
+      tester,
+    ) async {
+      // What a stalled connection looks like: the client has no receive
+      // timeout, so the request neither completes nor fails.
+      final hungResponse = Completer<Response<WhiteLabelingParams>>();
+      when(
+        () => liveApi.getWhiteLabelParams(),
+      ).thenAnswer((_) => hungResponse.future);
+      final container = await pumpWlProvider(tester);
+
+      await tester.pump(wlPollInterval);
+      verify(() => liveApi.getWhiteLabelParams()).called(1);
+
+      when(
+        () => liveApi.getWhiteLabelParams(),
+      ).thenAnswer((_) async => wlResponse());
+      // The hung fetch is given up after one interval, and the next tick
+      // fetches again.
+      await tester.pump(wlPollInterval);
+      await tester.pump(wlPollInterval);
+      verify(() => liveApi.getWhiteLabelParams()).called(1);
+      container.dispose();
+    });
+
+    testWidgets('a user response landing after a logout does not replace '
+        'the login white-labeling', (tester) async {
+      final slowUserResponse = Completer<Response<WhiteLabelingParams>>();
+      when(
+        () => liveApi.getWhiteLabelParams(),
+      ).thenAnswer((_) => slowUserResponse.future);
+      when(
+        () => liveApi.getLoginWhiteLabelParams(),
+      ).thenAnswer((_) async => loginWlResponse());
+      final container = await pumpWlProvider(tester);
+
+      await tester.pump(wlPollInterval);
+      verify(() => liveApi.getWhiteLabelParams()).called(1);
+
+      (container.read(loginProvider.notifier) as FakeLogin).logOut();
+      await tester.pump();
+      await tester.pump();
+      verify(() => liveApi.getLoginWhiteLabelParams()).called(1);
+      expect(container.read(wlProvider).isUserWlMode, isFalse);
+
+      slowUserResponse.complete(wlResponse((b) => b.appTitle = 'Stale'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(container.read(wlProvider).isUserWlMode, isFalse);
+      expect(container.read(wlProvider).userParams.appTitle, isNot('Stale'));
       container.dispose();
     });
   });

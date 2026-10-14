@@ -104,7 +104,7 @@ class Wl extends _$Wl {
   late ProviderSubscription<LoginState> _subscription;
   late AppLifecycleListener _lifecycleListener;
   Timer? _pollTimer;
-  bool _isPolling = false;
+  bool _isFetchInFlight = false;
 
   // The last params turned into theme and logo, so a poll that returns the
   // same params skips the rebuild of the whole MaterialApp. Login and user
@@ -114,14 +114,13 @@ class Wl extends _$Wl {
   @override
   WlState build() {
     _subscription = ref.listen(loginProvider, (prev, next) {
-      print('wl update');
       updateWhiteLabeling();
     });
     // The server has no push channel for white-labeling changes, so they are
     // picked up by polling while the app is visible (PROD-8928).
     _startPolling();
     _lifecycleListener = AppLifecycleListener(
-      onShow: _startPolling,
+      onShow: _resumePolling,
       onHide: _stopPolling,
     );
     ref.onDispose(() {
@@ -298,20 +297,31 @@ class Wl extends _$Wl {
     _pollTimer = Timer.periodic(wlPollInterval, (_) => _poll());
   }
 
+  // Coming back to the app is when a change made in the web UI is most
+  // likely to be looked for, so it is fetched right away rather than at the
+  // next tick.
+  void _resumePolling() {
+    _startPolling();
+    unawaited(_poll());
+  }
+
   void _stopPolling() {
     _pollTimer?.cancel();
     _pollTimer = null;
   }
 
+  // The client sets no receive timeout, so a request that stalls after
+  // connecting would otherwise keep the in-flight guard set and end polling
+  // for the rest of the session.
   Future<void> _poll() async {
-    if (_isPolling) return;
-    _isPolling = true;
+    if (_isFetchInFlight) return;
+    _isFetchInFlight = true;
     try {
-      await updateWhiteLabeling();
+      await updateWhiteLabeling().timeout(wlPollInterval);
     } catch (e, s) {
       getIt<TbLogger>().debug('White-labeling poll failed', e, s);
     } finally {
-      _isPolling = false;
+      _isFetchInFlight = false;
     }
   }
 
@@ -354,6 +364,9 @@ class Wl extends _$Wl {
       loginThemeData,
       true,
     );
+    // A poll started before a login must not paint the login look over the
+    // user white-labeling that the login listener applied meanwhile.
+    if (ref.read(loginProvider).isFullyAuthenticated()) return;
     state = state.copyWith(
       loginWhiteLabelingParams: merged,
       theme: loginThemeData,
@@ -377,14 +390,16 @@ class Wl extends _$Wl {
       themeData,
       false,
     );
-
+    // The reverse of the check in loadLoginWhiteLabelingParams: a poll
+    // started before a logout must not bring the user look back to the login
+    // screen.
+    if (!ref.read(loginProvider).isFullyAuthenticated()) return;
     state = state.copyWith(
       userParams: merged,
       theme: themeData,
       logo: logo,
       isUserWlMode: true,
     );
-    state = state.copyWith(isUserWlMode: true);
     _appliedParams = merged;
   }
 
