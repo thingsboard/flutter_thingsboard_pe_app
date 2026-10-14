@@ -9,11 +9,11 @@ import 'package:thingsboard_app/config/themes/app_colors.dart';
 import 'package:thingsboard_app/modules/notification/widgets/notification_icon.dart';
 import 'package:thingsboard_app/utils/services/notification_icon_renderer.dart';
 
-/// Shows a push message as a local notification when the app is in the
-/// background or terminated. The FCM SDK's default tray notification is
-/// suppressed natively ([TbFirebaseMessagingService] strips the notification
-/// payload from the intent), so this handler is the only place such messages
-/// are rendered — with the icon configured in the notification template.
+/// Upgrades a background push with the icon configured in the notification
+/// template. TbFirebaseMessagingService has already posted a plain
+/// notification for it (and stripped the payload so the FCM SDK does not post
+/// another); showing again with the same tag and id replaces that one in
+/// place. If this isolate never runs, the plain notification stays.
 ///
 /// Must be a top-level function annotated with `vm:entry-point`: it runs in
 /// a dedicated background isolate without the app's DI, and the plugin
@@ -22,6 +22,22 @@ import 'package:thingsboard_app/utils/services/notification_icon_renderer.dart';
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await PushNotificationDisplay.initialize();
   await PushNotificationDisplay.show(message);
+  debugPrint('TbPush: re-posted ${message.messageId} with the template icon');
+}
+
+/// The id TbFirebaseMessagingService posts the plain notification under, so
+/// the Dart re-post replaces it: Java's String.hashCode of the message id.
+/// Falls back to the notification's hash when the message has no id.
+int notificationIdFor(RemoteMessage message) {
+  final messageId = message.messageId;
+  if (messageId == null) {
+    return message.notification.hashCode;
+  }
+  var hash = 0;
+  for (final unit in messageId.codeUnits) {
+    hash = (31 * hash + unit) & 0xFFFFFFFF;
+  }
+  return hash >= 0x80000000 ? hash - 0x100000000 : hash;
 }
 
 /// Renders push messages via flutter_local_notifications. Kept free of GetIt
@@ -58,7 +74,7 @@ abstract final class PushNotificationDisplay {
     }
 
     await (plugin ?? PushNotificationDisplay.plugin).show(
-      notification.hashCode,
+      notificationIdFor(message),
       notification.title,
       notification.body,
       await _detailsFor(message),
@@ -67,8 +83,9 @@ abstract final class PushNotificationDisplay {
   }
 
   static Future<NotificationDetails> _detailsFor(RemoteMessage message) async {
+    final tag = message.messageId;
     final defaultDetails = NotificationDetails(
-      android: _androidDetails(),
+      android: _androidDetails(tag: tag),
       iOS: const DarwinNotificationDetails(),
     );
 
@@ -91,7 +108,10 @@ abstract final class PushNotificationDisplay {
       }
 
       return NotificationDetails(
-        android: _androidDetails(largeIcon: ByteArrayAndroidBitmap(iconBytes)),
+        android: _androidDetails(
+          tag: tag,
+          largeIcon: ByteArrayAndroidBitmap(iconBytes),
+        ),
         iOS:
             Platform.isIOS
                 ? DarwinNotificationDetails(
@@ -109,7 +129,10 @@ abstract final class PushNotificationDisplay {
     }
   }
 
+  // Channel id, name and importance are duplicated in
+  // TbFirebaseMessagingService; keep them in step.
   static AndroidNotificationDetails _androidDetails({
+    String? tag,
     AndroidBitmap<Object>? largeIcon,
   }) {
     return AndroidNotificationDetails(
@@ -122,6 +145,9 @@ abstract final class PushNotificationDisplay {
       // translate-me-ignore-next-line
       channelDescription: 'This channel is used for general notifications',
       showWhen: false,
+      tag: tag,
+      // The plain notification already alerted; the upgrade must not again.
+      onlyAlertOnce: true,
       largeIcon: largeIcon,
     );
   }
