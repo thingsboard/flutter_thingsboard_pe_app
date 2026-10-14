@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:thingsboard_app/core/auth/login/di/login_di.dart';
-import 'package:thingsboard_app/core/auth/login/login_theme.dart';
 import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/core/auth/login/widgets/full_screen_loader.dart';
@@ -18,8 +17,8 @@ class LoginPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loginState = ref.watch(loginProvider);
-    final darkForeground =
-        ref.watch(wlProvider).loginWhiteLabelingParams.darkForeground ?? false;
+    final wl = ref.watch(wlProvider);
+    final darkForeground = wl.loginWhiteLabelingParams.darkForeground ?? false;
     final isUserLoading = useState(false);
     useEffect(() {
       LoginDi.init();
@@ -30,7 +29,7 @@ class LoginPage extends HookConsumerWidget {
       handleUserLoading(loginState, isUserLoading);
     }, [loginState]);
     return Theme(
-      data: loginTheme(Theme.of(context), darkForeground: darkForeground),
+      data: wl.loginTheme,
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value:
             darkForeground

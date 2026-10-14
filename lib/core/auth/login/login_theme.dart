@@ -4,7 +4,7 @@ import 'package:thingsboard_app/config/themes/tb_text_styles.dart';
 /// Mirrors the web login page: the page is painted with the primary palette,
 /// the sign-in button with the accent palette, and text and icons are light
 /// unless login white-labeling turns on "Dark foreground".
-ThemeData loginTheme(ThemeData base, {required bool darkForeground}) {
+ThemeData loginPageTheme(ThemeData base, {required bool darkForeground}) {
   final foreground = darkForeground ? Colors.black : Colors.white;
   final primary = foreground.withValues(alpha: 0.87);
   final secondary = foreground.withValues(alpha: 0.7);
@@ -40,22 +40,25 @@ ThemeData loginTheme(ThemeData base, {required bool darkForeground}) {
         borderSide: BorderSide(color: primary, width: 2),
       ),
     ),
+    // styleFrom() leaves the disabled state to the Material defaults, so a
+    // disabled sign-in button still looks disabled; the base style fills in
+    // shape, padding and the rest.
     elevatedButtonTheme: ElevatedButtonThemeData(
-      style: base.elevatedButtonTheme.style?.copyWith(
-        backgroundColor: WidgetStatePropertyAll(accent),
-        foregroundColor: WidgetStatePropertyAll(onAccent),
-      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: accent,
+        foregroundColor: onAccent,
+      ).merge(base.elevatedButtonTheme.style),
     ),
     textButtonTheme: TextButtonThemeData(
-      style: base.textButtonTheme.style?.copyWith(
-        foregroundColor: WidgetStatePropertyAll(primary),
-      ),
+      style: TextButton.styleFrom(
+        foregroundColor: primary,
+      ).merge(base.textButtonTheme.style),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
-      style: base.outlinedButtonTheme.style?.copyWith(
-        foregroundColor: WidgetStatePropertyAll(primary),
-        side: WidgetStatePropertyAll(BorderSide(color: border)),
-      ),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: primary,
+        side: BorderSide(color: border),
+      ).merge(base.outlinedButtonTheme.style),
     ),
   );
 }
