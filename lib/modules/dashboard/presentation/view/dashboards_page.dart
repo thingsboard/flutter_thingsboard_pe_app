@@ -23,10 +23,12 @@ class _DashboardsPageState extends ConsumerState<DashboardsPage> {
   late final DashboardPageController dashboardPageCtrl;
 
   late final String diKey;
-  late final bool havePermission;
 
   @override
   Widget build(BuildContext context) {
+    final havePermission = ref.watch(
+      loginProvider.select((s) => s.canReadDashboards),
+    );
     if (!havePermission) {
       return const DashboardPermissionErrorView();
     }
@@ -43,7 +45,6 @@ class _DashboardsPageState extends ConsumerState<DashboardsPage> {
   @override
   void initState() {
     diKey = UniqueKey().toString();
-    havePermission = ref.read(loginProvider).canReadDashboards;
     DashboardsDi.init(diKey, tbClient: getIt<ITbClientService>().client);
     dashboardPageCtrl = DashboardPageController(pageCtrl: pageViewCtrl);
     super.initState();

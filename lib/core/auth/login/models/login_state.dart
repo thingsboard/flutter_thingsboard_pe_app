@@ -31,20 +31,13 @@ abstract class LoginState with _$LoginState {
     }
   }
 
-  bool hasReadGenericOrSharedGroupsPermission(
-    Resource resource,
-    EntityType entityType,
-  ) =>
+  /// Includes shared dashboard groups, so users whose only access is a shared
+  /// group are not locked out of listing and opening dashboards. Fails closed
+  /// like [hasGenericPermission]: it guards the dashboard pages, not the menu.
+  bool get canReadDashboards =>
       userPermissions?.hasReadGenericOrSharedGroupsPermission(
-        resource,
-        entityType,
+        Resource.DASHBOARD,
+        EntityType.DASHBOARD,
       ) ??
       false;
-
-  /// Includes shared dashboard groups, so users whose only access is a shared
-  /// group are not locked out of listing and opening dashboards.
-  bool get canReadDashboards => hasReadGenericOrSharedGroupsPermission(
-    Resource.DASHBOARD,
-    EntityType.DASHBOARD,
-  );
 }

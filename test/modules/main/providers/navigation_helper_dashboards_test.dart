@@ -41,14 +41,12 @@ void main() {
         },
       );
 
-      expect(login.canReadDashboards, isTrue);
       expect(NavigationHelper.isPageVisible(_dashboardsPage, login), isTrue);
     });
 
     test('hides the item from a user without dashboard access', () {
       final login = _customerWith();
 
-      expect(login.canReadDashboards, isFalse);
       expect(NavigationHelper.isPageVisible(_dashboardsPage, login), isFalse);
     });
   });

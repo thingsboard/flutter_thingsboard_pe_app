@@ -34,12 +34,14 @@ class _FullscreenDashboardPageState
   final showBackValue = ValueNotifier<bool>(false);
   late final String diKey;
   DashboardController? _dashboardController;
-  late final bool havePermission;
 
   @override
   Widget build(BuildContext context) {
+    final havePermission = ref.watch(
+      loginProvider.select((s) => s.canReadDashboards),
+    );
     if (!havePermission) {
-      return DashboardPermissionErrorView( fullScreen: true);
+      return DashboardPermissionErrorView(fullScreen: true);
     }
 
     return Scaffold(
@@ -111,7 +113,6 @@ class _FullscreenDashboardPageState
     super.initState();
     diKey = UniqueKey().toString();
     DashboardsDi.init(diKey, tbClient: getIt<ITbClientService>().client);
-    havePermission = ref.read(loginProvider).canReadDashboards;
     dashboardTitleValue = ValueNotifier(
       getIt<ICustomTranslationService>()
           .translate(widget._dashboardTitle ?? 'Dashboard'),

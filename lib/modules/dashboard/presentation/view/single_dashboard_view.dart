@@ -39,12 +39,14 @@ class _SingleDashboardViewState extends ConsumerState<SingleDashboardView>
   late final String diKey;
   late final Animation<double> rightLayoutMenuAnimation;
   late final AnimationController rightLayoutMenuController;
-  late final bool havePermission;
 
   DashboardController? _dashboardController;
 
   @override
   Widget build(BuildContext context) {
+    final havePermission = ref.watch(
+      loginProvider.select((s) => s.canReadDashboards),
+    );
     if (!havePermission) {
       return DashboardPermissionErrorView();
     }
@@ -136,7 +138,6 @@ class _SingleDashboardViewState extends ConsumerState<SingleDashboardView>
   @override
   void initState() {
     super.initState();
-    havePermission = ref.read(loginProvider).canReadDashboards;
 
     diKey = UniqueKey().toString();
     DashboardsDi.init(diKey, tbClient: getIt<ITbClientService>().client);
