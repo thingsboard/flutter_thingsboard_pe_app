@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/core/auth/login/provider/oauth_provider.dart';
 import 'package:thingsboard_app/core/auth/noauth/data/model/switch_endpoint_args.dart';
@@ -74,10 +75,9 @@ final class SwitchEndpointFailure implements Exception {
 /// Only http(s) links carry a host the app can switch to; anything else
 /// (e.g. a custom-scheme link) targets the current endpoint. `Uri.origin`
 /// still throws on an empty host, which the caller's catch turns into the
-/// regular error screen. Only `host=` is normalized: it is taken verbatim from
-/// the link and reaches `reInit` directly, bypassing `EndpointService`, while
-/// `Uri.origin` never ends with a slash and [previousEndpoint] comes from the
-/// already normalized `getEndpoint()`.
+/// regular error screen. `host=` is the one value taken verbatim from the
+/// link, so it is normalized here.
+@visibleForTesting
 String resolveSwitchHost(SwitchEndpointArgs args, String previousEndpoint) {
   final host = args.host;
   if (host != null) {

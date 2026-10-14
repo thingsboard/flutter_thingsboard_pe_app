@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:thingsboard_app/constants/app_constants.dart';
 import 'package:thingsboard_app/core/select_region/model/region.dart';
 import 'package:thingsboard_app/utils/services/endpoint/endpoint_service.dart';
 
@@ -34,6 +35,33 @@ void main() {
       },
     );
 
+    test(
+      'reads the stored endpoint once and serves it from the cache',
+      () async {
+        when(
+          () => database.getSelectedEndpoint(),
+        ).thenAnswer((_) async => 'https://h/');
+
+        await service.getEndpoint();
+        await service.getEndpoint();
+
+        verify(() => database.getSelectedEndpoint()).called(1);
+      },
+    );
+
+    test('falls back to the default endpoint when none is stored', () async {
+      when(() => database.getSelectedEndpoint()).thenAnswer((_) async => null);
+
+      expect(
+        await service.getEndpoint(),
+        ThingsboardAppConstants.thingsBoardApiEndpoint,
+      );
+      expect(
+        service.getCachedEndpoint(),
+        ThingsboardAppConstants.thingsBoardApiEndpoint,
+      );
+    });
+
     test('setEndpoint caches and persists the normalized endpoint', () async {
       await service.setEndpoint(' https://h/tb// ');
 
@@ -41,13 +69,17 @@ void main() {
       verify(() => database.setSelectedEndpoint('https://h/tb')).called(1);
     });
 
-    test(
-      'setEndpoint recognizes a region host given with a trailing slash',
-      () async {
-        await service.setEndpoint('${EndpointService.europeHost}/');
+    for (final (host, region) in [
+      (EndpointService.northAmericaHost, Region.northAmerica),
+      (EndpointService.europeHost, Region.europe),
+      ('https://h', Region.custom),
+    ]) {
+      test('setEndpoint saves $region for $host given with a trailing '
+          'slash', () async {
+        await service.setEndpoint('$host/');
 
-        verify(() => database.saveSelectedRegion(Region.europe)).called(1);
-      },
-    );
+        verify(() => database.saveSelectedRegion(region)).called(1);
+      });
+    }
   });
 }
