@@ -241,10 +241,18 @@ class NotificationService {
     );
   }
 
+  bool _launchNotificationHandled = false;
+
   /// Handles a tap on a locally shown notification that started the app from
   /// the terminated state: such taps don't go through FCM, so
-  /// [FirebaseMessaging.getInitialMessage] doesn't see them.
+  /// [FirebaseMessaging.getInitialMessage] doesn't see them. Unlike that call,
+  /// reading the launch details does not consume them, and `init()` runs again
+  /// on every login, so they are handled once per process.
   Future<void> _handleLocalNotificationAppLaunch() async {
+    if (_launchNotificationHandled) {
+      return;
+    }
+    _launchNotificationHandled = true;
     final launchDetails =
         await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
     final payload = launchDetails?.notificationResponse?.payload;
@@ -342,8 +350,7 @@ class NotificationService {
     _foregroundMessageSubscription = FirebaseMessaging.onMessage.listen((
       message,
     ) {
-      _log.debug('Message:$message');
-      _log.debug('Message data: ${message.data}');
+      _log.debug('Message ${message.messageId}: ${message.data}');
       if (message.sentTime == null) {
         final map = message.toMap();
         map['sentTime'] = DateTime.now().millisecondsSinceEpoch;

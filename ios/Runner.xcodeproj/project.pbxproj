@@ -19,7 +19,6 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		AE47077AF7691EC34DF2AB0C /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DE22ABB0C4CAF854326890 /* Pods_Runner.framework */; };
 		B5AC1A002B6A93FB0044773A /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AC19FF2B6A93FB0044773A /* StoreKit.framework */; };
-		BB9979B9EE40E4F0D503DFDC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7867374AA687ABC59E4C7F39 /* Foundation.framework */; };
 		DDCA1E0D6400FBF4C37CE1BA /* NotificationServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4C37B5D0269ADDFE64528BFA /* NotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FC0E6CDDE527064D175FD926 /* icon_map.json in Resources */ = {isa = PBXBuildFile; fileRef = 1FABF1E6A4D0989564E2FB3B /* icon_map.json */; };
 /* End PBXBuildFile section */
@@ -74,7 +73,6 @@
 		78018924264ABC4000ABF911 /* Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Release.plist"; sourceTree = "<group>"; };
 		78018925264ABC4000ABF911 /* Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Debug.plist"; sourceTree = "<group>"; };
 		7814FBD8267B343200D19461 /* TbWebAuthHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TbWebAuthHandler.swift; sourceTree = "<group>"; };
-		7867374AA687ABC59E4C7F39 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
@@ -104,7 +102,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB9979B9EE40E4F0D503DFDC /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,20 +182,11 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
-		9EF2A6D8AA7DE6C0EC61C6B8 /* iOS */ = {
-			isa = PBXGroup;
-			children = (
-				7867374AA687ABC59E4C7F39 /* Foundation.framework */,
-			);
-			name = iOS;
-			sourceTree = "<group>";
-		};
 		BB4711A7131D70453FCD2E69 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				B5AC19FF2B6A93FB0044773A /* StoreKit.framework */,
 				09DE22ABB0C4CAF854326890 /* Pods_Runner.framework */,
-				9EF2A6D8AA7DE6C0EC61C6B8 /* iOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

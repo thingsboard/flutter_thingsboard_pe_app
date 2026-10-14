@@ -1,5 +1,8 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:thingsboard_app/utils/services/notification_icon_renderer.dart';
 
 void main() {
@@ -17,6 +20,28 @@ void main() {
       expect(bytes, isNotNull);
       expect(bytes!.length, greaterThan(pngSignature.length));
       expect(bytes.sublist(0, pngSignature.length), equals(pngSignature));
+    });
+
+    test('renders an MDI glyph, which comes from a package font', () async {
+      final bytes = await NotificationIconRenderer.renderPng(
+        MdiIcons.bell,
+        const Color(0xFFF44336),
+      );
+
+      expect(bytes!.sublist(0, pngSignature.length), equals(pngSignature));
+    });
+
+    test('renders a square image of the requested size', () async {
+      final bytes = await NotificationIconRenderer.renderPng(
+        Icons.warning,
+        const Color(0xFFF44336),
+        size: 64,
+      );
+      final frame =
+          await (await ui.instantiateImageCodec(bytes!)).getNextFrame();
+
+      expect(frame.image.width, 64);
+      expect(frame.image.height, 64);
     });
   });
 }

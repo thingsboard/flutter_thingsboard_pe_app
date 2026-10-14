@@ -48,6 +48,10 @@ Future<void> main() async {
     log('main::FirebaseService.initializeApp() exception $e', error: e);
   }
 
+  // Android only: TbFirebaseMessagingService suppresses the SDK's own tray
+  // notification so this handler can render it with the icon. On iOS the
+  // system shows the push and the Notification Service Extension attaches the
+  // icon, so a handler there would show every push twice.
   if (UniversalPlatform.isAndroid) {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   }
