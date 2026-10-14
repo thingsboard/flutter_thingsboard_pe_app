@@ -8,6 +8,7 @@ import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_item_data.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_state.dart';
+import 'package:thingsboard_app/modules/main/providers/navigation_helper.dart';
 import 'package:thingsboard_app/modules/main/providers/navigation_provider.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/device_info/i_device_info_service.dart';
@@ -70,6 +71,27 @@ void main() {
         pathsOf(navigationFor(loginAs(Authority.SYS_ADMIN)).bottomBarPages),
         ['/home', '/notifications', '/auditLogs', fullScreenProfile],
       );
+    });
+
+    test('sysadmin default layout lists every page the allowlist admits', () {
+      final sysAdmin = loginAs(Authority.SYS_ADMIN);
+      final allowedPages = {
+        for (final id in Pages.values)
+          if (id != Pages.undefined &&
+              NavigationHelper.isPageVisible(PageLayout(id: id), sysAdmin))
+            id.name,
+      };
+      final navigation = navigationFor(sysAdmin);
+
+      final layoutPages = {
+        for (final item in [
+          ...navigation.bottomBarPages,
+          ...navigation.morePages,
+        ])
+          if (item.id != null) item.id!,
+      };
+
+      expect(layoutPages, allowedPages);
     });
 
     test('tenant admin without a mobile bundle keeps the tenant pages', () {

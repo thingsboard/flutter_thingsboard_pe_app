@@ -6,18 +6,7 @@ import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 
 import 'navigation_test_utils.dart';
 
-const builtInPages = [
-  Pages.home,
-  Pages.alarms,
-  Pages.devices,
-  Pages.customers,
-  Pages.assets,
-  Pages.audit_logs,
-  Pages.notifications,
-  Pages.device_list,
-  Pages.dashboards,
-  Pages.live_location_tracking,
-];
+final builtInPages = Pages.values.where((p) => p != Pages.undefined).toList();
 
 const sysAdminPages = {Pages.home, Pages.notifications, Pages.audit_logs};
 

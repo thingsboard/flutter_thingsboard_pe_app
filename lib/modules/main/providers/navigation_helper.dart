@@ -88,7 +88,8 @@ class NavigationHelper {
     }
   }
 
-  /// Mirrors the web UI's `menuFilters` (PE ui-ngx
+  /// SYS_ADMIN is not RBAC-filtered: see [_isAllowedForSysAdmin]. For everyone
+  /// else this mirrors the web UI's `menuFilters` (PE ui-ngx
   /// `src/app/core/services/menu.models.ts`): a page is visible only if the
   /// user can read its underlying resource, either generically or via group
   /// roles.
@@ -98,8 +99,6 @@ class NavigationHelper {
   /// on purpose: a permissions hiccup must not lock the user out of navigation.
   /// This differs from `LoginState.hasGenericPermission`, which fails closed
   /// because it guards actions rather than menu entries.
-  ///
-  /// SYS_ADMIN is decided by [_isAllowedForSysAdmin] before any of the above.
   static bool isPageVisible(PageLayout pageLayout, LoginState login) {
     if (login.userScope == Authority.SYS_ADMIN) {
       return _isAllowedForSysAdmin(pageLayout);
