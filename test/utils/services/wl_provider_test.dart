@@ -42,6 +42,7 @@ Response<Map<String, dynamic>> systemInfoResponse(String? version) => Response(
 
 void main() {
   late MockTbClientService clientService;
+  late MockThingsboardClient staleClient;
   late MockThingsboardClient liveClient;
   late MockWhiteLabelingControllerApi staleApi;
   late MockWhiteLabelingControllerApi liveApi;
@@ -61,7 +62,7 @@ void main() {
       when(systemInfoCall).thenThrow(ThingsboardError(message: 'Forbidden'));
 
   setUp(() {
-    final staleClient = MockThingsboardClient();
+    staleClient = MockThingsboardClient();
     liveClient = MockThingsboardClient();
     staleApi = MockWhiteLabelingControllerApi();
     liveApi = MockWhiteLabelingControllerApi();
@@ -88,7 +89,7 @@ void main() {
       () => localDatabase.getSelectedRegion(),
     ).thenAnswer((_) async => Region.europe);
     clientService = registerTestDependencies(
-      tbClient: staleClient,
+      tbClient: liveClient,
       localDatabase: localDatabase,
       firebaseService: MockFirebaseService(),
     );
@@ -100,8 +101,7 @@ void main() {
       );
   });
 
-  /// Mounts an app around the provider and returns the notifier, with the
-  /// client service already handing out [liveClient].
+  /// Mounts an app around the provider and returns the notifier.
   Future<Wl> pumpWlProvider(
     WidgetTester tester,
     ProviderContainer container,
@@ -120,7 +120,6 @@ void main() {
     // The provider is autoDispose; the app root keeps it alive with a watch,
     // which is what lets it outlive a client re-creation.
     container.listen(wlProvider, (_, _) {});
-    when(() => clientService.client).thenReturn(liveClient);
     return container.read(wlProvider.notifier);
   }
 
@@ -134,10 +133,12 @@ void main() {
 
   testWidgets('updateWhiteLabeling uses the client current at call time, '
       'not the one captured when the provider was built', (tester) async {
+    when(() => clientService.client).thenReturn(staleClient);
     final container = makeContainer();
     final wl = await pumpWlProvider(tester, container);
 
     // A QR-code login re-creates the client (TbClientService.reInit).
+    when(() => clientService.client).thenReturn(liveClient);
     await wl.updateWhiteLabeling();
 
     verify(() => liveApi.getWhiteLabelParams()).called(1);
@@ -231,6 +232,72 @@ void main() {
       await wl.updateWhiteLabeling();
 
       expect(container.read(wlProvider).isUserWlMode, isTrue);
+      expect(container.read(wlProvider).platformVersion, '4.4.0PE');
+    });
+
+    testWidgets('is taken from the running server when an admin cleared the '
+        'field, which the web form stores as an empty string', (tester) async {
+      when(() => liveApi.getWhiteLabelParams()).thenAnswer(
+        (_) async => wlResponse(
+          WhiteLabelingParams(
+            (b) =>
+                b
+                  ..logoImageUrl = defaultLogoUrl
+                  ..platformVersion = '',
+          ),
+        ),
+      );
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).platformVersion, '4.4.0PE');
+    });
+
+    testWidgets('is looked up once per client and reused by later loads', (
+      tester,
+    ) async {
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+      await wl.updateWhiteLabeling();
+
+      verify(systemInfoCall).called(1);
+      expect(container.read(wlProvider).platformVersion, '4.4.0PE');
+    });
+
+    testWidgets('is looked up again from a re-created client', (tester) async {
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+      await wl.updateWhiteLabeling();
+
+      // A QR-code login re-creates the client (TbClientService.reInit).
+      final newClient = MockThingsboardClient();
+      when(() => newClient.getWhiteLabelingControllerApi()).thenReturn(liveApi);
+      when(
+        () => newClient.get<Map<String, dynamic>>(
+          systemInfoPath,
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) async => systemInfoResponse('4.5.0PE'));
+      when(() => clientService.client).thenReturn(newClient);
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).platformVersion, '4.5.0PE');
+    });
+
+    testWidgets('failed lookup is retried on the next load', (tester) async {
+      stubSystemInfoFailure();
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+      await wl.updateWhiteLabeling();
+      expect(container.read(wlProvider).platformVersion, isEmpty);
+
+      stubSystemInfo('4.4.0PE');
+      await wl.updateWhiteLabeling();
+
       expect(container.read(wlProvider).platformVersion, '4.4.0PE');
     });
   });

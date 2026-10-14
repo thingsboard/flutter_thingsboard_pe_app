@@ -16,6 +16,7 @@ import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 
 import 'package:thingsboard_app/core/context/tb_context.dart';
+import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/core/select_region/model/region.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
@@ -63,9 +64,6 @@ abstract class WlState with _$WlState {
           : loginWhiteLabelingParams.platformVersion) ??
       '';
 
-  // A version left at the web UI's default is stored as null ("the running
-  // server version"); before login, or when the lookup fails, it is unknown,
-  // so it is left out rather than made up.
   String get platformNameAndVersion => [
     if (platformName.isNotEmpty) platformName,
     if (platformVersion.isNotEmpty) 'v.$platformVersion',
@@ -324,8 +322,9 @@ class Wl extends _$Wl {
   Future<void> _loadUserWhiteLabelingParams() async {
     final response =
         await _tbClient.getWhiteLabelingControllerApi().getWhiteLabelParams();
-    final userWlParams = await _withServerVersion(response.data);
-    var merged = _mergeDefaults(userWlParams, _defaultWLParams);
+    final merged = await _withServerVersion(
+      _mergeDefaults(response.data, _defaultWLParams),
+    );
     final themeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final logo = await _updateImages(
       globalNavigatorKey.currentContext!,
@@ -344,48 +343,59 @@ class Wl extends _$Wl {
     state = state.copyWith(isUserWlMode: true);
   }
 
-  // A null platformVersion in the white-label response means "the running
-  // server version": the web UI fills it from its own bundle, which the app
-  // cannot do.
-  Future<WhiteLabelingParams?> _withServerVersion(
-    WhiteLabelingParams? params,
+  // An unset platform version means "the running server version": the web UI
+  // fills it from its own bundle, which the app cannot do, so it asks the
+  // server. Both null and '' count as unset, as in the web: the admin form
+  // stores '' when the field is cleared.
+  Future<WhiteLabelingParams> _withServerVersion(
+    WhiteLabelingParams params,
   ) async {
-    if (params?.platformVersion != null) {
+    if (!_isEmpty(params.platformVersion)) {
       return params;
     }
-    final serverVersion = await _fetchServerVersion();
-    if (serverVersion == null) {
-      return params;
+    final serverVersion = await _serverVersion();
+    return serverVersion == null
+        ? params
+        : params.rebuild((b) => b..platformVersion = serverVersion);
+  }
+
+  // The version cannot change while the app talks to one server, and a
+  // re-init (QR login, endpoint switch) hands out a new client, so one lookup
+  // per client is enough. A failed lookup is retried on the next load.
+  ThingsboardClient? _serverVersionClient;
+  String? _serverVersionCache;
+
+  Future<String?> _serverVersion() async {
+    final client = _tbClient;
+    if (_serverVersionCache != null &&
+        identical(client, _serverVersionClient)) {
+      return _serverVersionCache;
     }
-    return (params ?? WhiteLabelingParams((b) => b)).rebuild(
-      (b) => b..platformVersion = serverVersion,
-    );
+    final version = await _fetchServerVersion(client);
+    if (version != null) {
+      _serverVersionClient = client;
+      _serverVersionCache = version;
+    }
+    return version;
   }
 
   // The endpoint that reports the server version is hidden from the OpenAPI
   // spec, so the generated client has no accessor for it and it is requested
-  // by path.
-  Future<String?> _fetchServerVersion() async {
+  // by path. The web UI shows the package version, which never carries the
+  // Maven -SNAPSHOT suffix.
+  Future<String?> _fetchServerVersion(ThingsboardClient client) async {
     try {
-      final response = await _tbClient.get<Map<String, dynamic>>(
+      final response = await client.get<Map<String, dynamic>>(
         '/api/system/info',
         options: Options(extra: silentRequestExtra()),
       );
       final version = response.data?['version'] as String?;
-      return version == null ? null : _withoutSnapshotSuffix(version);
-    } catch (_) {
+      return version?.replaceFirst(RegExp(r'-SNAPSHOT$'), '');
+    } catch (e) {
+      getIt<TbLogger>().debug('Server version lookup failed: $e');
       return null;
     }
   }
-
-  // The web UI shows the package version, which never carries the Maven
-  // -SNAPSHOT suffix; the server strips it the same way for its API docs.
-  static const _snapshotSuffix = '-SNAPSHOT';
-
-  static String _withoutSnapshotSuffix(String version) =>
-      version.endsWith(_snapshotSuffix)
-          ? version.substring(0, version.length - _snapshotSuffix.length)
-          : version;
 
   Future<Widget> _updateImages(
     BuildContext context,
