@@ -149,6 +149,11 @@ class Login extends _$Login {
   }
 
   Future<void> twoFaConfirmed(LoginResponse response) async {
+    await _tbClient.setUserFromJwtToken(
+      response.token,
+      response.refreshToken,
+      true,
+    );
     await _onFullyLoggedIn();
   }
 
