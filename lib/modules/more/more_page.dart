@@ -61,9 +61,7 @@ class MorePage extends HookConsumerWidget {
                                     TbMainNavigationItem(
                                       title: NavigationHelper.getLocalizedTitle(
                                         context,
-                                        e.id,
-                                        e.path,
-                                        e.title,
+                                        e,
                                       ),
                                       icon: e.icon,
                                       path: e.path,

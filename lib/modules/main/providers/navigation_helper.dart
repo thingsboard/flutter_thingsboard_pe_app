@@ -9,14 +9,17 @@ import 'package:thingsboard_app/thingsboard_client_extensions.dart';
 import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 
 class NavigationHelper {
+  /// A title set in the bundle layout wins over the localized default, so an
+  /// admin's renamed page shows as typed regardless of the device language.
   static String getLocalizedTitle(
     BuildContext context,
-    String? id,
-    String path,
-    String fallbackTitle,
+    NavigationItemData item,
   ) {
+    if (item.label != null) {
+      return item.label!;
+    }
     final s = S.of(context);
-    switch (id) {
+    switch (item.id) {
       case 'home':
         return s.home;
       case 'alarms':
@@ -38,9 +41,9 @@ class NavigationHelper {
       case 'live_location_tracking':
         return s.liveTrackingMenuTitle;
     }
-    if (path == '/more') return s.more;
-    if (path.contains('/profile')) return s.profile;
-    return fallbackTitle;
+    if (item.path == '/more') return s.more;
+    if (item.path.contains('/profile')) return s.profile;
+    return item.title;
   }
 
   static int? getCurrentIndexFromPath(
@@ -55,10 +58,21 @@ class NavigationHelper {
     return null;
   }
 
+  /// The title typed for the page in the bundle layout, or null when it was
+  /// left at the default or saved blank.
+  static String? customLabel(PageLayout pageLayout) {
+    final label = pageLayout.label;
+    if (label == null || label.trim().isEmpty) {
+      return null;
+    }
+    return label;
+  }
+
   // Helper functions
   static String getLabel(PageLayout pageLayout) {
-    if (pageLayout.label != null) {
-      return pageLayout.label!;
+    final label = customLabel(pageLayout);
+    if (label != null) {
+      return label;
     }
 
     switch (pageLayout.id) {

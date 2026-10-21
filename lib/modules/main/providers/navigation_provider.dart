@@ -127,6 +127,7 @@ class Navigation extends _$Navigation {
                 icon: NavigationHelper.getIcon(pageLayout),
                 path: NavigationHelper.getPath(pageLayout),
                 id: pageLayout.id?.name,
+                label: NavigationHelper.customLabel(pageLayout),
                 showNotificationBadge: pageLayout.id == Pages.notifications,
               ),
             )
