@@ -149,12 +149,13 @@ class Login extends _$Login {
   }
 
   Future<void> twoFaConfirmed(LoginResponse response) async {
+    // notify=true fires UserLoadedEvent, whose listener above runs
+    // _onFullyLoggedIn(); calling it here too would load the user twice.
     await _tbClient.setUserFromJwtToken(
       response.token,
       response.refreshToken,
       true,
     );
-    await _onFullyLoggedIn();
   }
 
   Future<bool> oauthLogin(String url) async {
