@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/config/routes/v2/router_2.dart';
@@ -16,8 +15,6 @@ import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 
 part 'navigation_provider.g.dart';
-
-const fullScreenProfile = '/profile?fullscreen=true';
 
 @riverpod
 class Navigation extends _$Navigation {
@@ -148,7 +145,7 @@ class Navigation extends _$Navigation {
             : const NavigationItemData(
               title: 'More',
               icon: Icons.menu_outlined,
-              path: '/more',
+              path: morePath,
             );
     NavigationState navState = const NavigationState(
       bottomBarPages: [],

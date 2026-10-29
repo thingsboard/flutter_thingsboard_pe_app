@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/modules/main/model/navigation_item_data.dart';
 import 'package:thingsboard_app/modules/main/providers/navigation_helper.dart';
-import 'package:thingsboard_app/modules/main/providers/navigation_provider.dart';
 import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 
 NavigationItemData devicesItem({String? label}) => NavigationItemData(
@@ -94,6 +93,21 @@ void main() {
       );
 
       expect(title, 'Reports');
+    });
+
+    testWidgets('keeps the title of a custom page under a profile path', (
+      tester,
+    ) async {
+      final title = await resolveTitle(
+        tester,
+        const NavigationItemData(
+          title: 'Team profile',
+          icon: Icons.link,
+          path: '/team/profile',
+        ),
+      );
+
+      expect(title, 'Team profile');
     });
 
     testWidgets('localizes the More item', (tester) async {
