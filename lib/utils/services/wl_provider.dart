@@ -1,5 +1,7 @@
 // ignore_for_file: parameter_assignments
 
+import 'dart:async';
+
 import 'package:built_collection/built_collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,8 @@ part 'wl_provider.g.dart';
 part 'wl_provider.freezed.dart';
 
 const defaultLogoUrl = 'LOGO-PE';
+const wlPollInterval = Duration(hours: 1);
+const wlFetchTimeout = Duration(seconds: 30);
 
 @freezed
 abstract class WlState with _$WlState {
@@ -110,13 +114,37 @@ class Wl extends _$Wl {
   // (PROD-8879).
   ThingsboardClient get _tbClient => getIt<ITbClientService>().client;
   late ProviderSubscription<LoginState> _subscription;
+  late AppLifecycleListener _lifecycleListener;
+  Timer? _pollTimer;
+  bool _isFetchInFlight = false;
+
+  // Only the latest fetch may write state: a timed-out poll keeps running and
+  // could otherwise land after a newer fetch and bring back the older look.
+  int _fetchId = 0;
+
+  // The last params turned into theme and logo, so a poll that returns the
+  // same params skips the rebuild of the whole MaterialApp. Login and user
+  // params are different types, so switching mode always re-applies.
+  Object? _appliedParams;
+
   @override
   WlState build() {
     _subscription = ref.listen(loginProvider, (prev, next) {
-      print('wl update');
       updateWhiteLabeling();
     });
-    ref.onDispose(() => _subscription.close());
+    // The server has no push channel for white-labeling changes, so they are
+    // fetched when the app comes back to the foreground, with a rare poll as
+    // a fallback for an app that stays open (PROD-8928).
+    _startPolling();
+    _lifecycleListener = AppLifecycleListener(
+      onShow: _resumePolling,
+      onHide: _stopPolling,
+    );
+    ref.onDispose(() {
+      _subscription.close();
+      _stopPolling();
+      _lifecycleListener.dispose();
+    });
     return WlState(
       loginWhiteLabelingParams: _defaultLoginWlParams,
       userParams: _defaultWLParams,
@@ -286,6 +314,39 @@ class Wl extends _$Wl {
     );
   }
 
+  void _startPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(wlPollInterval, (_) => _poll());
+  }
+
+  // Coming back to the app is when a change made in the web UI is most
+  // likely to be looked for, so it is fetched right away rather than at the
+  // next tick.
+  void _resumePolling() {
+    _startPolling();
+    unawaited(_poll());
+  }
+
+  void _stopPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
+  }
+
+  // The client sets no receive timeout, so a request that stalls after
+  // connecting would otherwise keep the in-flight guard set and end polling
+  // for the rest of the session.
+  Future<void> _poll() async {
+    if (_isFetchInFlight) return;
+    _isFetchInFlight = true;
+    try {
+      await updateWhiteLabeling().timeout(wlFetchTimeout);
+    } catch (e, s) {
+      getIt<TbLogger>().debug('White-labeling poll failed', e, s);
+    } finally {
+      _isFetchInFlight = false;
+    }
+  }
+
   static bool _isEmpty(String? str) {
     return str == null || str.isEmpty;
   }
@@ -308,12 +369,14 @@ class Wl extends _$Wl {
   }
 
   Future<void> loadLoginWhiteLabelingParams({BuildContext? context}) async {
+    final fetchId = ++_fetchId;
     final response =
         await _tbClient
             .getWhiteLabelingControllerApi()
             .getLoginWhiteLabelParams();
     var loginWlParams = response.data;
     var merged = _mergeLoginDefaults(loginWlParams, _defaultLoginWlParams);
+    if (merged == _appliedParams) return;
     final loginThemeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final loginLogo = await _updateImages(
       context ?? globalNavigatorKey.currentContext!,
@@ -322,6 +385,10 @@ class Wl extends _$Wl {
       loginThemeData,
       true,
     );
+    // A poll started before a login must not paint the login look over the
+    // user white-labeling that the login listener applied meanwhile.
+    if (ref.read(loginProvider).isFullyAuthenticated()) return;
+    if (fetchId != _fetchId) return;
     state = state.copyWith(
       loginWhiteLabelingParams: merged,
       theme: loginThemeData,
@@ -332,14 +399,17 @@ class Wl extends _$Wl {
       logo: loginLogo,
       isUserWlMode: false,
     );
+    _appliedParams = merged;
   }
 
   Future<void> _loadUserWhiteLabelingParams() async {
+    final fetchId = ++_fetchId;
     final response =
         await _tbClient.getWhiteLabelingControllerApi().getWhiteLabelParams();
     final merged = await _withServerVersion(
       _mergeDefaults(response.data, _defaultWLParams),
     );
+    if (merged == _appliedParams) return;
     final themeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final logo = await _updateImages(
       globalNavigatorKey.currentContext!,
@@ -348,14 +418,18 @@ class Wl extends _$Wl {
       themeData,
       false,
     );
-
+    // The reverse of the check in loadLoginWhiteLabelingParams: a poll
+    // started before a logout must not bring the user look back to the login
+    // screen.
+    if (!ref.read(loginProvider).isFullyAuthenticated()) return;
+    if (fetchId != _fetchId) return;
     state = state.copyWith(
       userParams: merged,
       theme: themeData,
       logo: logo,
       isUserWlMode: true,
     );
-    state = state.copyWith(isUserWlMode: true);
+    _appliedParams = merged;
   }
 
   // An unset platform version means "the running server version": the web UI
