@@ -69,6 +69,26 @@ void main() {
     });
   });
 
+  group('NavigationHelper.toNavigationItem', () {
+    testWidgets('shows the title of a renamed built-in page', (tester) async {
+      final item = NavigationHelper.toNavigationItem(
+        const PageLayout(id: Pages.devices, label: 'Machines'),
+      );
+
+      expect(await resolveTitle(tester, item), 'Machines');
+    });
+
+    testWidgets('localizes a built-in page left at its default', (
+      tester,
+    ) async {
+      final item = NavigationHelper.toNavigationItem(
+        const PageLayout(id: Pages.devices, label: '   '),
+      );
+
+      expect(await resolveTitle(tester, item), 'Geräte');
+    });
+  });
+
   group('NavigationHelper.getLocalizedTitle', () {
     testWidgets('shows the bundle label for a built-in page', (tester) async {
       final title = await resolveTitle(tester, devicesItem(label: 'Machines'));

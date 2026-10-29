@@ -116,19 +116,7 @@ class Navigation extends _$Navigation {
     if (hiddenPageIds.isNotEmpty) {
       _logger.debug('Navigation pages hidden by RBAC: $hiddenPageIds');
     }
-    _allPages =
-        visibleLayouts
-            .map(
-              (pageLayout) => NavigationItemData(
-                title: NavigationHelper.getLabel(pageLayout),
-                icon: NavigationHelper.getIcon(pageLayout),
-                path: NavigationHelper.getPath(pageLayout),
-                id: pageLayout.id?.name,
-                label: NavigationHelper.customLabel(pageLayout),
-                showNotificationBadge: pageLayout.id == Pages.notifications,
-              ),
-            )
-            .toList();
+    _allPages = visibleLayouts.map(NavigationHelper.toNavigationItem).toList();
     final bool shouldAddProfile =
         _allPages.length < 4 &&
         _allPages.firstWhereOrNull((e) {

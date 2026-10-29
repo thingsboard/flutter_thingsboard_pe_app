@@ -62,6 +62,19 @@ class NavigationHelper {
     return label;
   }
 
+  /// The navigation item for a page from the bundle layout. Keeps the custom
+  /// label separate from the default title, so the title can be localized.
+  static NavigationItemData toNavigationItem(PageLayout pageLayout) {
+    return NavigationItemData(
+      title: getLabel(pageLayout),
+      icon: getIcon(pageLayout),
+      path: getPath(pageLayout),
+      id: pageLayout.id?.name,
+      label: customLabel(pageLayout),
+      showNotificationBadge: pageLayout.id == Pages.notifications,
+    );
+  }
+
   // Helper functions
   static String getLabel(PageLayout pageLayout) {
     final label = customLabel(pageLayout);
