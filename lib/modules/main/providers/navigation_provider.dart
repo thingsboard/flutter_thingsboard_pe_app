@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/config/routes/v2/router_2.dart';
@@ -16,8 +15,6 @@ import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 
 part 'navigation_provider.g.dart';
-
-const fullScreenProfile = '/profile?fullscreen=true';
 
 @riverpod
 class Navigation extends _$Navigation {
@@ -119,18 +116,7 @@ class Navigation extends _$Navigation {
     if (hiddenPageIds.isNotEmpty) {
       _logger.debug('Navigation pages hidden by RBAC: $hiddenPageIds');
     }
-    _allPages =
-        visibleLayouts
-            .map(
-              (pageLayout) => NavigationItemData(
-                title: NavigationHelper.getLabel(pageLayout),
-                icon: NavigationHelper.getIcon(pageLayout),
-                path: NavigationHelper.getPath(pageLayout),
-                id: pageLayout.id?.name,
-                showNotificationBadge: pageLayout.id == Pages.notifications,
-              ),
-            )
-            .toList();
+    _allPages = visibleLayouts.map(NavigationHelper.toNavigationItem).toList();
     final bool shouldAddProfile =
         _allPages.length < 4 &&
         _allPages.firstWhereOrNull((e) {
@@ -147,7 +133,7 @@ class Navigation extends _$Navigation {
             : const NavigationItemData(
               title: 'More',
               icon: Icons.menu_outlined,
-              path: '/more',
+              path: morePath,
             );
     NavigationState navState = const NavigationState(
       bottomBarPages: [],
