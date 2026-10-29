@@ -30,14 +30,39 @@ class FakeLogin extends Login {
       const LoginState(isUserLoaded: true, userScope: Authority.TENANT_ADMIN);
 }
 
+const systemInfoPath = '/api/system/info';
+
+Response<WhiteLabelingParams> wlResponse(WhiteLabelingParams? params) =>
+    Response(data: params, requestOptions: RequestOptions());
+
+Response<Map<String, dynamic>> systemInfoResponse(String? version) => Response(
+  data: {if (version != null) 'version': version, 'type': 'PE'},
+  requestOptions: RequestOptions(),
+);
+
 void main() {
   late MockTbClientService clientService;
+  late MockThingsboardClient staleClient;
   late MockThingsboardClient liveClient;
   late MockWhiteLabelingControllerApi staleApi;
   late MockWhiteLabelingControllerApi liveApi;
 
+  setUpAll(() => registerFallbackValue(Options()));
+
+  Future<Response<Map<String, dynamic>>> systemInfoCall() =>
+      liveClient.get<Map<String, dynamic>>(
+        systemInfoPath,
+        options: any(named: 'options'),
+      );
+
+  void stubSystemInfo(String? version) =>
+      when(systemInfoCall).thenAnswer((_) async => systemInfoResponse(version));
+
+  void stubSystemInfoFailure() =>
+      when(systemInfoCall).thenThrow(ThingsboardError(message: 'Forbidden'));
+
   setUp(() {
-    final staleClient = MockThingsboardClient();
+    staleClient = MockThingsboardClient();
     liveClient = MockThingsboardClient();
     staleApi = MockWhiteLabelingControllerApi();
     liveApi = MockWhiteLabelingControllerApi();
@@ -50,19 +75,21 @@ void main() {
     when(
       () => staleApi.getWhiteLabelParams(),
     ).thenThrow(ThingsboardError(message: 'Unauthorized!'));
+    // What the server answers when no admin typed a platform version into the
+    // white-labeling settings: the field is simply null.
     when(() => liveApi.getWhiteLabelParams()).thenAnswer(
-      (_) async => Response(
-        data: WhiteLabelingParams((b) => b..logoImageUrl = defaultLogoUrl),
-        requestOptions: RequestOptions(),
+      (_) async => wlResponse(
+        WhiteLabelingParams((b) => b..logoImageUrl = defaultLogoUrl),
       ),
     );
+    stubSystemInfo('4.4.0PE');
 
     final localDatabase = MockLocalDatabaseService();
     when(
       () => localDatabase.getSelectedRegion(),
     ).thenAnswer((_) async => Region.europe);
     clientService = registerTestDependencies(
-      tbClient: staleClient,
+      tbClient: liveClient,
       localDatabase: localDatabase,
       firebaseService: MockFirebaseService(),
     );
@@ -74,12 +101,11 @@ void main() {
       );
   });
 
-  testWidgets('updateWhiteLabeling uses the client current at call time, '
-      'not the one captured when the provider was built', (tester) async {
-    final container = ProviderContainer(
-      overrides: [loginProvider.overrideWith(FakeLogin.new)],
-    );
-    addTearDown(container.dispose);
+  /// Mounts an app around the provider and returns the notifier.
+  Future<Wl> pumpWlProvider(
+    WidgetTester tester,
+    ProviderContainer container,
+  ) async {
     // _updateImages() resolves the global navigator context, so the
     // provider needs a mounted app around it.
     await tester.pumpWidget(
@@ -94,16 +120,186 @@ void main() {
     // The provider is autoDispose; the app root keeps it alive with a watch,
     // which is what lets it outlive a client re-creation.
     container.listen(wlProvider, (_, _) {});
-    final wl = container.read(wlProvider.notifier);
+    return container.read(wlProvider.notifier);
+  }
+
+  ProviderContainer makeContainer() {
+    final container = ProviderContainer(
+      overrides: [loginProvider.overrideWith(FakeLogin.new)],
+    );
+    addTearDown(container.dispose);
+    return container;
+  }
+
+  testWidgets('updateWhiteLabeling uses the client current at call time, '
+      'not the one captured when the provider was built', (tester) async {
+    when(() => clientService.client).thenReturn(staleClient);
+    final container = makeContainer();
+    final wl = await pumpWlProvider(tester, container);
 
     // A QR-code login re-creates the client (TbClientService.reInit).
     when(() => clientService.client).thenReturn(liveClient);
-
     await wl.updateWhiteLabeling();
 
     verify(() => liveApi.getWhiteLabelParams()).called(1);
     verifyNever(() => staleApi.getWhiteLabelParams());
     expect(container.read(wlProvider).isUserWlMode, isTrue);
+  });
+
+  group('platform version', () {
+    testWidgets('is taken from the running server when the white-label '
+        'response leaves it null', (tester) async {
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).platformVersion, '4.4.0PE');
+    });
+
+    testWidgets('drops the -SNAPSHOT suffix of a development server build', (
+      tester,
+    ) async {
+      stubSystemInfo('4.4.0PE-SNAPSHOT');
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).platformVersion, '4.4.0PE');
+    });
+
+    testWidgets('set by an admin is kept and the server is not asked', (
+      tester,
+    ) async {
+      when(() => liveApi.getWhiteLabelParams()).thenAnswer(
+        (_) async => wlResponse(
+          WhiteLabelingParams(
+            (b) =>
+                b
+                  ..logoImageUrl = defaultLogoUrl
+                  ..platformVersion = 'Custom 1.0',
+          ),
+        ),
+      );
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).platformVersion, 'Custom 1.0');
+      verifyNever(
+        () => liveClient.get<Map<String, dynamic>>(
+          any(),
+          options: any(named: 'options'),
+        ),
+      );
+    });
+
+    testWidgets('lookup failure does not break white-labeling loading', (
+      tester,
+    ) async {
+      stubSystemInfoFailure();
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).isUserWlMode, isTrue);
+      expect(container.read(wlProvider).platformNameAndVersion, 'ThingsBoard');
+    });
+
+    testWidgets('shows only the name when the server reports no version', (
+      tester,
+    ) async {
+      stubSystemInfo(null);
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).platformNameAndVersion, 'ThingsBoard');
+    });
+
+    testWidgets('is taken from the running server when the white-label '
+        'response has no body', (tester) async {
+      when(
+        () => liveApi.getWhiteLabelParams(),
+      ).thenAnswer((_) async => wlResponse(null));
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).isUserWlMode, isTrue);
+      expect(container.read(wlProvider).platformVersion, '4.4.0PE');
+    });
+
+    testWidgets('is taken from the running server when an admin cleared the '
+        'field, which the web form stores as an empty string', (tester) async {
+      when(() => liveApi.getWhiteLabelParams()).thenAnswer(
+        (_) async => wlResponse(
+          WhiteLabelingParams(
+            (b) =>
+                b
+                  ..logoImageUrl = defaultLogoUrl
+                  ..platformVersion = '',
+          ),
+        ),
+      );
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).platformVersion, '4.4.0PE');
+    });
+
+    testWidgets('is looked up once per client and reused by later loads', (
+      tester,
+    ) async {
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+
+      await wl.updateWhiteLabeling();
+      await wl.updateWhiteLabeling();
+
+      verify(systemInfoCall).called(1);
+      expect(container.read(wlProvider).platformVersion, '4.4.0PE');
+    });
+
+    testWidgets('is looked up again from a re-created client', (tester) async {
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+      await wl.updateWhiteLabeling();
+
+      // A QR-code login re-creates the client (TbClientService.reInit).
+      final newClient = MockThingsboardClient();
+      when(() => newClient.getWhiteLabelingControllerApi()).thenReturn(liveApi);
+      when(
+        () => newClient.get<Map<String, dynamic>>(
+          systemInfoPath,
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) async => systemInfoResponse('4.5.0PE'));
+      when(() => clientService.client).thenReturn(newClient);
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).platformVersion, '4.5.0PE');
+    });
+
+    testWidgets('failed lookup is retried on the next load', (tester) async {
+      stubSystemInfoFailure();
+      final container = makeContainer();
+      final wl = await pumpWlProvider(tester, container);
+      await wl.updateWhiteLabeling();
+      expect(container.read(wlProvider).platformVersion, isEmpty);
+
+      stubSystemInfo('4.4.0PE');
+      await wl.updateWhiteLabeling();
+
+      expect(container.read(wlProvider).platformVersion, '4.4.0PE');
+    });
   });
 
   testWidgets('keeps the login page theme when the user white-labeling '
@@ -123,8 +319,8 @@ void main() {
       ),
     );
     when(() => liveApi.getWhiteLabelParams()).thenAnswer(
-      (_) async => Response(
-        data: WhiteLabelingParams(
+      (_) async => wlResponse(
+        WhiteLabelingParams(
           (b) =>
               b
                 ..logoImageUrl = defaultLogoUrl
@@ -133,25 +329,11 @@ void main() {
                       ..primaryPalette = (PaletteBuilder()..type = 'red')
                       ..accentPalette = (PaletteBuilder()..type = 'amber')),
         ),
-        requestOptions: RequestOptions(),
       ),
     );
     when(() => clientService.client).thenReturn(liveClient);
-    final container = ProviderContainer(
-      overrides: [loginProvider.overrideWith(FakeLogin.new)],
-    );
-    addTearDown(container.dispose);
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          navigatorKey: globalNavigatorKey,
-          home: const SizedBox(),
-        ),
-      ),
-    );
-    container.listen(wlProvider, (_, _) {});
-    final wl = container.read(wlProvider.notifier);
+    final container = makeContainer();
+    final wl = await pumpWlProvider(tester, container);
 
     await wl.loadLoginWhiteLabelingParams();
     expect(

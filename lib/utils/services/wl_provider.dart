@@ -1,6 +1,7 @@
 // ignore_for_file: parameter_assignments
 
 import 'package:built_collection/built_collection.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -16,11 +17,13 @@ import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 
 import 'package:thingsboard_app/core/context/tb_context.dart';
+import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/core/select_region/model/region.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
+import 'package:thingsboard_app/utils/silent_request.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 part 'wl_provider.g.dart';
 part 'wl_provider.freezed.dart';
@@ -67,7 +70,10 @@ abstract class WlState with _$WlState {
           : loginWhiteLabelingParams.platformVersion) ??
       '';
 
-  String get platformNameAndVersion => '$platformName v.$platformVersion';
+  String get platformNameAndVersion => [
+    if (platformName.isNotEmpty) platformName,
+    if (platformVersion.isNotEmpty) 'v.$platformVersion',
+  ].join(' ');
 
   bool get isCustomLogo =>
       isUserWlMode
@@ -165,8 +171,7 @@ class Wl extends _$Wl {
           ..helpLinkBaseUrl = 'https://thingsboard.io'
           ..enableHelpLinks = true
           ..showNameVersion = false
-          ..platformName = 'ThingsBoard'
-          ..platformVersion = '3.4.1PE',
+          ..platformName = 'ThingsBoard',
   );
 
   static LoginWhiteLabelingParams _createDefaultLoginWlParams() {
@@ -190,7 +195,6 @@ class Wl extends _$Wl {
             ..enableHelpLinks = true
             ..showNameVersion = false
             ..platformName = 'ThingsBoard'
-            ..platformVersion = '3.4.1PE'
             ..pageBackgroundColor = '#eee'
             ..darkForeground = false,
     );
@@ -264,10 +268,12 @@ class Wl extends _$Wl {
             ..helpLinkBaseUrl = mergedBase.helpLinkBaseUrl
             ..enableHelpLinks = mergedBase.enableHelpLinks
             ..showNameVersion = mergedBase.showNameVersion
-            ..platformName = mergedBase.platformName
-            ..platformVersion = mergedBase.platformVersion
+            // Left unset, the web login fills these from its own bundle, which
+            // the app cannot; only values the admin typed in are shown.
+            ..platformName = wlParams!.platformName
+            ..platformVersion = wlParams.platformVersion
             ..pageBackgroundColor =
-                wlParams!.pageBackgroundColor ??
+                wlParams.pageBackgroundColor ??
                 defaultWlParams.pageBackgroundColor
             ..darkForeground =
                 wlParams.darkForeground ?? defaultWlParams.darkForeground
@@ -307,8 +313,6 @@ class Wl extends _$Wl {
             .getWhiteLabelingControllerApi()
             .getLoginWhiteLabelParams();
     var loginWlParams = response.data;
-    // platformVersion is always on the server side in the new client; no
-    // getPlatformVersion() helper.
     var merged = _mergeLoginDefaults(loginWlParams, _defaultLoginWlParams);
     final loginThemeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final loginLogo = await _updateImages(
@@ -333,8 +337,9 @@ class Wl extends _$Wl {
   Future<void> _loadUserWhiteLabelingParams() async {
     final response =
         await _tbClient.getWhiteLabelingControllerApi().getWhiteLabelParams();
-    var userWlParams = response.data;
-    var merged = _mergeDefaults(userWlParams, _defaultWLParams);
+    final merged = await _withServerVersion(
+      _mergeDefaults(response.data, _defaultWLParams),
+    );
     final themeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final logo = await _updateImages(
       globalNavigatorKey.currentContext!,
@@ -351,6 +356,60 @@ class Wl extends _$Wl {
       isUserWlMode: true,
     );
     state = state.copyWith(isUserWlMode: true);
+  }
+
+  // An unset platform version means "the running server version": the web UI
+  // fills it from its own bundle, which the app cannot do, so it asks the
+  // server. Both null and '' count as unset, as in the web: the admin form
+  // stores '' when the field is cleared.
+  Future<WhiteLabelingParams> _withServerVersion(
+    WhiteLabelingParams params,
+  ) async {
+    if (!_isEmpty(params.platformVersion)) {
+      return params;
+    }
+    final serverVersion = await _serverVersion();
+    return serverVersion == null
+        ? params
+        : params.rebuild((b) => b..platformVersion = serverVersion);
+  }
+
+  // The version cannot change while the app talks to one server, and a
+  // re-init (QR login, endpoint switch) hands out a new client, so one lookup
+  // per client is enough. A failed lookup is retried on the next load.
+  ThingsboardClient? _serverVersionClient;
+  String? _serverVersionCache;
+
+  Future<String?> _serverVersion() async {
+    final client = _tbClient;
+    if (_serverVersionCache != null &&
+        identical(client, _serverVersionClient)) {
+      return _serverVersionCache;
+    }
+    final version = await _fetchServerVersion(client);
+    if (version != null) {
+      _serverVersionClient = client;
+      _serverVersionCache = version;
+    }
+    return version;
+  }
+
+  // The endpoint that reports the server version is hidden from the OpenAPI
+  // spec, so the generated client has no accessor for it and it is requested
+  // by path. The web UI shows the package version, which never carries the
+  // Maven -SNAPSHOT suffix.
+  Future<String?> _fetchServerVersion(ThingsboardClient client) async {
+    try {
+      final response = await client.get<Map<String, dynamic>>(
+        '/api/system/info',
+        options: Options(extra: silentRequestExtra()),
+      );
+      final version = response.data?['version'] as String?;
+      return version?.replaceFirst(RegExp(r'-SNAPSHOT$'), '');
+    } catch (e) {
+      getIt<TbLogger>().debug('Server version lookup failed: $e');
+      return null;
+    }
   }
 
   Future<Widget> _updateImages(
