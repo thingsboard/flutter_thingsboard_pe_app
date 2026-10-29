@@ -109,7 +109,8 @@ class NavigationHelper {
     }
   }
 
-  /// Mirrors the web UI's `menuFilters` (PE ui-ngx
+  /// SYS_ADMIN is not RBAC-filtered: see [_isAllowedForSysAdmin]. For everyone
+  /// else this mirrors the web UI's `menuFilters` (PE ui-ngx
   /// `src/app/core/services/menu.models.ts`): a page is visible only if the
   /// user can read its underlying resource, either generically or via group
   /// roles.
@@ -120,10 +121,8 @@ class NavigationHelper {
   /// This differs from `LoginState.hasGenericPermission`, which fails closed
   /// because it guards actions rather than menu entries.
   static bool isPageVisible(PageLayout pageLayout, LoginState login) {
-    // Sysadmins have no RBAC roles: their pages come from the system-tenant
-    // bundle (or the sysadmin default layout) and are shown as configured.
     if (login.userScope == Authority.SYS_ADMIN) {
-      return true;
+      return _isAllowedForSysAdmin(pageLayout);
     }
     final permissions = login.userPermissions;
     if (permissions == null) {
@@ -168,6 +167,33 @@ class NavigationHelper {
       case Pages.undefined:
       case null:
         return true;
+    }
+  }
+
+  /// SYS_ADMIN's generic permissions don't reflect what the tenant endpoints
+  /// allow (they answer 403), so only the built-in pages served to sysadmins
+  /// are allowed, plus custom pages the sysadmin configured. A built-in page id
+  /// this app version doesn't know also parses to [Pages.undefined]; it has no
+  /// target to open, so it is hidden.
+  static bool _isAllowedForSysAdmin(PageLayout pageLayout) {
+    switch (pageLayout.id) {
+      case Pages.home:
+      case Pages.notifications:
+      case Pages.audit_logs:
+        return true;
+      case Pages.undefined:
+      case null:
+        return pageLayout.url != null ||
+            pageLayout.dashboardId != null ||
+            pageLayout.path != null;
+      case Pages.alarms:
+      case Pages.devices:
+      case Pages.customers:
+      case Pages.assets:
+      case Pages.device_list:
+      case Pages.dashboards:
+      case Pages.live_location_tracking:
+        return false;
     }
   }
 

@@ -76,28 +76,31 @@ class Navigation extends _$Navigation {
     required Authority authority,
   }) {
     if (pages == null) {
-      _pagesLayout = [
-        const PageLayout(id: Pages.home),
-        const PageLayout(id: Pages.alarms),
-        const PageLayout(id: Pages.devices),
+      const tenantPages = [
+        PageLayout(id: Pages.home),
+        PageLayout(id: Pages.alarms),
+        PageLayout(id: Pages.devices),
       ];
-
-      if (authority == Authority.SYS_ADMIN) {
-        _pagesLayout.add(const PageLayout(id: Pages.notifications));
-        _pagesLayout.removeWhere((e) => e.id == Pages.alarms);
-      } else if (authority == Authority.TENANT_ADMIN) {
-        _pagesLayout.addAll([
+      _pagesLayout = switch (authority) {
+        Authority.SYS_ADMIN => [
+          const PageLayout(id: Pages.home),
+          const PageLayout(id: Pages.notifications),
+          const PageLayout(id: Pages.audit_logs),
+        ],
+        Authority.TENANT_ADMIN => [
+          ...tenantPages,
           const PageLayout(id: Pages.customers),
           const PageLayout(id: Pages.assets),
           const PageLayout(id: Pages.audit_logs),
           const PageLayout(id: Pages.notifications),
-        ]);
-      } else if (authority == Authority.CUSTOMER_USER) {
-        _pagesLayout.addAll([
+        ],
+        Authority.CUSTOMER_USER => [
+          ...tenantPages,
           const PageLayout(id: Pages.assets),
           const PageLayout(id: Pages.notifications),
-        ]);
-      }
+        ],
+        _ => [...tenantPages],
+      };
     } else {
       _pagesLayout = List.of(pages);
     }
@@ -114,7 +117,7 @@ class Navigation extends _$Navigation {
       }
     }
     if (hiddenPageIds.isNotEmpty) {
-      _logger.debug('Navigation pages hidden by RBAC: $hiddenPageIds');
+      _logger.debug('Navigation pages hidden: $hiddenPageIds');
     }
     _allPages = visibleLayouts.map(NavigationHelper.toNavigationItem).toList();
     final bool shouldAddProfile =
