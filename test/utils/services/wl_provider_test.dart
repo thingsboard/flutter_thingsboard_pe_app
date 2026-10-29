@@ -105,4 +105,67 @@ void main() {
     verifyNever(() => staleApi.getWhiteLabelParams());
     expect(container.read(wlProvider).isUserWlMode, isTrue);
   });
+
+  testWidgets('keeps the login page theme when the user white-labeling '
+      'replaces the app theme', (tester) async {
+    when(() => liveApi.getLoginWhiteLabelParams()).thenAnswer(
+      (_) async => Response(
+        data: LoginWhiteLabelingParams(
+          (b) =>
+              b
+                ..logoImageUrl = defaultLogoUrl
+                ..paletteSettings =
+                    (PaletteSettingsBuilder()
+                      ..primaryPalette = (PaletteBuilder()..type = 'indigo')
+                      ..accentPalette = (PaletteBuilder()..type = 'amber')),
+        ),
+        requestOptions: RequestOptions(),
+      ),
+    );
+    when(() => liveApi.getWhiteLabelParams()).thenAnswer(
+      (_) async => Response(
+        data: WhiteLabelingParams(
+          (b) =>
+              b
+                ..logoImageUrl = defaultLogoUrl
+                ..paletteSettings =
+                    (PaletteSettingsBuilder()
+                      ..primaryPalette = (PaletteBuilder()..type = 'red')
+                      ..accentPalette = (PaletteBuilder()..type = 'amber')),
+        ),
+        requestOptions: RequestOptions(),
+      ),
+    );
+    when(() => clientService.client).thenReturn(liveClient);
+    final container = ProviderContainer(
+      overrides: [loginProvider.overrideWith(FakeLogin.new)],
+    );
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          navigatorKey: globalNavigatorKey,
+          home: const SizedBox(),
+        ),
+      ),
+    );
+    container.listen(wlProvider, (_, _) {});
+    final wl = container.read(wlProvider.notifier);
+
+    await wl.loadLoginWhiteLabelingParams();
+    expect(
+      container.read(wlProvider).loginTheme.scaffoldBackgroundColor,
+      Colors.indigo,
+    );
+
+    // What the login page sees right after a logout: the user theme is still
+    // the app theme while the login white-labeling is being re-fetched.
+    await wl.updateWhiteLabeling();
+    expect(container.read(wlProvider).theme.primaryColor, Colors.red);
+    expect(
+      container.read(wlProvider).loginTheme.scaffoldBackgroundColor,
+      Colors.indigo,
+    );
+  });
 }
