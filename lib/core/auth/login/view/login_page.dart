@@ -8,6 +8,8 @@ import 'package:thingsboard_app/core/auth/login/widgets/full_screen_loader.dart'
 import 'package:thingsboard_app/core/auth/login/widgets/login_page_background.dart';
 import 'package:thingsboard_app/core/auth/login/widgets/login_widget.dart';
 import 'package:thingsboard_app/locator.dart';
+import 'package:thingsboard_app/utils/services/communication/events/user_loaded_event.dart';
+import 'package:thingsboard_app/utils/services/communication/i_communication_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 
 class LoginPage extends HookConsumerWidget {
@@ -20,7 +22,15 @@ class LoginPage extends HookConsumerWidget {
     useEffect(() {
       LoginDi.init();
       handleUserLoading(loginState, isUserLoading);
-      return () => LoginDi.dispose();
+      // The login state doesn't change when a session whose user never loaded
+      // is dropped, but the client fires this event for every session change.
+      final subscription = getIt<ICommunicationService>()
+          .on<UserLoadedEvent>()
+          .listen((_) => handleUserLoading(loginState, isUserLoading));
+      return () {
+        subscription.cancel();
+        LoginDi.dispose();
+      };
     }, []);
     useEffect(() {
       handleUserLoading(loginState, isUserLoading);
@@ -43,13 +53,10 @@ class LoginPage extends HookConsumerWidget {
     final client = getIt<ITbClientService>().client;
     final user = client.getAuthUser();
 
-    if (user != null &&
-        (!user.isMfaConfigurationToken() || !user.isPreVerificationToken())) {
-      isUserLoading.value = true;
-    }
-    if (user != null &&
-        (user.isMfaConfigurationToken() || user.isPreVerificationToken())) {
-      isUserLoading.value = false;
-    }
+    // Only a full session is on its way to the home screen.
+    isUserLoading.value =
+        user != null &&
+        !user.isMfaConfigurationToken() &&
+        !user.isPreVerificationToken();
   }
 }

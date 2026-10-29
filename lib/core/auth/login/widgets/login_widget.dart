@@ -196,15 +196,15 @@ Future<void> onLoginPressed(
   }
   final String username = form.control('email').value.toString();
   final String password = form.control('password').value.toString();
+  // Covers the request only: once a session is stored, LoginPage shows its
+  // own loader until the user loads, and drops it if the session is dropped.
   try {
     loading.value = true;
-    final res = await ref
-        .read(loginProvider.notifier)
-        .login(username, password);
-
-    loading.value = res;
+    await ref.read(loginProvider.notifier).login(username, password);
   } catch (e) {
     form.setErrors({"err": {}});
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -235,10 +235,8 @@ Future<void> onOauth2ButtonPressed(
     return;
   }
   loading.value = true;
-  final res = await ref
-      .read(loginProvider.notifier)
-      .oauthLogin(client.url ?? '');
-  loading.value = res;
+  await ref.read(loginProvider.notifier).oauthLogin(client.url ?? '');
+  loading.value = false;
 }
 
 Future<void> onForgotPassword(BuildContext context) async {
