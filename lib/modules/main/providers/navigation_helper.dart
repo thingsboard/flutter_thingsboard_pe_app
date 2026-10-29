@@ -8,39 +8,36 @@ import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/thingsboard_client_extensions.dart';
 import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 
+/// Paths of the More and Profile items the app adds to the bottom bar.
+const morePath = '/more';
+const fullScreenProfile = '/profile?fullscreen=true';
+
 class NavigationHelper {
+  /// A title set in the bundle layout wins over the localized default, so an
+  /// admin's renamed page shows as typed regardless of the device language.
   static String getLocalizedTitle(
     BuildContext context,
-    String? id,
-    String path,
-    String fallbackTitle,
+    NavigationItemData item,
   ) {
+    if (item.label case final label?) return label;
     final s = S.of(context);
-    switch (id) {
-      case 'home':
-        return s.home;
-      case 'alarms':
-        return s.alarms(2);
-      case 'devices':
-        return s.devices(2);
-      case 'customers':
-        return s.customers;
-      case 'assets':
-        return s.assets;
-      case 'audit_logs':
-        return s.auditLogs;
-      case 'notifications':
-        return s.notifications(2);
-      case 'device_list':
-        return s.deviceList;
-      case 'dashboards':
-        return s.dashboards(2);
-      case 'live_location_tracking':
-        return s.liveTrackingMenuTitle;
-    }
-    if (path == '/more') return s.more;
-    if (path.contains('/profile')) return s.profile;
-    return fallbackTitle;
+    if (item.path == morePath) return s.more;
+    if (item.path == fullScreenProfile) return s.profile;
+    // Exhaustive over Pages, so a new built-in page fails to compile until it
+    // gets a localized title here.
+    return switch (Pages.values.asNameMap()[item.id]) {
+      Pages.home => s.home,
+      Pages.alarms => s.alarms(2),
+      Pages.devices => s.devices(2),
+      Pages.customers => s.customers,
+      Pages.assets => s.assets,
+      Pages.audit_logs => s.auditLogs,
+      Pages.notifications => s.notifications(2),
+      Pages.device_list => s.deviceList,
+      Pages.dashboards => s.dashboards(2),
+      Pages.live_location_tracking => s.liveTrackingMenuTitle,
+      Pages.undefined || null => item.title,
+    };
   }
 
   static int? getCurrentIndexFromPath(
@@ -55,10 +52,34 @@ class NavigationHelper {
     return null;
   }
 
+  /// The title typed for the page in the bundle layout, or null when it was
+  /// left at the default or saved blank.
+  static String? customLabel(PageLayout pageLayout) {
+    final label = pageLayout.label;
+    if (label == null || label.trim().isEmpty) {
+      return null;
+    }
+    return label;
+  }
+
+  /// The navigation item for a page from the bundle layout. Keeps the custom
+  /// label separate from the default title, so the title can be localized.
+  static NavigationItemData toNavigationItem(PageLayout pageLayout) {
+    return NavigationItemData(
+      title: getLabel(pageLayout),
+      icon: getIcon(pageLayout),
+      path: getPath(pageLayout),
+      id: pageLayout.id?.name,
+      label: customLabel(pageLayout),
+      showNotificationBadge: pageLayout.id == Pages.notifications,
+    );
+  }
+
   // Helper functions
   static String getLabel(PageLayout pageLayout) {
-    if (pageLayout.label != null) {
-      return pageLayout.label!;
+    final label = customLabel(pageLayout);
+    if (label != null) {
+      return label;
     }
 
     switch (pageLayout.id) {
@@ -88,7 +109,8 @@ class NavigationHelper {
     }
   }
 
-  /// Mirrors the web UI's `menuFilters` (PE ui-ngx
+  /// SYS_ADMIN is not RBAC-filtered: see [_isAllowedForSysAdmin]. For everyone
+  /// else this mirrors the web UI's `menuFilters` (PE ui-ngx
   /// `src/app/core/services/menu.models.ts`): a page is visible only if the
   /// user can read its underlying resource, either generically or via group
   /// roles.
@@ -99,10 +121,8 @@ class NavigationHelper {
   /// This differs from `LoginState.hasGenericPermission`, which fails closed
   /// because it guards actions rather than menu entries.
   static bool isPageVisible(PageLayout pageLayout, LoginState login) {
-    // Sysadmins have no RBAC roles: their pages come from the system-tenant
-    // bundle (or the sysadmin default layout) and are shown as configured.
     if (login.userScope == Authority.SYS_ADMIN) {
-      return true;
+      return _isAllowedForSysAdmin(pageLayout);
     }
     final permissions = login.userPermissions;
     if (permissions == null) {
@@ -147,6 +167,33 @@ class NavigationHelper {
       case Pages.undefined:
       case null:
         return true;
+    }
+  }
+
+  /// SYS_ADMIN's generic permissions don't reflect what the tenant endpoints
+  /// allow (they answer 403), so only the built-in pages served to sysadmins
+  /// are allowed, plus custom pages the sysadmin configured. A built-in page id
+  /// this app version doesn't know also parses to [Pages.undefined]; it has no
+  /// target to open, so it is hidden.
+  static bool _isAllowedForSysAdmin(PageLayout pageLayout) {
+    switch (pageLayout.id) {
+      case Pages.home:
+      case Pages.notifications:
+      case Pages.audit_logs:
+        return true;
+      case Pages.undefined:
+      case null:
+        return pageLayout.url != null ||
+            pageLayout.dashboardId != null ||
+            pageLayout.path != null;
+      case Pages.alarms:
+      case Pages.devices:
+      case Pages.customers:
+      case Pages.assets:
+      case Pages.device_list:
+      case Pages.dashboards:
+      case Pages.live_location_tracking:
+        return false;
     }
   }
 

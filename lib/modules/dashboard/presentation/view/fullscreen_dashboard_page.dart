@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:thingsboard_app/config/routes/router.dart';
+import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/di/dashboards_di.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashboard_controller.dart';
@@ -10,10 +12,9 @@ import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard
 import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
-import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 import 'package:thingsboard_app/widgets/tb_app_bar.dart';
 
-class FullscreenDashboardPage extends StatefulWidget {
+class FullscreenDashboardPage extends ConsumerStatefulWidget {
   const FullscreenDashboardPage(
     this.fullscreenDashboardId, {
     super.key,
@@ -23,20 +24,24 @@ class FullscreenDashboardPage extends StatefulWidget {
   final String? _dashboardTitle;
 
   @override
-  State<StatefulWidget> createState() => _FullscreenDashboardPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _FullscreenDashboardPageState();
 }
 
-class _FullscreenDashboardPageState extends State<FullscreenDashboardPage> {
+class _FullscreenDashboardPageState
+    extends ConsumerState<FullscreenDashboardPage> {
   late ValueNotifier<String> dashboardTitleValue;
   final showBackValue = ValueNotifier<bool>(false);
   late final String diKey;
   DashboardController? _dashboardController;
-  late final bool havePermission;
 
   @override
   Widget build(BuildContext context) {
+    final havePermission = ref.watch(
+      loginProvider.select((s) => s.canReadDashboards),
+    );
     if (!havePermission) {
-      return DashboardPermissionErrorView( fullScreen: true);
+      return DashboardPermissionErrorView(fullScreen: true);
     }
 
     return Scaffold(
@@ -108,8 +113,6 @@ class _FullscreenDashboardPageState extends State<FullscreenDashboardPage> {
     super.initState();
     diKey = UniqueKey().toString();
     DashboardsDi.init(diKey, tbClient: getIt<ITbClientService>().client);
-    havePermission = getIt<IPermissionService>()
-        .haveViewDashboardPermission();
     dashboardTitleValue = ValueNotifier(
       getIt<ICustomTranslationService>()
           .translate(widget._dashboardTitle ?? 'Dashboard'),

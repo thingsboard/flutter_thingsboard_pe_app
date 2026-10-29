@@ -12,6 +12,7 @@ import 'package:thingsboard_app/config/themes/tb_theme.dart';
 import 'package:thingsboard_app/config/themes/tb_theme_utils.dart';
 import 'package:thingsboard_app/constants/app_constants.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
+import 'package:thingsboard_app/core/auth/login/login_theme.dart';
 import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 
@@ -35,6 +36,11 @@ abstract class WlState with _$WlState {
     required LoginWhiteLabelingParams loginWhiteLabelingParams,
     required WhiteLabelingParams userParams,
     required ThemeData theme,
+
+    /// The login page look, built from the login white-labeling. Kept apart
+    /// from [theme] so the login page shown right after a logout does not
+    /// inherit the signed-out user's palette.
+    required ThemeData loginTheme,
     required bool isUserWlMode,
     required Widget logo,
   }) = _WlState;
@@ -115,6 +121,7 @@ class Wl extends _$Wl {
       loginWhiteLabelingParams: _defaultLoginWlParams,
       userParams: _defaultWLParams,
       theme: _defaultThemeData,
+      loginTheme: _defaultLoginTheme,
       isUserWlMode: false,
       logo: _defaultLogo,
     );
@@ -127,6 +134,10 @@ class Wl extends _$Wl {
     TbThemeUtils.tbAccentColor,
   );
   static final _defaultLoginWlParams = _createDefaultLoginWlParams();
+  static final _defaultLoginTheme = loginPageTheme(
+    _defaultThemeData,
+    darkForeground: false,
+  );
 
   static final _defaultLogo = SvgPicture.asset(
     ThingsboardImage.thingsBoardWithTitle,
@@ -314,6 +325,10 @@ class Wl extends _$Wl {
     state = state.copyWith(
       loginWhiteLabelingParams: merged,
       theme: loginThemeData,
+      loginTheme: loginPageTheme(
+        loginThemeData,
+        darkForeground: merged.darkForeground ?? false,
+      ),
       logo: loginLogo,
       isUserWlMode: false,
     );
@@ -404,7 +419,11 @@ class Wl extends _$Wl {
     ThemeData themeData,
     bool isLogin,
   ) async {
-    final double height = (wlParams.logoImageHeight ?? 36).toDouble() / 3 * 2;
+    final logoImageHeight = (wlParams.logoImageHeight ?? 36).toDouble();
+    // The login logo matches the web, where the height is set in px; the app
+    // bar logo keeps its smaller scale.
+    final double height =
+        isLogin ? logoImageHeight.clamp(1, 200) : logoImageHeight / 3 * 2;
     if (wlParams.logoImageUrl == defaultLogoUrl) {
       Region? region;
       return SvgPicture.asset(

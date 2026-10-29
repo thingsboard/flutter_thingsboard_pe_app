@@ -12,7 +12,9 @@ class DashboardPageController {
   final TwoPageViewController pageCtrl;
 
   void setDashboardController(DashboardController controller) {
-    dashboardController.complete(controller);
+    if (!dashboardController.isCompleted) {
+      dashboardController.complete(controller);
+    }
   }
 
   void setDashboardTitleNotifier(ValueNotifier<String> notifier) {

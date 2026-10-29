@@ -14,7 +14,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WlState {
 
- LoginWhiteLabelingParams get loginWhiteLabelingParams; WhiteLabelingParams get userParams; ThemeData get theme; bool get isUserWlMode; Widget get logo;
+ LoginWhiteLabelingParams get loginWhiteLabelingParams; WhiteLabelingParams get userParams; ThemeData get theme;/// The login page look, built from the login white-labeling. Kept apart
+/// from [theme] so the login page shown right after a logout does not
+/// inherit the signed-out user's palette.
+ ThemeData get loginTheme; bool get isUserWlMode; Widget get logo;
 /// Create a copy of WlState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +28,16 @@ $WlStateCopyWith<WlState> get copyWith => _$WlStateCopyWithImpl<WlState>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WlState&&(identical(other.loginWhiteLabelingParams, loginWhiteLabelingParams) || other.loginWhiteLabelingParams == loginWhiteLabelingParams)&&(identical(other.userParams, userParams) || other.userParams == userParams)&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.isUserWlMode, isUserWlMode) || other.isUserWlMode == isUserWlMode)&&(identical(other.logo, logo) || other.logo == logo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WlState&&(identical(other.loginWhiteLabelingParams, loginWhiteLabelingParams) || other.loginWhiteLabelingParams == loginWhiteLabelingParams)&&(identical(other.userParams, userParams) || other.userParams == userParams)&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.loginTheme, loginTheme) || other.loginTheme == loginTheme)&&(identical(other.isUserWlMode, isUserWlMode) || other.isUserWlMode == isUserWlMode)&&(identical(other.logo, logo) || other.logo == logo));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,loginWhiteLabelingParams,userParams,theme,isUserWlMode,logo);
+int get hashCode => Object.hash(runtimeType,loginWhiteLabelingParams,userParams,theme,loginTheme,isUserWlMode,logo);
 
 @override
 String toString() {
-  return 'WlState(loginWhiteLabelingParams: $loginWhiteLabelingParams, userParams: $userParams, theme: $theme, isUserWlMode: $isUserWlMode, logo: $logo)';
+  return 'WlState(loginWhiteLabelingParams: $loginWhiteLabelingParams, userParams: $userParams, theme: $theme, loginTheme: $loginTheme, isUserWlMode: $isUserWlMode, logo: $logo)';
 }
 
 
@@ -45,7 +48,7 @@ abstract mixin class $WlStateCopyWith<$Res>  {
   factory $WlStateCopyWith(WlState value, $Res Function(WlState) _then) = _$WlStateCopyWithImpl;
 @useResult
 $Res call({
- LoginWhiteLabelingParams loginWhiteLabelingParams, WhiteLabelingParams userParams, ThemeData theme, bool isUserWlMode, Widget logo
+ LoginWhiteLabelingParams loginWhiteLabelingParams, WhiteLabelingParams userParams, ThemeData theme, ThemeData loginTheme, bool isUserWlMode, Widget logo
 });
 
 
@@ -62,11 +65,12 @@ class _$WlStateCopyWithImpl<$Res>
 
 /// Create a copy of WlState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? loginWhiteLabelingParams = null,Object? userParams = null,Object? theme = null,Object? isUserWlMode = null,Object? logo = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? loginWhiteLabelingParams = null,Object? userParams = null,Object? theme = null,Object? loginTheme = null,Object? isUserWlMode = null,Object? logo = null,}) {
   return _then(_self.copyWith(
 loginWhiteLabelingParams: null == loginWhiteLabelingParams ? _self.loginWhiteLabelingParams : loginWhiteLabelingParams // ignore: cast_nullable_to_non_nullable
 as LoginWhiteLabelingParams,userParams: null == userParams ? _self.userParams : userParams // ignore: cast_nullable_to_non_nullable
 as WhiteLabelingParams,theme: null == theme ? _self.theme : theme // ignore: cast_nullable_to_non_nullable
+as ThemeData,loginTheme: null == loginTheme ? _self.loginTheme : loginTheme // ignore: cast_nullable_to_non_nullable
 as ThemeData,isUserWlMode: null == isUserWlMode ? _self.isUserWlMode : isUserWlMode // ignore: cast_nullable_to_non_nullable
 as bool,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non_nullable
 as Widget,
@@ -154,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LoginWhiteLabelingParams loginWhiteLabelingParams,  WhiteLabelingParams userParams,  ThemeData theme,  bool isUserWlMode,  Widget logo)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LoginWhiteLabelingParams loginWhiteLabelingParams,  WhiteLabelingParams userParams,  ThemeData theme,  ThemeData loginTheme,  bool isUserWlMode,  Widget logo)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WlState() when $default != null:
-return $default(_that.loginWhiteLabelingParams,_that.userParams,_that.theme,_that.isUserWlMode,_that.logo);case _:
+return $default(_that.loginWhiteLabelingParams,_that.userParams,_that.theme,_that.loginTheme,_that.isUserWlMode,_that.logo);case _:
   return orElse();
 
 }
@@ -175,10 +179,10 @@ return $default(_that.loginWhiteLabelingParams,_that.userParams,_that.theme,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LoginWhiteLabelingParams loginWhiteLabelingParams,  WhiteLabelingParams userParams,  ThemeData theme,  bool isUserWlMode,  Widget logo)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LoginWhiteLabelingParams loginWhiteLabelingParams,  WhiteLabelingParams userParams,  ThemeData theme,  ThemeData loginTheme,  bool isUserWlMode,  Widget logo)  $default,) {final _that = this;
 switch (_that) {
 case _WlState():
-return $default(_that.loginWhiteLabelingParams,_that.userParams,_that.theme,_that.isUserWlMode,_that.logo);case _:
+return $default(_that.loginWhiteLabelingParams,_that.userParams,_that.theme,_that.loginTheme,_that.isUserWlMode,_that.logo);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +199,10 @@ return $default(_that.loginWhiteLabelingParams,_that.userParams,_that.theme,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LoginWhiteLabelingParams loginWhiteLabelingParams,  WhiteLabelingParams userParams,  ThemeData theme,  bool isUserWlMode,  Widget logo)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LoginWhiteLabelingParams loginWhiteLabelingParams,  WhiteLabelingParams userParams,  ThemeData theme,  ThemeData loginTheme,  bool isUserWlMode,  Widget logo)?  $default,) {final _that = this;
 switch (_that) {
 case _WlState() when $default != null:
-return $default(_that.loginWhiteLabelingParams,_that.userParams,_that.theme,_that.isUserWlMode,_that.logo);case _:
+return $default(_that.loginWhiteLabelingParams,_that.userParams,_that.theme,_that.loginTheme,_that.isUserWlMode,_that.logo);case _:
   return null;
 
 }
@@ -210,12 +214,16 @@ return $default(_that.loginWhiteLabelingParams,_that.userParams,_that.theme,_tha
 
 
 class _WlState extends WlState {
-  const _WlState({required this.loginWhiteLabelingParams, required this.userParams, required this.theme, required this.isUserWlMode, required this.logo}): super._();
+  const _WlState({required this.loginWhiteLabelingParams, required this.userParams, required this.theme, required this.loginTheme, required this.isUserWlMode, required this.logo}): super._();
   
 
 @override final  LoginWhiteLabelingParams loginWhiteLabelingParams;
 @override final  WhiteLabelingParams userParams;
 @override final  ThemeData theme;
+/// The login page look, built from the login white-labeling. Kept apart
+/// from [theme] so the login page shown right after a logout does not
+/// inherit the signed-out user's palette.
+@override final  ThemeData loginTheme;
 @override final  bool isUserWlMode;
 @override final  Widget logo;
 
@@ -229,16 +237,16 @@ _$WlStateCopyWith<_WlState> get copyWith => __$WlStateCopyWithImpl<_WlState>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WlState&&(identical(other.loginWhiteLabelingParams, loginWhiteLabelingParams) || other.loginWhiteLabelingParams == loginWhiteLabelingParams)&&(identical(other.userParams, userParams) || other.userParams == userParams)&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.isUserWlMode, isUserWlMode) || other.isUserWlMode == isUserWlMode)&&(identical(other.logo, logo) || other.logo == logo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WlState&&(identical(other.loginWhiteLabelingParams, loginWhiteLabelingParams) || other.loginWhiteLabelingParams == loginWhiteLabelingParams)&&(identical(other.userParams, userParams) || other.userParams == userParams)&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.loginTheme, loginTheme) || other.loginTheme == loginTheme)&&(identical(other.isUserWlMode, isUserWlMode) || other.isUserWlMode == isUserWlMode)&&(identical(other.logo, logo) || other.logo == logo));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,loginWhiteLabelingParams,userParams,theme,isUserWlMode,logo);
+int get hashCode => Object.hash(runtimeType,loginWhiteLabelingParams,userParams,theme,loginTheme,isUserWlMode,logo);
 
 @override
 String toString() {
-  return 'WlState(loginWhiteLabelingParams: $loginWhiteLabelingParams, userParams: $userParams, theme: $theme, isUserWlMode: $isUserWlMode, logo: $logo)';
+  return 'WlState(loginWhiteLabelingParams: $loginWhiteLabelingParams, userParams: $userParams, theme: $theme, loginTheme: $loginTheme, isUserWlMode: $isUserWlMode, logo: $logo)';
 }
 
 
@@ -249,7 +257,7 @@ abstract mixin class _$WlStateCopyWith<$Res> implements $WlStateCopyWith<$Res> {
   factory _$WlStateCopyWith(_WlState value, $Res Function(_WlState) _then) = __$WlStateCopyWithImpl;
 @override @useResult
 $Res call({
- LoginWhiteLabelingParams loginWhiteLabelingParams, WhiteLabelingParams userParams, ThemeData theme, bool isUserWlMode, Widget logo
+ LoginWhiteLabelingParams loginWhiteLabelingParams, WhiteLabelingParams userParams, ThemeData theme, ThemeData loginTheme, bool isUserWlMode, Widget logo
 });
 
 
@@ -266,11 +274,12 @@ class __$WlStateCopyWithImpl<$Res>
 
 /// Create a copy of WlState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? loginWhiteLabelingParams = null,Object? userParams = null,Object? theme = null,Object? isUserWlMode = null,Object? logo = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? loginWhiteLabelingParams = null,Object? userParams = null,Object? theme = null,Object? loginTheme = null,Object? isUserWlMode = null,Object? logo = null,}) {
   return _then(_WlState(
 loginWhiteLabelingParams: null == loginWhiteLabelingParams ? _self.loginWhiteLabelingParams : loginWhiteLabelingParams // ignore: cast_nullable_to_non_nullable
 as LoginWhiteLabelingParams,userParams: null == userParams ? _self.userParams : userParams // ignore: cast_nullable_to_non_nullable
 as WhiteLabelingParams,theme: null == theme ? _self.theme : theme // ignore: cast_nullable_to_non_nullable
+as ThemeData,loginTheme: null == loginTheme ? _self.loginTheme : loginTheme // ignore: cast_nullable_to_non_nullable
 as ThemeData,isUserWlMode: null == isUserWlMode ? _self.isUserWlMode : isUserWlMode // ignore: cast_nullable_to_non_nullable
 as bool,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non_nullable
 as Widget,

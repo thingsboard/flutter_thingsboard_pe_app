@@ -59,14 +59,13 @@ class TwoFactorConfirm extends _$TwoFactorConfirm {
       state = state.copyWith(loading: false, codeState: CodeState.valid);
     } catch (e) {
       state = state.copyWith(loading: false);
-      if (e is ThingsboardError) {
-        if (e.status == 429) {
-          state = state.copyWith(
-            codeState: CodeState.tooManyRequests,
-            loading: false,
-          );
-          return;
-        }
+      // The generated API throws a DioException that wraps the error.
+      if (toThingsboardError(e).status == 429) {
+        state = state.copyWith(
+          codeState: CodeState.tooManyRequests,
+          loading: false,
+        );
+        return;
       }
       state = state.copyWith(codeState: CodeState.invalid);
       return;

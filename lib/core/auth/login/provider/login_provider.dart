@@ -19,6 +19,9 @@ import 'package:thingsboard_app/utils/services/live_location_tracking/i_live_loc
 import 'package:thingsboard_app/utils/services/notification_service.dart';
 import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
+import 'package:thingsboard_app/utils/silent_request.dart';
+import 'package:thingsboard_app/utils/translation_utils.dart';
+import 'package:thingsboard_app/utils/utils.dart';
 
 part 'login_provider.g.dart';
 
@@ -106,16 +109,21 @@ class Login extends _$Login {
     return true;
   }
 
-  Future<void> loadUser() async {
+  /// [silent] keeps the requests away from the global error toast/dialog, for
+  /// a caller that reports the failure itself.
+  Future<void> loadUser({bool silent = false}) async {
+    final extra = silent ? silentRequestExtra() : null;
     final mobileResp = await _tbClient
         .getMobileAppControllerApi()
         .getUserMobileInfo(
           pkgName: _deviceInfoService.getApplicationId(),
           platform: _deviceInfoService.getPlatformType().name,
+          extra: extra,
         );
     final mobileInfo = MobileBasicInfo.fromUserMobileInfo(mobileResp.data!);
 
-    final userInfo = (await _tbClient.getAuthControllerApi().getUser()).data!;
+    final userInfo =
+        (await _tbClient.getAuthControllerApi().getUser(extra: extra)).data!;
     final lang =
         userInfo.additionalInfo?.isMap == true
             ? userInfo.additionalInfo?.asMap['lang']
@@ -131,9 +139,8 @@ class Login extends _$Login {
     );
     final userPermissions =
         (await _tbClient
-                .getUserPermissionsControllerApi()
-                .getAllowedPermissions())
-            .data!;
+            .getUserPermissionsControllerApi()
+            .getAllowedPermissions(extra: extra)).data!;
     state = state.copyWith(
       isUserLoaded: true,
       user: userInfo,
@@ -144,12 +151,71 @@ class Login extends _$Login {
   }
 
   Future<void> _onFullyLoggedIn() async {
-    await loadUser();
+    final client = _tbClient;
+    try {
+      await loadUser(silent: true);
+    } catch (e) {
+      log('load user failed: $e');
+      await _onLoadUserFailed(client, e);
+      return;
+    }
     await getIt<NotificationService>().init();
   }
 
+  /// Only a loaded user moves the app past the login and 2FA screens, so a
+  /// failed load must end in a retry or a logout: keeping the session without
+  /// a user left the login loader spinning and the 2FA screen frozen on a
+  /// valid code (the old TbContext.onUserLoaded did the same).
+  Future<void> _onLoadUserFailed(ThingsboardClient client, Object e) async {
+    // A QR endpoint switch replaced the client, or a rejected refresh token
+    // cleared the session: that change fires its own UserLoadedEvent.
+    bool superseded() =>
+        !identical(client, _tbClient) || !client.isAuthenticated();
+    if (superseded()) {
+      return;
+    }
+    // The generated APIs throw a DioException that wraps the error.
+    final error = toThingsboardError(e);
+    final choice =
+        Utils.isConnectionError(error)
+            ? await _overlayService.showConnectionErrorRetryDialog(
+              content:
+                  (context) => DialogContent(
+                    title: S.of(context).connectionError,
+                    message: S.of(context).failedToConnectToServer,
+                    ok: S.of(context).retry,
+                    cancel: S.of(context).logout,
+                  ),
+            )
+            : await _overlayService.showConfirmDialog(
+              content:
+                  (context) => DialogContent(
+                    title: S.of(context).somethingWentWrong,
+                    message: error.getTranslatedMessage(context),
+                    ok: S.of(context).retry,
+                    cancel: S.of(context).logout,
+                  ),
+            );
+    if (superseded()) {
+      return;
+    }
+    // Dismissing the dialog retries: only the explicit button drops the
+    // session.
+    if (choice == false) {
+      await logout();
+    } else {
+      await _onFullyLoggedIn();
+    }
+  }
+
   Future<void> twoFaConfirmed(LoginResponse response) async {
-    await _onFullyLoggedIn();
+    // notify=true fires UserLoadedEvent, whose listener above runs
+    // _onFullyLoggedIn(); calling it here too would load the user twice.
+    await _tbClient.setUserFromJwtToken(
+      response.token,
+      response.refreshToken,
+      true,
+    );
   }
 
   Future<bool> oauthLogin(String url) async {

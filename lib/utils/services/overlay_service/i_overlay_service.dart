@@ -9,6 +9,16 @@ abstract interface class IOverlayService {
   Future<bool?> showConfirmDialog({
     required TranslatedDialogBuilder content
   });
+
+  /// "Failed to connect to server", shown once however many requests fail.
+  void showConnectionErrorDialog();
+
+  /// The connection error for a caller that can retry; it replaces the plain
+  /// [showConnectionErrorDialog] while it is on screen.
+  Future<bool?> showConnectionErrorRetryDialog({
+    required TranslatedDialogBuilder content,
+  });
+
     void showErrorNotification(
     TranslationBuilder tranlatedMessage, {
     Duration? duration,
