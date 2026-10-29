@@ -8,8 +8,11 @@ import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 AllowedPermissionsInfo permissions(
   Map<Resource, Set<Operation>> generic, {
   Set<EntityType> sharedGroups = const {},
+  Set<Resource>? allowedResources,
 }) =>
     standardSerializers.deserializeWith(AllowedPermissionsInfo.serializer, {
+      if (allowedResources != null)
+        'allowedResources': [for (final r in allowedResources) r.name],
       'userPermissions': {
         'genericPermissions': {
           for (final entry in generic.entries)

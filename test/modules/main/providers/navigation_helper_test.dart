@@ -28,16 +28,21 @@ void expectCustomPagesVisible(LoginState login) {
 void main() {
   group('NavigationHelper.isPageVisible', () {
     group('sysadmin', () {
-      // What the server grants SYS_ADMIN generically, ALARM and DASHBOARD
-      // read included, although the tenant list endpoints reject sysadmins.
+      // What the server sends SYS_ADMIN: no generic ALL grant, but ALARM and
+      // DASHBOARD read are included, so RBAC alone would not hide those pages.
+      // `allowedResources` is the page-relevant part of the server's
+      // `Resource.resourcesByAuthority`: no DEVICE, ASSET, CUSTOMER or
+      // DEVICE_PROFILE.
       final sysAdmin = loginAs(
         Authority.SYS_ADMIN,
-        permissions({
-          Resource.ALARM: {Operation.READ},
-          Resource.DASHBOARD: {Operation.READ},
-          Resource.AUDIT_LOG: {Operation.READ},
-          Resource.ALL: {Operation.ALL},
-        }),
+        permissions(
+          {
+            Resource.ALARM: {Operation.READ},
+            Resource.DASHBOARD: {Operation.READ},
+            Resource.AUDIT_LOG: {Operation.READ},
+          },
+          allowedResources: {Resource.ALL, Resource.ALARM, Resource.DASHBOARD},
+        ),
       );
 
       test('shows only the allowlisted built-in pages', () {
@@ -46,6 +51,16 @@ void main() {
 
       test('shows custom pages', () {
         expectCustomPagesVisible(sysAdmin);
+      });
+
+      test('hides a page id unknown to this app version', () {
+        expect(
+          NavigationHelper.isPageVisible(
+            const PageLayout(id: Pages.undefined, label: 'Unknown'),
+            sysAdmin,
+          ),
+          isFalse,
+        );
       });
 
       test('applies the allowlist before permissions are loaded', () {

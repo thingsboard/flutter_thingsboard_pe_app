@@ -151,15 +151,20 @@ class NavigationHelper {
 
   /// SYS_ADMIN's generic permissions don't reflect what the tenant endpoints
   /// allow (they answer 403), so only the built-in pages served to sysadmins
-  /// are allowed, plus custom pages the sysadmin configured.
+  /// are allowed, plus custom pages the sysadmin configured. A built-in page id
+  /// this app version doesn't know also parses to [Pages.undefined]; it has no
+  /// target to open, so it is hidden.
   static bool _isAllowedForSysAdmin(PageLayout pageLayout) {
     switch (pageLayout.id) {
       case Pages.home:
       case Pages.notifications:
       case Pages.audit_logs:
+        return true;
       case Pages.undefined:
       case null:
-        return true;
+        return pageLayout.url != null ||
+            pageLayout.dashboardId != null ||
+            pageLayout.path != null;
       case Pages.alarms:
       case Pages.devices:
       case Pages.customers:
