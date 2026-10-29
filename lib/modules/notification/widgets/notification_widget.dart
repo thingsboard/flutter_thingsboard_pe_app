@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:thingsboard_app/locator.dart';
 
 import 'package:thingsboard_app/modules/alarm/alarms_base.dart';
@@ -97,7 +97,17 @@ class NotificationWidget extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Flexible(child: Html(data: notification.text)),
+                        Flexible(
+                          child: Padding(
+                            // Keeps the 8px body margin flutter_html used to add.
+                            padding: const EdgeInsets.all(8),
+                            child: HtmlWidget(
+                              notification.text,
+                              // Links were not tappable with flutter_html.
+                              onTapUrl: (_) => true,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
