@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/core/auth/login/provider/oauth_provider.dart';
 import 'package:thingsboard_app/core/auth/noauth/data/model/switch_endpoint_args.dart';
@@ -9,6 +10,7 @@ import 'package:thingsboard_app/firebase_options.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/endpoint/i_endpoint_service.dart';
+import 'package:thingsboard_app/utils/services/endpoint/normalize_endpoint.dart';
 import 'package:thingsboard_app/utils/services/firebase/i_firebase_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 part 'noauth_provider.g.dart';
@@ -70,6 +72,24 @@ final class SwitchEndpointFailure implements Exception {
       'serverMessage: $serverMessage)';
 }
 
+/// Only http(s) links carry a host the app can switch to; anything else
+/// (e.g. a custom-scheme link) targets the current endpoint. `Uri.origin`
+/// still throws on an empty host, which the caller's catch turns into the
+/// regular error screen. `host=` is the one value taken verbatim from the
+/// link, so it is normalized here.
+@visibleForTesting
+String resolveSwitchHost(SwitchEndpointArgs args, String previousEndpoint) {
+  final host = args.host;
+  if (host != null) {
+    return normalizeEndpoint(host);
+  }
+
+  final uri = args.uri;
+  return _isHttpUri(uri) ? uri.origin : previousEndpoint;
+}
+
+bool _isHttpUri(Uri uri) => uri.isScheme('http') || uri.isScheme('https');
+
 typedef _Session = ({String? token, String? refreshToken});
 
 /// A pair the server just handed out: the access token is always present.
@@ -94,7 +114,7 @@ class NoauthProvider extends _$NoauthProvider {
     String? host;
 
     try {
-      host = _resolveHost(params.data, previousEndpoint);
+      host = resolveSwitchHost(params.data, previousEndpoint);
       final isSameOrigin = _isSameOrigin(host, previousEndpoint);
 
       _logger.debug(
@@ -137,16 +157,6 @@ class NoauthProvider extends _$NoauthProvider {
     }
   }
 
-  /// Only http(s) links carry a host the app can switch to; anything else
-  /// (e.g. a custom-scheme link) targets the current endpoint. `Uri.origin`
-  /// still throws on an empty host, which the caller's catch turns into the
-  /// regular error screen.
-  String _resolveHost(SwitchEndpointArgs args, String previousEndpoint) {
-    final uri = args.uri;
-
-    return args.host ?? (_isHttpUri(uri) ? uri.origin : previousEndpoint);
-  }
-
   /// Scheme and port are part of the identity: `http://acme.local:8080` and
   /// `https://acme.local` are different servers, so a link that differs only
   /// there still has to switch. `Uri.origin` normalizes case and default ports
@@ -166,8 +176,6 @@ class NoauthProvider extends _$NoauthProvider {
 
     return target == previous.origin;
   }
-
-  bool _isHttpUri(Uri uri) => uri.isScheme('http') || uri.isScheme('https');
 
   /// Exchanges the one-time QR secret for a JWT pair on the TARGET host.
   ///
