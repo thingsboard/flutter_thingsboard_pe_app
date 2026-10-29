@@ -117,6 +117,28 @@ void main() {
     return container;
   }
 
+  // A real device reports every intermediate state (the engine message path
+  // fills them in); calling the binding directly does not.
+  void sendToBackground(WidgetTester tester) {
+    for (final state in [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+  }
+
+  void bringToForeground(WidgetTester tester) {
+    for (final state in [
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+  }
+
   testWidgets('updateWhiteLabeling uses the client current at call time, '
       'not the one captured when the provider was built', (tester) async {
     final container = await pumpWlProvider(tester);
@@ -159,25 +181,11 @@ void main() {
     ) async {
       final container = await pumpWlProvider(tester);
 
-      // A real device reports every intermediate state (the engine message
-      // path fills them in); calling the binding directly does not.
-      for (final state in [
-        AppLifecycleState.inactive,
-        AppLifecycleState.hidden,
-        AppLifecycleState.paused,
-      ]) {
-        tester.binding.handleAppLifecycleStateChanged(state);
-      }
+      sendToBackground(tester);
       await tester.pump(wlPollInterval * 10);
       verifyNever(() => liveApi.getWhiteLabelParams());
 
-      for (final state in [
-        AppLifecycleState.hidden,
-        AppLifecycleState.inactive,
-        AppLifecycleState.resumed,
-      ]) {
-        tester.binding.handleAppLifecycleStateChanged(state);
-      }
+      bringToForeground(tester);
       // Coming back to the foreground fetches right away, then on schedule.
       await tester.pump();
       verify(() => liveApi.getWhiteLabelParams()).called(1);
@@ -233,21 +241,24 @@ void main() {
       container.dispose();
     });
 
-    testWidgets('skips a tick while the previous fetch is still running', (
-      tester,
-    ) async {
+    testWidgets('coming back to the foreground does not start a second '
+        'fetch while the previous one is still running', (tester) async {
       final slowResponse = Completer<Response<WhiteLabelingParams>>();
       when(
         () => liveApi.getWhiteLabelParams(),
       ).thenAnswer((_) => slowResponse.future);
       final container = await pumpWlProvider(tester);
 
-      await tester.pump(wlPollInterval + const Duration(seconds: 1));
-      verify(() => liveApi.getWhiteLabelParams()).called(1);
-
-      slowResponse.complete(wlResponse());
       await tester.pump(wlPollInterval);
       verify(() => liveApi.getWhiteLabelParams()).called(1);
+
+      sendToBackground(tester);
+      bringToForeground(tester);
+      await tester.pump();
+      verifyNever(() => liveApi.getWhiteLabelParams());
+
+      slowResponse.complete(wlResponse());
+      await tester.pump();
       container.dispose();
     });
 
@@ -268,11 +279,34 @@ void main() {
       when(
         () => liveApi.getWhiteLabelParams(),
       ).thenAnswer((_) async => wlResponse());
-      // The hung fetch is given up after one interval, and the next tick
+      // The hung fetch is given up after wlFetchTimeout, so the next tick
       // fetches again.
       await tester.pump(wlPollInterval);
-      await tester.pump(wlPollInterval);
       verify(() => liveApi.getWhiteLabelParams()).called(1);
+      container.dispose();
+    });
+
+    testWidgets('a timed-out response landing after a newer one does not '
+        'bring back the older white-labeling', (tester) async {
+      final staleResponse = Completer<Response<WhiteLabelingParams>>();
+      final responses = [
+        staleResponse.future,
+        Future.value(wlResponse((b) => b.appTitle = 'Fresh')),
+      ];
+      when(
+        () => liveApi.getWhiteLabelParams(),
+      ).thenAnswer((_) => responses.removeAt(0));
+      final container = await pumpWlProvider(tester);
+
+      await tester.pump(wlPollInterval);
+      await tester.pump(wlPollInterval);
+      expect(container.read(wlProvider).wlParams.appTitle, 'Fresh');
+
+      staleResponse.complete(wlResponse((b) => b.appTitle = 'Stale'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(container.read(wlProvider).wlParams.appTitle, 'Fresh');
       container.dispose();
     });
 

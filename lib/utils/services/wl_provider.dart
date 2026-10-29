@@ -28,7 +28,8 @@ part 'wl_provider.g.dart';
 part 'wl_provider.freezed.dart';
 
 const defaultLogoUrl = 'LOGO-PE';
-const wlPollInterval = Duration(seconds: 30);
+const wlPollInterval = Duration(hours: 1);
+const wlFetchTimeout = Duration(seconds: 30);
 
 @freezed
 abstract class WlState with _$WlState {
@@ -106,6 +107,10 @@ class Wl extends _$Wl {
   Timer? _pollTimer;
   bool _isFetchInFlight = false;
 
+  // Only the latest fetch may write state: a timed-out poll keeps running and
+  // could otherwise land after a newer fetch and bring back the older look.
+  int _fetchId = 0;
+
   // The last params turned into theme and logo, so a poll that returns the
   // same params skips the rebuild of the whole MaterialApp. Login and user
   // params are different types, so switching mode always re-applies.
@@ -117,7 +122,8 @@ class Wl extends _$Wl {
       updateWhiteLabeling();
     });
     // The server has no push channel for white-labeling changes, so they are
-    // picked up by polling while the app is visible (PROD-8928).
+    // fetched when the app comes back to the foreground, with a rare poll as
+    // a fallback for an app that stays open (PROD-8928).
     _startPolling();
     _lifecycleListener = AppLifecycleListener(
       onShow: _resumePolling,
@@ -317,7 +323,7 @@ class Wl extends _$Wl {
     if (_isFetchInFlight) return;
     _isFetchInFlight = true;
     try {
-      await updateWhiteLabeling().timeout(wlPollInterval);
+      await updateWhiteLabeling().timeout(wlFetchTimeout);
     } catch (e, s) {
       getIt<TbLogger>().debug('White-labeling poll failed', e, s);
     } finally {
@@ -347,6 +353,7 @@ class Wl extends _$Wl {
   }
 
   Future<void> loadLoginWhiteLabelingParams({BuildContext? context}) async {
+    final fetchId = ++_fetchId;
     final response =
         await _tbClient
             .getWhiteLabelingControllerApi()
@@ -367,6 +374,7 @@ class Wl extends _$Wl {
     // A poll started before a login must not paint the login look over the
     // user white-labeling that the login listener applied meanwhile.
     if (ref.read(loginProvider).isFullyAuthenticated()) return;
+    if (fetchId != _fetchId) return;
     state = state.copyWith(
       loginWhiteLabelingParams: merged,
       theme: loginThemeData,
@@ -377,6 +385,7 @@ class Wl extends _$Wl {
   }
 
   Future<void> _loadUserWhiteLabelingParams() async {
+    final fetchId = ++_fetchId;
     final response =
         await _tbClient.getWhiteLabelingControllerApi().getWhiteLabelParams();
     var userWlParams = response.data;
@@ -394,6 +403,7 @@ class Wl extends _$Wl {
     // started before a logout must not bring the user look back to the login
     // screen.
     if (!ref.read(loginProvider).isFullyAuthenticated()) return;
+    if (fetchId != _fetchId) return;
     state = state.copyWith(
       userParams: merged,
       theme: themeData,
