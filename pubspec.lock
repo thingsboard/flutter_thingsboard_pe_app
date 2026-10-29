@@ -389,10 +389,10 @@ packages:
     dependency: transitive
     description:
       name: csslib
-      sha256: "831883fb353c8bdc1d71979e5b342c7d88acfbc643113c14ae51e2442ea0f20f"
+      sha256: "09bad715f418841f976c77db72d5398dc1253c21fb9c0c7f0b0b985860b2d58e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.17.3"
+    version: "1.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -764,14 +764,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.21.2"
-  flutter_html:
-    dependency: "direct main"
-    description:
-      name: flutter_html
-      sha256: "02ad69e813ecfc0728a455e4bf892b9379983e050722b1dce00192ee2e41d1ee"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0-beta.2"
   flutter_inappwebview:
     dependency: "direct main"
     description:
@@ -1249,13 +1241,13 @@ packages:
     source: hosted
     version: "2.6.1"
   html:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: html
-      sha256: "3a7812d5bcd2894edf53dfaf8cd640876cf6cef50a8f238745c8b8120ea74d3a"
+      sha256: "43b67b8f43321ab066817dfac5619596c98bb1b61624e77203bb4351785f9699"
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.4"
+    version: "0.15.7"
   http:
     dependency: "direct overridden"
     description:
@@ -1517,14 +1509,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  list_counter:
-    dependency: transitive
-    description:
-      name: list_counter
-      sha256: c447ae3dfcd1c55f0152867090e67e219d42fe6d4f2807db4bbe8b8d69912237
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2"
   logger:
     dependency: "direct main"
     description:
