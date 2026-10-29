@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:go_router/go_router.dart';
 import 'package:thingsboard_app/config/routes/v2/routes_config/routes/ui_utils_routes.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
@@ -54,16 +54,14 @@ class _VersionSingleState extends State<VersionSingleWidget>
               TabBar(controller: tabCtrl, tabs: [Tab(text: widget.version)]),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Html(
-                    data: widget.notes,
-                    onLinkTap: (link, _, _) {
-                      if (link != null) {
-                        launchUrlString(
-                          link,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      }
-                    },
+                  // Keeps the 8px body margin flutter_html used to add.
+                  padding: const EdgeInsets.all(8),
+                  child: HtmlWidget(
+                    widget.notes,
+                    onTapUrl: (link) => launchUrlString(
+                      link,
+                      mode: LaunchMode.externalApplication,
+                    ),
                   ),
                 ),
               ),

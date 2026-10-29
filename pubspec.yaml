@@ -12,85 +12,83 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  thingsboard_pe_client: ^4.4.0
-  dio: ^5.7.0
+  thingsboard_pe_client: ^4.4.1
+  dio: ^5.11.1
   intl: ^0.19.0
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^9.2.4
   flutter_speed_dial: ^7.0.0
-  cupertino_icons: ^1.0.6
+  cupertino_icons: ^1.0.8
   fluro: ^2.0.5
-  flutter_svg: ^2.0.9
-  jovial_svg: ^1.1.19
-  auto_size_text: ^3.0.0-nullsafety.0
-  infinite_scroll_pagination: ^4.0.0
-  fading_edge_scrollview: ^4.0.0
-  stream_transform: ^2.1.0
+  flutter_svg: ^2.2.2
+  jovial_svg: ^1.1.29
+  auto_size_text: ^3.0.0
+  infinite_scroll_pagination: ^4.1.0
+  fading_edge_scrollview: ^4.1.1
+  stream_transform: ^2.1.2
   flutter_inappwebview: ^6.1.5
-  url_launcher: ^6.2.1
-  image_picker: ^1.0.4
-  mime: ^1.0.4
-  logger: ^2.5.0
-  device_info_plus: ^10.1.0
+  url_launcher: ^6.3.2
+  image_picker: ^1.2.1
+  mime: ^1.0.6
+  logger: ^2.8.0
+  device_info_plus: ^10.1.2
   geolocator: ^12.0.0
   geolocator_android: 4.6.1
   material_design_icons_flutter: ^7.0.7296
-  package_info_plus: ^8.0.0
-  dart_jsonwebtoken: ^2.12.1
-  crypto: ^3.0.3
-  flutter_form_builder: ^9.1.1
+  package_info_plus: ^8.3.1
+  dart_jsonwebtoken: ^2.17.0
+  crypto: ^3.0.8
+  flutter_form_builder: ^9.7.0
   form_builder_validators: ^10.0.1
-  flutter_html: 3.0.0-beta.2
-  universal_html: ^2.2.4
-  universal_platform: ^1.0.0+1
+  universal_html: ^2.3.0
+  universal_platform: ^1.1.0
   preload_page_view: ^0.2.0
   flutter_localizations:
     sdk: flutter
-  firebase_core: ^3.1.0
-  firebase_messaging: ^15.0.1
-  flutter_local_notifications: ^17.1.2
-  flutter_new_badger: ^1.0.1
-  timeago: ^3.6.1
-  flutter_bloc: ^8.1.5
-  get_it: ^7.6.7
-  equatable: ^2.0.5
-  app_links: ^6.3.2
-  collection: ^1.18.0
-  html: ^0.15.4
+  firebase_core: ^3.15.2
+  firebase_messaging: ^15.2.10
+  flutter_local_notifications: ^17.2.4
+  flutter_new_badger: ^1.1.1
+  timeago: ^3.7.1
+  flutter_bloc: ^8.1.6
+  get_it: ^7.7.0
+  equatable: ^2.1.0
+  app_links: ^6.4.1
+  collection: ^1.19.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   modal_bottom_sheet: ^3.0.0
-  event_bus: ^2.0.0
-  google_fonts: ^6.2.1
+  event_bus: ^2.0.1
+  google_fonts: ^6.3.2
   expandable: ^5.0.1
   focused_menu: ^1.0.5
-  recaptcha_enterprise_flutter: ^18.6.1
+  recaptcha_enterprise_flutter: ^18.8.2
   flutter_esp_ble_prov: ^0.1.7
   esp_smartconfig: ^2.0.4
-  permission_handler: ^11.3.1
-  wifi_scan: ^0.4.1+1
-  open_settings_plus: ^0.4.0
+  permission_handler: ^11.4.0
+  wifi_scan: ^0.4.1+3
+  open_settings_plus: ^0.4.2
   plugin_wifi_connect:
     git:
       url: https://github.com/thingsboard/flutter_wifi_connect
   toastification: ^2.3.0
-  flutter_widget_from_html: ^0.16.0
-  file_picker: ^9.0.0
+  flutter_widget_from_html: ^0.16.1
+  file_picker: ^9.2.3
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
-  mobile_scanner: ^7.0.1
+  mobile_scanner: ">=7.1.4 <7.2.0" # 7.2+ needs CameraX 1.6 (AGP 8.9.1, compileSdk 36)
   flutter_hooks: ^0.21.2
   esp_provisioning_softap:
     git:
       url: https://github.com/thingsboard/esp_provisioning_softap
-  flutter_slidable: ^4.0.0
-  flutter_native_splash: ^2.4.4
+  flutter_slidable: ^4.0.3
+  flutter_native_splash: ^2.4.6
   super_tooltip: ^2.1.0
   go_router: ^17.0.0
   hooks_riverpod: ^2.6.1
-  country_picker: ^2.0.27
+  country_picker: ^2.0.28
   flutter_localized_locales: ^2.0.5
-  native_device_orientation: ^2.0.5
-  reactive_forms: ^18.2.0
+  native_device_orientation: ^2.1.0
+  reactive_forms: ^18.2.2
   reactive_phone_form_field: ^5.0.2
   barcode: ^2.2.9
   riverpod_annotation: ^2.6.1
@@ -101,13 +99,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.14.4
-  mocktail: ^1.0.3
+  mocktail: ^1.0.5
   bloc_test: ^9.1.7
   flutter_lints: ^2.0.3
-  build_runner: ^2.4.9
-  custom_lint: ^0.7.0
+  build_runner: ^2.5.4
+  custom_lint: ^0.7.6
   lint: 2.8.0
-  flutter_gen: ^5.11.0
+  flutter_gen: ^5.15.0
   riverpod_generator: ^2.6.5
   json_serializable: ^6.9.5
   freezed: ^3.1.0

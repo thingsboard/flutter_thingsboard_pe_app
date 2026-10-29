@@ -12,36 +12,29 @@ class LoginFooter extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final oauth = ref.watch(oauthProvider);
-    return oauth.maybeWhen(
-      orElse: () => const SizedBox(),
-      data: (data) {
-        if (data.selfRegistrationParams == null) {
-          return const SizedBox();
-        }
-        return    Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-            Text(S.of(context).newUserText, style: TbTextStyles.bodyMedium),
-            TextButton(
-              onPressed: () {
-                context.push(RegisterRoutes.register);
-              },
-              child: Text(
-                S.of(context).createAccount,
-                style: TbTextStyles.bodyMedium,
-              ),
-            ),
-                  ],
+    final selfRegistrationEnabled =
+        ref.watch(oauthProvider).value?.selfRegistrationParams != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (selfRegistrationEnabled)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(S.of(context).newUserText, style: TbTextStyles.bodyMedium),
+              TextButton(
+                onPressed: () {
+                  context.push(RegisterRoutes.register);
+                },
+                child: Text(
+                  S.of(context).createAccount,
+                  style: TbTextStyles.bodyMedium,
                 ),
-                const MorePageFooter()
-          ],
-        );
-      },
+              ),
+            ],
+          ),
+        const MorePageFooter(),
+      ],
     );
- 
   }
 }

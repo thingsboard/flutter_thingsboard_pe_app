@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/config/routes/route_not_found_widget.dart';
 import 'package:thingsboard_app/config/routes/v2/redirects/redirects.dart';
 import 'package:thingsboard_app/config/routes/v2/refresh_listenable.dart';
+import 'package:thingsboard_app/config/routes/v2/route_extra_codec.dart';
 import 'package:thingsboard_app/config/routes/v2/routes_config/routes.dart';
 
 part 'router_2.g.dart';
@@ -18,6 +19,7 @@ class Router extends _$Router {
     final listenable = RefreshListenable(ref);
     return GoRouter(
       debugLogDiagnostics: true,
+      extraCodec: const RouteExtraCodec(),
       refreshListenable: listenable,
       navigatorKey: globalNavigatorKey,
       redirect: (context, state) async {

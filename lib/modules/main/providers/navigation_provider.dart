@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:thingsboard_app/config/routes/v2/router_2.dart';
@@ -16,8 +15,6 @@ import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/layouts/pages_layout.dart';
 
 part 'navigation_provider.g.dart';
-
-const fullScreenProfile = '/profile?fullscreen=true';
 
 @riverpod
 class Navigation extends _$Navigation {
@@ -79,28 +76,31 @@ class Navigation extends _$Navigation {
     required Authority authority,
   }) {
     if (pages == null) {
-      _pagesLayout = [
-        const PageLayout(id: Pages.home),
-        const PageLayout(id: Pages.alarms),
-        const PageLayout(id: Pages.devices),
+      const tenantPages = [
+        PageLayout(id: Pages.home),
+        PageLayout(id: Pages.alarms),
+        PageLayout(id: Pages.devices),
       ];
-
-      if (authority == Authority.SYS_ADMIN) {
-        _pagesLayout.add(const PageLayout(id: Pages.notifications));
-        _pagesLayout.removeWhere((e) => e.id == Pages.alarms);
-      } else if (authority == Authority.TENANT_ADMIN) {
-        _pagesLayout.addAll([
+      _pagesLayout = switch (authority) {
+        Authority.SYS_ADMIN => [
+          const PageLayout(id: Pages.home),
+          const PageLayout(id: Pages.notifications),
+          const PageLayout(id: Pages.audit_logs),
+        ],
+        Authority.TENANT_ADMIN => [
+          ...tenantPages,
           const PageLayout(id: Pages.customers),
           const PageLayout(id: Pages.assets),
           const PageLayout(id: Pages.audit_logs),
           const PageLayout(id: Pages.notifications),
-        ]);
-      } else if (authority == Authority.CUSTOMER_USER) {
-        _pagesLayout.addAll([
+        ],
+        Authority.CUSTOMER_USER => [
+          ...tenantPages,
           const PageLayout(id: Pages.assets),
           const PageLayout(id: Pages.notifications),
-        ]);
-      }
+        ],
+        _ => [...tenantPages],
+      };
     } else {
       _pagesLayout = List.of(pages);
     }
@@ -117,20 +117,9 @@ class Navigation extends _$Navigation {
       }
     }
     if (hiddenPageIds.isNotEmpty) {
-      _logger.debug('Navigation pages hidden by RBAC: $hiddenPageIds');
+      _logger.debug('Navigation pages hidden: $hiddenPageIds');
     }
-    _allPages =
-        visibleLayouts
-            .map(
-              (pageLayout) => NavigationItemData(
-                title: NavigationHelper.getLabel(pageLayout),
-                icon: NavigationHelper.getIcon(pageLayout),
-                path: NavigationHelper.getPath(pageLayout),
-                id: pageLayout.id?.name,
-                showNotificationBadge: pageLayout.id == Pages.notifications,
-              ),
-            )
-            .toList();
+    _allPages = visibleLayouts.map(NavigationHelper.toNavigationItem).toList();
     final bool shouldAddProfile =
         _allPages.length < 4 &&
         _allPages.firstWhereOrNull((e) {
@@ -147,7 +136,7 @@ class Navigation extends _$Navigation {
             : const NavigationItemData(
               title: 'More',
               icon: Icons.menu_outlined,
-              path: '/more',
+              path: morePath,
             );
     NavigationState navState = const NavigationState(
       bottomBarPages: [],

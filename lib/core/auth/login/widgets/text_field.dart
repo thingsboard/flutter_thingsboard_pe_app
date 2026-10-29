@@ -61,6 +61,9 @@ class TbTextField extends HookWidget {
     final isErrorState = useState(false);
     // final theme = Theme.of(context);
     final counter = useState(0);
+    final errorColor =
+        Theme.of(context).inputDecorationTheme.errorStyle?.color ??
+        AppColors.textError;
     //  final iconStateColor = isErrorState.value ? AppColors.textError : null;
 
     useEffect(() {
@@ -129,7 +132,7 @@ class TbTextField extends HookWidget {
             (error) => S.of(context).verificationCodeInvalid,
       },
       style: TbTextStyles.bodyLarge.copyWith(
-        color: isErrorState.value ? AppColors.textError : null,
+        color: isErrorState.value ? errorColor : null,
       ),
       decoration: InputDecoration(
         counterText:
@@ -144,7 +147,9 @@ class TbTextField extends HookWidget {
 
                   icon: Icon(
                     !isVisible.value ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.iconDisabled,
+                    color:
+                        Theme.of(context).inputDecorationTheme.suffixIconColor ??
+                        AppColors.iconDisabled,
                     size: 24,
                   ),
 
@@ -162,13 +167,13 @@ class TbTextField extends HookWidget {
         // Override theme styles when there's an error state
         labelStyle:
             isErrorState.value
-                ? TbTextStyles.bodyLarge.copyWith(color: AppColors.textError)
+                ? TbTextStyles.bodyLarge.copyWith(color: errorColor)
                 : null,
         floatingLabelStyle:
             isErrorState.value
                 ? WidgetStateTextStyle.resolveWith((Set<WidgetState> states) {
                   return TbTextStyles.labelSmall.copyWith(
-                    color: AppColors.textError,
+                    color: errorColor,
                   );
                 })
                 : null,

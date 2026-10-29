@@ -9,8 +9,6 @@ import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashbo
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboard_grid_card.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/custom_translation/i_custom_translation_service.dart';
-import 'package:thingsboard_app/utils/services/overlay_service/i_overlay_service.dart';
-import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_exception_widget.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/first_page_progress_builder.dart';
 import 'package:thingsboard_app/utils/ui/pagination_widgets/new_page_progress_builder.dart';
@@ -41,20 +39,12 @@ class DashboardsGridWidget extends StatelessWidget {
                   entityCardWidgetBuilder:
                       (_, dashboard) => DashboardGridCard(dashboard: dashboard),
                   onEntityTap: (dashboard) {
-                     final havePermission = getIt<IPermissionService>()
-                    .haveViewDashboardPermission();
-
-                if (havePermission) {
-                  dashboardPageCtrl.openDashboard(
-                    dashboard.id!.id!,
-                    title: getIt<ICustomTranslationService>()
-                        .translate(dashboard.title),
-                  );
-                } else {
-                  getIt<IOverlayService>().showErrorNotification( (_) =>
-                    S.of(context).youDontHavePermissionsToPerformThisOperation,
-                  );
-                }
+                    dashboardPageCtrl.openDashboard(
+                      dashboard.id!.id!,
+                      title: getIt<ICustomTranslationService>().translate(
+                        dashboard.title,
+                      ),
+                    );
                   },
                   settings: EntityCardSettings(),
                 ),
