@@ -9,50 +9,45 @@ class NotificationIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconData = _toIcon(
-      notification.additionalConfig?['icon'] as Map<String, dynamic>? ?? {},
+    final config =
+        notification.additionalConfig?['icon'] as Map<String, dynamic>? ?? {};
+
+    return Icon(
+      toNotificationIconData(config['icon']?.toString()) ?? Icons.notifications,
+      color: toNotificationIconColor(config['color']?.toString()),
     );
+  }
+}
 
-    return iconData;
+IconData? toNotificationIconData(String? name) {
+  if (name == null) {
+    return null;
   }
 
-  Color _toColor(String? data) {
-    if (data != null) {
-      var hexColor = data.replaceAll('#', '');
-      if (hexColor.length == 6) {
-        hexColor = 'FF$hexColor';
-      } else if (hexColor.length == 8) {
-        final alpha = hexColor.substring(6, 8);
-        hexColor = '$alpha${hexColor.substring(0, 6)}';
-      }
-      final value = int.tryParse(hexColor, radix: 16);
-      if (value != null) {
-        return Color(value);
-      }
+  if (name.contains('mdi')) {
+    // translate-me-ignore-next-line
+    return MdiIcons.fromString(name.split('mdi:').last);
+  }
+
+  return materialIconsMap[name];
+}
+
+Color toNotificationIconColor(String? data) {
+  if (data != null) {
+    var hexColor = data.replaceAll('#', '');
+    if (hexColor.length == 6) {
+      hexColor = 'FF$hexColor';
+    } else if (hexColor.length == 8) {
+      final alpha = hexColor.substring(6, 8);
+      hexColor = '$alpha${hexColor.substring(0, 6)}';
     }
-
-    return Colors.black54;
-  }
-
-  Widget _toIcon(Map<String, dynamic> data) {
-    if (data['icon'] != null) {
-      final String imageData = data['icon'].toString();
-      if (imageData.contains('mdi')) {
-        return Icon(
-          // translate-me-ignore-next-line
-          MdiIcons.fromString(imageData.split('mdi:').last),
-          color: _toColor(data['color']?.toString()),
-        );
-      }
-
-      return Icon(
-        materialIconsMap[imageData],
-        color: _toColor(data['color']?.toString()),
-      );
+    final value = int.tryParse(hexColor, radix: 16);
+    if (value != null) {
+      return Color(value);
     }
-
-    return const Icon(Icons.notifications, color: Colors.black54);
   }
+
+  return Colors.black54;
 }
 
 const materialIconsMap = {

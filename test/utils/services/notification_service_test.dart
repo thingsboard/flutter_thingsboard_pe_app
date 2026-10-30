@@ -160,6 +160,9 @@ void main() {
     ).thenAnswer((_) async => true);
     when(() => localNotificationsPlugin.cancelAll()).thenAnswer((_) async {});
     when(
+      () => localNotificationsPlugin.getNotificationAppLaunchDetails(),
+    ).thenAnswer((_) async => null);
+    when(
       () => localService.clearNotificationBadgeCount(),
     ).thenAnswer((_) async {});
     when(
@@ -193,6 +196,30 @@ void main() {
   });
 
   group('NotificationService.init', () {
+    test('handles the notification that launched the app once per process, '
+        'not again when a later login re-runs init()', () async {
+      when(
+        () => localNotificationsPlugin.getNotificationAppLaunchDetails(),
+      ).thenAnswer(
+        (_) async => const NotificationAppLaunchDetails(
+          true,
+          notificationResponse: NotificationResponse(
+            notificationResponseType:
+                NotificationResponseType.selectedNotification,
+            payload: '{}',
+          ),
+        ),
+      );
+      final service = buildService();
+
+      await service.init();
+      await service.init();
+
+      verify(
+        () => localNotificationsPlugin.getNotificationAppLaunchDetails(),
+      ).called(1);
+    });
+
     test('skips entirely when Firebase is not configured', () async {
       when(() => firebaseService.apps).thenReturn(const []);
 
