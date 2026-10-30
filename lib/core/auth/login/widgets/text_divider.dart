@@ -6,12 +6,13 @@ class TextDivider extends StatelessWidget {
   final String text;
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).dividerTheme.color;
     return Row(
       spacing: 12,
       children: [
-        Flexible(child: Divider(color: Colors.black.withValues(alpha: .12))),
+        Flexible(child: Divider(color: color)),
         Text(text, style: TbTextStyles.bodyMedium),
-        Flexible(child: Divider(color: Colors.black.withValues(alpha: .12))),
+        Flexible(child: Divider(color: color)),
       ],
     );
   }

@@ -6,6 +6,7 @@ class NavigationItemData {
     required this.icon,
     required this.path,
     this.id,
+    this.label,
     this.showNotificationBadge = false,
   });
 
@@ -13,6 +14,10 @@ class NavigationItemData {
   final IconData icon;
   final String path;
   final String? id;
+
+  /// Non-blank title given to the page in the mobile bundle layout. Null when
+  /// the page keeps its default title, which is then localized on display.
+  final String? label;
   final bool showNotificationBadge;
 
   @override
@@ -24,6 +29,7 @@ class NavigationItemData {
           icon == other.icon &&
           path == other.path &&
           id == other.id &&
+          label == other.label &&
           showNotificationBadge == other.showNotificationBadge;
 
   @override
@@ -32,5 +38,6 @@ class NavigationItemData {
       icon.hashCode ^
       path.hashCode ^
       id.hashCode ^
+      label.hashCode ^
       showNotificationBadge.hashCode;
 }

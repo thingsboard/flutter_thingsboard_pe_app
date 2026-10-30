@@ -11,6 +11,7 @@ import 'package:thingsboard_app/core/auth/2FA/confirm/widgets/base_two_factor_la
 import 'package:thingsboard_app/core/auth/2FA/confirm/widgets/select_provider_type_widget.dart';
 import 'package:thingsboard_app/core/auth/2FA/confirm/widgets/two_factor_auth_code_widget.dart';
 import 'package:thingsboard_app/core/auth/2FA/two_fa_view_type.dart';
+import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 
@@ -25,6 +26,13 @@ class TwoFactorAuthenticationPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = useState(false);
+    // The session was dropped (Log Out after a failed user load): there is
+    // nothing left to verify.
+    ref.listen(loginProvider, (_, next) {
+      if (!next.isUserLoaded) {
+        context.go(LoginRoutes.login);
+      }
+    });
 
     final providers = ref.watch(twoFaConfirmAvalibleProvidersProvider);
     useEffect(() {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/modules/dashboard/di/dashboards_di.dart';
 import 'package:thingsboard_app/modules/dashboard/main_dashboard_page.dart';
@@ -6,26 +8,27 @@ import 'package:thingsboard_app/modules/dashboard/presentation/controller/dashbo
 import 'package:thingsboard_app/modules/dashboard/presentation/view/dashboard_permission_error_view.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboards_appbar.dart';
 import 'package:thingsboard_app/modules/dashboard/presentation/widgets/dashboards_grid.dart';
-import 'package:thingsboard_app/utils/services/permission/i_permission_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
 import 'package:thingsboard_app/widgets/two_page_view.dart';
 
-class DashboardsPage extends StatefulWidget {
+class DashboardsPage extends ConsumerStatefulWidget {
   const DashboardsPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _DashboardsPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _DashboardsPageState();
 }
 
-class _DashboardsPageState extends State<DashboardsPage> {
+class _DashboardsPageState extends ConsumerState<DashboardsPage> {
   final pageViewCtrl = TwoPageViewController();
   late final DashboardPageController dashboardPageCtrl;
 
   late final String diKey;
-  late final bool havePermission;
 
   @override
   Widget build(BuildContext context) {
+    final havePermission = ref.watch(
+      loginProvider.select((s) => s.canReadDashboards),
+    );
     if (!havePermission) {
       return const DashboardPermissionErrorView();
     }
@@ -42,8 +45,6 @@ class _DashboardsPageState extends State<DashboardsPage> {
   @override
   void initState() {
     diKey = UniqueKey().toString();
-    havePermission = getIt<IPermissionService>()
-        .haveViewDashboardPermission();
     DashboardsDi.init(diKey, tbClient: getIt<ITbClientService>().client);
     dashboardPageCtrl = DashboardPageController(pageCtrl: pageViewCtrl);
     super.initState();

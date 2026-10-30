@@ -23,6 +23,10 @@ class OAuthButtons extends StatelessWidget {
             OAuthButton(
               logo: SvgPicture.asset(
                 ThingsboardImage.oauth2Logos['qr-code-logo']!,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primary,
+                  BlendMode.srcIn,
+                ),
               ),
               onTap: () => onButtonPressed(clients.first),
               title: S.of(context).scanQrCode,
@@ -46,18 +50,31 @@ class OAuthButtons extends StatelessWidget {
   }
 }
 
+// Single-color brand marks; drawn in the foreground so they stay visible on
+// the primary palette. Multicolor logos (Google, Facebook) keep their colors.
+const _monochromeLogos = {'github-logo', 'apple-logo', 'qr-code'};
+
 Widget _getOauth2ButtonLogo(BuildContext context, OAuth2ClientLoginInfo info) {
   final String? svgPath = ThingsboardImage.oauth2Logos[info.icon];
 
   if (svgPath != null) {
-    return SizedBox(width: 24, height: 24, child: SvgPicture.asset(svgPath));
+    return SizedBox(
+      width: 24,
+      height: 24,
+      child: SvgPicture.asset(
+        svgPath,
+        colorFilter:
+            _monochromeLogos.contains(info.icon)
+                ? ColorFilter.mode(
+                  Theme.of(context).colorScheme.primary,
+                  BlendMode.srcIn,
+                )
+                : null,
+      ),
+    );
   }
 
   final iconData = NavigationHelper.getIconFromString(info.icon);
 
-  return SizedBox(
-    width: 24,
-    height: 24,
-    child: Icon(iconData, color: Colors.black),
-  );
+  return SizedBox(width: 24, height: 24, child: Icon(iconData));
 }

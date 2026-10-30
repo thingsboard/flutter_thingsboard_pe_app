@@ -57,6 +57,9 @@ class _DashboardState extends State<DashboardWidget> {
     clearCache: true,
     allowsInlineMediaPlayback: true,
     allowsBackForwardNavigationGestures: false,
+    // Android defaults to 8px, so TB widgets that shrink text in an unbounded
+    // loop (LED indicator, knob, round switch) never exit and freeze the page.
+    minimumFontSize: 0,
   );
 
   @override

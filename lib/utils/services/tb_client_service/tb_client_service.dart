@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/utils/services/communication/events/user_loaded_event.dart';
 import 'package:thingsboard_app/utils/services/communication/i_communication_service.dart';
@@ -107,14 +106,7 @@ class TbClientService implements ITbClientService {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (Utils.isConnectionError(e)) {
-        _overlayService.showAlertDialog(
-          content:
-              (context) => DialogContent(
-                title: S.of(context).connectionError,
-                message: S.of(context).failedToConnectToServer,
-              ),
-        );
-
+        _overlayService.showConnectionErrorDialog();
         return;
       }
       _overlayService.showErrorNotification(e.getTranslatedMessage);

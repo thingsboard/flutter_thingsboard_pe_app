@@ -1,6 +1,9 @@
 // ignore_for_file: parameter_assignments
 
+import 'dart:async';
+
 import 'package:built_collection/built_collection.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -11,20 +14,25 @@ import 'package:thingsboard_app/config/themes/tb_theme.dart';
 import 'package:thingsboard_app/config/themes/tb_theme_utils.dart';
 import 'package:thingsboard_app/constants/app_constants.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
+import 'package:thingsboard_app/core/auth/login/login_theme.dart';
 import 'package:thingsboard_app/core/auth/login/models/login_state.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
 
 import 'package:thingsboard_app/core/context/tb_context.dart';
+import 'package:thingsboard_app/core/logger/tb_logger.dart';
 import 'package:thingsboard_app/core/select_region/model/region.dart';
 import 'package:thingsboard_app/locator.dart';
 import 'package:thingsboard_app/thingsboard_client.dart';
 import 'package:thingsboard_app/utils/services/local_database/i_local_database_service.dart';
 import 'package:thingsboard_app/utils/services/tb_client_service/i_tb_client_service.dart';
+import 'package:thingsboard_app/utils/silent_request.dart';
 import 'package:thingsboard_app/utils/utils.dart';
 part 'wl_provider.g.dart';
 part 'wl_provider.freezed.dart';
 
 const defaultLogoUrl = 'LOGO-PE';
+const wlPollInterval = Duration(hours: 1);
+const wlFetchTimeout = Duration(seconds: 30);
 
 @freezed
 abstract class WlState with _$WlState {
@@ -32,6 +40,11 @@ abstract class WlState with _$WlState {
     required LoginWhiteLabelingParams loginWhiteLabelingParams,
     required WhiteLabelingParams userParams,
     required ThemeData theme,
+
+    /// The login page look, built from the login white-labeling. Kept apart
+    /// from [theme] so the login page shown right after a logout does not
+    /// inherit the signed-out user's palette.
+    required ThemeData loginTheme,
     required bool isUserWlMode,
     required Widget logo,
   }) = _WlState;
@@ -61,7 +74,10 @@ abstract class WlState with _$WlState {
           : loginWhiteLabelingParams.platformVersion) ??
       '';
 
-  String get platformNameAndVersion => '$platformName v.$platformVersion';
+  String get platformNameAndVersion => [
+    if (platformName.isNotEmpty) platformName,
+    if (platformVersion.isNotEmpty) 'v.$platformVersion',
+  ].join(' ');
 
   bool get isCustomLogo =>
       isUserWlMode
@@ -98,17 +114,42 @@ class Wl extends _$Wl {
   // (PROD-8879).
   ThingsboardClient get _tbClient => getIt<ITbClientService>().client;
   late ProviderSubscription<LoginState> _subscription;
+  late AppLifecycleListener _lifecycleListener;
+  Timer? _pollTimer;
+  bool _isFetchInFlight = false;
+
+  // Only the latest fetch may write state: a timed-out poll keeps running and
+  // could otherwise land after a newer fetch and bring back the older look.
+  int _fetchId = 0;
+
+  // The last params turned into theme and logo, so a poll that returns the
+  // same params skips the rebuild of the whole MaterialApp. Login and user
+  // params are different types, so switching mode always re-applies.
+  Object? _appliedParams;
+
   @override
   WlState build() {
     _subscription = ref.listen(loginProvider, (prev, next) {
-      print('wl update');
       updateWhiteLabeling();
     });
-    ref.onDispose(() => _subscription.close());
+    // The server has no push channel for white-labeling changes, so they are
+    // fetched when the app comes back to the foreground, with a rare poll as
+    // a fallback for an app that stays open (PROD-8928).
+    _startPolling();
+    _lifecycleListener = AppLifecycleListener(
+      onShow: _resumePolling,
+      onHide: _stopPolling,
+    );
+    ref.onDispose(() {
+      _subscription.close();
+      _stopPolling();
+      _lifecycleListener.dispose();
+    });
     return WlState(
       loginWhiteLabelingParams: _defaultLoginWlParams,
       userParams: _defaultWLParams,
       theme: _defaultThemeData,
+      loginTheme: _defaultLoginTheme,
       isUserWlMode: false,
       logo: _defaultLogo,
     );
@@ -121,6 +162,10 @@ class Wl extends _$Wl {
     TbThemeUtils.tbAccentColor,
   );
   static final _defaultLoginWlParams = _createDefaultLoginWlParams();
+  static final _defaultLoginTheme = loginPageTheme(
+    _defaultThemeData,
+    darkForeground: false,
+  );
 
   static final _defaultLogo = SvgPicture.asset(
     ThingsboardImage.thingsBoardWithTitle,
@@ -154,8 +199,7 @@ class Wl extends _$Wl {
           ..helpLinkBaseUrl = 'https://thingsboard.io'
           ..enableHelpLinks = true
           ..showNameVersion = false
-          ..platformName = 'ThingsBoard'
-          ..platformVersion = '3.4.1PE',
+          ..platformName = 'ThingsBoard',
   );
 
   static LoginWhiteLabelingParams _createDefaultLoginWlParams() {
@@ -179,7 +223,6 @@ class Wl extends _$Wl {
             ..enableHelpLinks = true
             ..showNameVersion = false
             ..platformName = 'ThingsBoard'
-            ..platformVersion = '3.4.1PE'
             ..pageBackgroundColor = '#eee'
             ..darkForeground = false,
     );
@@ -253,10 +296,12 @@ class Wl extends _$Wl {
             ..helpLinkBaseUrl = mergedBase.helpLinkBaseUrl
             ..enableHelpLinks = mergedBase.enableHelpLinks
             ..showNameVersion = mergedBase.showNameVersion
-            ..platformName = mergedBase.platformName
-            ..platformVersion = mergedBase.platformVersion
+            // Left unset, the web login fills these from its own bundle, which
+            // the app cannot; only values the admin typed in are shown.
+            ..platformName = wlParams!.platformName
+            ..platformVersion = wlParams.platformVersion
             ..pageBackgroundColor =
-                wlParams!.pageBackgroundColor ??
+                wlParams.pageBackgroundColor ??
                 defaultWlParams.pageBackgroundColor
             ..darkForeground =
                 wlParams.darkForeground ?? defaultWlParams.darkForeground
@@ -267,6 +312,39 @@ class Wl extends _$Wl {
             ..prohibitDifferentUrl = wlParams.prohibitDifferentUrl
             ..adminSettingsId = wlParams.adminSettingsId,
     );
+  }
+
+  void _startPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(wlPollInterval, (_) => _poll());
+  }
+
+  // Coming back to the app is when a change made in the web UI is most
+  // likely to be looked for, so it is fetched right away rather than at the
+  // next tick.
+  void _resumePolling() {
+    _startPolling();
+    unawaited(_poll());
+  }
+
+  void _stopPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
+  }
+
+  // The client sets no receive timeout, so a request that stalls after
+  // connecting would otherwise keep the in-flight guard set and end polling
+  // for the rest of the session.
+  Future<void> _poll() async {
+    if (_isFetchInFlight) return;
+    _isFetchInFlight = true;
+    try {
+      await updateWhiteLabeling().timeout(wlFetchTimeout);
+    } catch (e, s) {
+      getIt<TbLogger>().debug('White-labeling poll failed', e, s);
+    } finally {
+      _isFetchInFlight = false;
+    }
   }
 
   static bool _isEmpty(String? str) {
@@ -291,14 +369,14 @@ class Wl extends _$Wl {
   }
 
   Future<void> loadLoginWhiteLabelingParams({BuildContext? context}) async {
+    final fetchId = ++_fetchId;
     final response =
         await _tbClient
             .getWhiteLabelingControllerApi()
             .getLoginWhiteLabelParams();
     var loginWlParams = response.data;
-    // platformVersion is always on the server side in the new client; no
-    // getPlatformVersion() helper.
     var merged = _mergeLoginDefaults(loginWlParams, _defaultLoginWlParams);
+    if (merged == _appliedParams) return;
     final loginThemeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final loginLogo = await _updateImages(
       context ?? globalNavigatorKey.currentContext!,
@@ -307,19 +385,31 @@ class Wl extends _$Wl {
       loginThemeData,
       true,
     );
+    // A poll started before a login must not paint the login look over the
+    // user white-labeling that the login listener applied meanwhile.
+    if (ref.read(loginProvider).isFullyAuthenticated()) return;
+    if (fetchId != _fetchId) return;
     state = state.copyWith(
       loginWhiteLabelingParams: merged,
       theme: loginThemeData,
+      loginTheme: loginPageTheme(
+        loginThemeData,
+        darkForeground: merged.darkForeground ?? false,
+      ),
       logo: loginLogo,
       isUserWlMode: false,
     );
+    _appliedParams = merged;
   }
 
   Future<void> _loadUserWhiteLabelingParams() async {
+    final fetchId = ++_fetchId;
     final response =
         await _tbClient.getWhiteLabelingControllerApi().getWhiteLabelParams();
-    var userWlParams = response.data;
-    var merged = _mergeDefaults(userWlParams, _defaultWLParams);
+    final merged = await _withServerVersion(
+      _mergeDefaults(response.data, _defaultWLParams),
+    );
+    if (merged == _appliedParams) return;
     final themeData = TbThemeUtils.createTheme(merged.paletteSettings);
     final logo = await _updateImages(
       globalNavigatorKey.currentContext!,
@@ -328,14 +418,72 @@ class Wl extends _$Wl {
       themeData,
       false,
     );
-
+    // The reverse of the check in loadLoginWhiteLabelingParams: a poll
+    // started before a logout must not bring the user look back to the login
+    // screen.
+    if (!ref.read(loginProvider).isFullyAuthenticated()) return;
+    if (fetchId != _fetchId) return;
     state = state.copyWith(
       userParams: merged,
       theme: themeData,
       logo: logo,
       isUserWlMode: true,
     );
-    state = state.copyWith(isUserWlMode: true);
+    _appliedParams = merged;
+  }
+
+  // An unset platform version means "the running server version": the web UI
+  // fills it from its own bundle, which the app cannot do, so it asks the
+  // server. Both null and '' count as unset, as in the web: the admin form
+  // stores '' when the field is cleared.
+  Future<WhiteLabelingParams> _withServerVersion(
+    WhiteLabelingParams params,
+  ) async {
+    if (!_isEmpty(params.platformVersion)) {
+      return params;
+    }
+    final serverVersion = await _serverVersion();
+    return serverVersion == null
+        ? params
+        : params.rebuild((b) => b..platformVersion = serverVersion);
+  }
+
+  // The version cannot change while the app talks to one server, and a
+  // re-init (QR login, endpoint switch) hands out a new client, so one lookup
+  // per client is enough. A failed lookup is retried on the next load.
+  ThingsboardClient? _serverVersionClient;
+  String? _serverVersionCache;
+
+  Future<String?> _serverVersion() async {
+    final client = _tbClient;
+    if (_serverVersionCache != null &&
+        identical(client, _serverVersionClient)) {
+      return _serverVersionCache;
+    }
+    final version = await _fetchServerVersion(client);
+    if (version != null) {
+      _serverVersionClient = client;
+      _serverVersionCache = version;
+    }
+    return version;
+  }
+
+  // The endpoint that reports the server version is hidden from the OpenAPI
+  // spec, so the generated client has no accessor for it and it is requested
+  // by path. The web UI shows the package version, which never carries the
+  // Maven -SNAPSHOT suffix.
+  Future<String?> _fetchServerVersion(ThingsboardClient client) async {
+    try {
+      final response = await client.get<Map<String, dynamic>>(
+        '/api/system/info',
+        options: Options(extra: silentRequestExtra()),
+      );
+      final version = response.data?['version'] as String?;
+      return version?.replaceFirst(RegExp(r'-SNAPSHOT$'), '');
+    } catch (e) {
+      getIt<TbLogger>().debug('Server version lookup failed: $e');
+      return null;
+    }
   }
 
   Future<Widget> _updateImages(
@@ -345,7 +493,11 @@ class Wl extends _$Wl {
     ThemeData themeData,
     bool isLogin,
   ) async {
-    final double height = (wlParams.logoImageHeight ?? 36).toDouble() / 3 * 2;
+    final logoImageHeight = (wlParams.logoImageHeight ?? 36).toDouble();
+    // The login logo matches the web, where the height is set in px; the app
+    // bar logo keeps its smaller scale.
+    final double height =
+        isLogin ? logoImageHeight.clamp(1, 200) : logoImageHeight / 3 * 2;
     if (wlParams.logoImageUrl == defaultLogoUrl) {
       Region? region;
       return SvgPicture.asset(
