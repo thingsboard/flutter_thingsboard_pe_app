@@ -10,10 +10,10 @@ import 'package:thingsboard_app/modules/notification/widgets/notification_icon.d
 import 'package:thingsboard_app/utils/services/notification_icon_renderer.dart';
 
 /// Upgrades a background push with the icon configured in the notification
-/// template. TbFirebaseMessagingService has already posted a plain
-/// notification for it (and stripped the payload so the FCM SDK does not post
-/// another); showing again with the same tag and id replaces that one in
-/// place. If this isolate never runs, the plain notification stays.
+/// template. TbFirebaseMessagingService posts a plain notification for it
+/// (and strips the payload so the FCM SDK does not post another); showing
+/// again with the same tag and id replaces that one in place. If this isolate
+/// never runs, the plain notification stays.
 ///
 /// Must be a top-level function annotated with `vm:entry-point`: it runs in
 /// a dedicated background isolate without the app's DI, and the plugin
@@ -21,6 +21,10 @@ import 'package:thingsboard_app/utils/services/notification_icon_renderer.dart';
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await PushNotificationDisplay.initialize();
+  if (message.notification == null) {
+    return;
+  }
+  await PushNotificationDisplay.waitForPlainNotification(message);
   await PushNotificationDisplay.show(message);
   debugPrint('TbPush: re-posted ${message.messageId} with the template icon');
 }
@@ -82,6 +86,33 @@ abstract final class PushNotificationDisplay {
     );
   }
 
+  /// Waits until TbFirebaseMessagingService's plain notification for [message]
+  /// is active, so it cannot land after the icon version and replace it: both
+  /// sides get the same broadcast independently. Gives up after [timeout].
+  static Future<void> waitForPlainNotification(
+    RemoteMessage message, {
+    FlutterLocalNotificationsPlugin? plugin,
+    Duration timeout = const Duration(seconds: 1),
+    Duration interval = const Duration(milliseconds: 50),
+  }) async {
+    final tag = message.messageId;
+    if (tag == null) {
+      return;
+    }
+    final id = notificationIdFor(message);
+    final stopwatch = Stopwatch()..start();
+    while (stopwatch.elapsed < timeout) {
+      final active =
+          await (plugin ?? PushNotificationDisplay.plugin)
+              .getActiveNotifications();
+      if (active.any((n) => n.tag == tag && n.id == id)) {
+        return;
+      }
+      await Future<void>.delayed(interval);
+    }
+    debugPrint('TbPush: no plain notification for $tag, posting anyway');
+  }
+
   static Future<NotificationDetails> _detailsFor(RemoteMessage message) async {
     final tag = message.messageId;
     final defaultDetails = NotificationDetails(
@@ -129,8 +160,9 @@ abstract final class PushNotificationDisplay {
     }
   }
 
-  // Channel id, name and importance are duplicated in
-  // TbFirebaseMessagingService; keep them in step.
+  // Channel id, name, importance and colour are duplicated in
+  // TbFirebaseMessagingService; keep them in step
+  // (push_notification_display_test.dart compares them).
   static AndroidNotificationDetails _androidDetails({
     String? tag,
     AndroidBitmap<Object>? largeIcon,

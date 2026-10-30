@@ -64,6 +64,12 @@ class TbFirebaseMessagingService : FlutterFirebaseMessagingService() {
         }
         ensureChannel()
         val id = notificationId(messageId)
+        // Dart gives up waiting for this one after a second; posting after it
+        // would replace the icon version.
+        if (isPosted(messageId, id)) {
+            Log.i(TAG, "Dart already posted $messageId, skipping the plain one")
+            return
+        }
         val built = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setColor(BRAND_COLOR)
@@ -81,6 +87,11 @@ class TbFirebaseMessagingService : FlutterFirebaseMessagingService() {
             Log.w(TAG, "Could not post notification $messageId", e)
         }
     }
+
+    private fun isPosted(tag: String, id: Int): Boolean =
+        getSystemService(NotificationManager::class.java)
+            .activeNotifications
+            .any { it.tag == tag && it.id == id }
 
     private fun tapIntent(id: Int, payload: String): PendingIntent? {
         val intent = packageManager.getLaunchIntentForPackage(packageName) ?: return null
@@ -143,6 +154,8 @@ class TbFirebaseMessagingService : FlutterFirebaseMessagingService() {
         const val EXTRA_NOTIFICATION_ID = "notificationId"
         const val EXTRA_PAYLOAD = "payload"
 
+        // Mirror PushNotificationDisplay._androidDetails and AppColors.primaryBlue;
+        // push_notification_display_test.dart compares them.
         const val CHANNEL_ID = "general"
         const val CHANNEL_NAME = "General notifications"
         const val CHANNEL_DESCRIPTION = "This channel is used for general notifications"
