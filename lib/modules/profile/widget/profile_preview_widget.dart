@@ -7,6 +7,7 @@ import 'package:thingsboard_app/config/routes/v2/routes_config/routes/login_rout
 import 'package:thingsboard_app/config/themes/app_colors.dart';
 import 'package:thingsboard_app/config/themes/tb_text_styles.dart';
 import 'package:thingsboard_app/core/auth/login/provider/login_provider.dart';
+import 'package:thingsboard_app/core/auth/user_authority_bridge.dart';
 import 'package:thingsboard_app/core/usecases/user_details_usecase.dart';
 import 'package:thingsboard_app/generated/l10n.dart';
 import 'package:thingsboard_app/locator.dart';
@@ -165,7 +166,7 @@ class ProfilePreviewWidget extends HookConsumerWidget {
                 ),
                 // Commented out for CE app, uncoment this code if you need this feature
                 // for your users
-                // if (user.authority != Authority.SYS_ADMIN)
+                // if (user.appAuthority != Authority.SYS_ADMIN)
                 //   getDeleteButton(context, ref, user)
               ],
             ),
