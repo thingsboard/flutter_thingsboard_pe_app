@@ -165,7 +165,8 @@ class ProfilePreviewWidget extends HookConsumerWidget {
                 ),
                 // Commented out for CE app, uncoment this code if you need this feature
                 // for your users
-                // if (user.authority != Authority.SYS_ADMIN)
+                // Requires: import 'package:thingsboard_app/core/auth/user_authority_bridge.dart';
+                // if (user.appAuthority != Authority.SYS_ADMIN)
                 //   getDeleteButton(context, ref, user)
               ],
             ),
